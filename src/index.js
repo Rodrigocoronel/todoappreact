@@ -29,7 +29,7 @@ ReactDOM.render(
 	<Provider store={store}>
 		<HashRouter>
 			<Switch>
-				<Route exact path="/" component={SignIn} />
+				<Route exact path="/s" component={SignIn} />
 				<Route path="/app" component={App} />
 				<Route component={Page404} />
 			</Switch>

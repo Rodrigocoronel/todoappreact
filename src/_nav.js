@@ -2,7 +2,7 @@ export default {
   items: [
     {
       name: 'Dashboard',
-      url: '/dashboard',
+      url: '/app/dashboard',
       icon: 'icon-speedometer',
       badge: {
         variant: 'info',
@@ -20,12 +20,12 @@ export default {
     },
     {
       name: 'Colors',
-      url: '/theme/colors',
+      url: '/app/theme/colors',
       icon: 'icon-drop',
     },
     {
       name: 'Typography',
-      url: '/theme/typography',
+      url: '/app/theme/typography',
       icon: 'icon-pencil',
     },
     {
@@ -38,131 +38,131 @@ export default {
     },
     {
       name: 'Base',
-      url: '/base',
+      url: '/app/base',
       icon: 'icon-puzzle',
       children: [
         {
           name: 'Breadcrumbs',
-          url: '/base/breadcrumbs',
+          url: '/app/base/breadcrumbs',
           icon: 'icon-puzzle',
         },
         {
           name: 'Cards',
-          url: '/base/cards',
+          url: '/app/base/cards',
           icon: 'icon-puzzle',
         },
         {
           name: 'Carousels',
-          url: '/base/carousels',
+          url: '/app/base/carousels',
           icon: 'icon-puzzle',
         },
         {
           name: 'Collapses',
-          url: '/base/collapses',
+          url: '/app/base/collapses',
           icon: 'icon-puzzle',
         },
         {
           name: 'Dropdowns',
-          url: '/base/dropdowns',
+          url: '/app/base/dropdowns',
           icon: 'icon-puzzle',
         },
         {
           name: 'Forms',
-          url: '/base/forms',
+          url: '/app/base/forms',
           icon: 'icon-puzzle',
         },
         {
           name: 'Jumbotrons',
-          url: '/base/jumbotrons',
+          url: '/app/base/jumbotrons',
           icon: 'icon-puzzle',
         },
         {
           name: 'List groups',
-          url: '/base/list-groups',
+          url: '/app/base/list-groups',
           icon: 'icon-puzzle',
         },
         {
           name: 'Navs',
-          url: '/base/navs',
+          url: '/app/base/navs',
           icon: 'icon-puzzle',
         },
         {
           name: 'Paginations',
-          url: '/base/paginations',
+          url: '/app/base/paginations',
           icon: 'icon-puzzle',
         },
         {
           name: 'Popovers',
-          url: '/base/popovers',
+          url: '/app/base/popovers',
           icon: 'icon-puzzle',
         },
         {
           name: 'Progress Bar',
-          url: '/base/progress-bar',
+          url: '/app/base/progress-bar',
           icon: 'icon-puzzle',
         },
         {
           name: 'Switches',
-          url: '/base/switches',
+          url: '/app/base/switches',
           icon: 'icon-puzzle',
         },
         {
           name: 'Tables',
-          url: '/base/tables',
+          url: '/app/base/tables',
           icon: 'icon-puzzle',
         },
         {
           name: 'Tabs',
-          url: '/base/tabs',
+          url: '/app/base/tabs',
           icon: 'icon-puzzle',
         },
         {
           name: 'Tooltips',
-          url: '/base/tooltips',
+          url: '/app/base/tooltips',
           icon: 'icon-puzzle',
         },
       ],
     },
     {
       name: 'Buttons',
-      url: '/buttons',
+      url: '/app/buttons',
       icon: 'icon-cursor',
       children: [
         {
           name: 'Buttons',
-          url: '/buttons/buttons',
+          url: '/app/buttons/buttons',
           icon: 'icon-cursor',
         },
         {
           name: 'Button dropdowns',
-          url: '/buttons/button-dropdowns',
+          url: '/app/buttons/button-dropdowns',
           icon: 'icon-cursor',
         },
         {
           name: 'Button groups',
-          url: '/buttons/button-groups',
+          url: '/app/buttons/button-groups',
           icon: 'icon-cursor',
         },
         {
           name: 'Brand Buttons',
-          url: '/buttons/brand-buttons',
+          url: '/app/buttons/brand-buttons',
           icon: 'icon-cursor',
         },
       ],
     },
     {
       name: 'Charts',
-      url: '/charts',
+      url: '/app/charts',
       icon: 'icon-pie-chart',
     },
     {
       name: 'Icons',
-      url: '/icons',
+      url: '/app/icons',
       icon: 'icon-star',
       children: [
         {
           name: 'CoreUI Icons',
-          url: '/icons/coreui-icons',
+          url: '/app/icons/coreui-icons',
           icon: 'icon-star',
           badge: {
             variant: 'info',
@@ -171,12 +171,12 @@ export default {
         },
         {
           name: 'Flags',
-          url: '/icons/flags',
+          url: '/app/icons/flags',
           icon: 'icon-star',
         },
         {
           name: 'Font Awesome',
-          url: '/icons/font-awesome',
+          url: '/app/icons/font-awesome',
           icon: 'icon-star',
           badge: {
             variant: 'secondary',
@@ -185,36 +185,36 @@ export default {
         },
         {
           name: 'Simple Line Icons',
-          url: '/icons/simple-line-icons',
+          url: '/app/icons/simple-line-icons',
           icon: 'icon-star',
         },
       ],
     },
     {
       name: 'Notifications',
-      url: '/notifications',
+      url: '/app/notifications',
       icon: 'icon-bell',
       children: [
         {
           name: 'Alerts',
-          url: '/notifications/alerts',
+          url: '/app/notifications/alerts',
           icon: 'icon-bell',
         },
         {
           name: 'Badges',
-          url: '/notifications/badges',
+          url: '/app/notifications/badges',
           icon: 'icon-bell',
         },
         {
           name: 'Modals',
-          url: '/notifications/modals',
+          url: '/app/notifications/modals',
           icon: 'icon-bell',
         },
       ],
     },
     {
       name: 'Widgets',
-      url: '/widgets',
+      url: '/app/widgets',
       icon: 'icon-calculator',
       badge: {
         variant: 'info',
@@ -230,27 +230,27 @@ export default {
     },
     {
       name: 'Pages',
-      url: '/pages',
+      url: '/app/pages',
       icon: 'icon-star',
       children: [
         {
           name: 'Login',
-          url: '/login',
+          url: '/app/login',
           icon: 'icon-star',
         },
         {
           name: 'Register',
-          url: '/register',
+          url: '/app/register',
           icon: 'icon-star',
         },
         {
           name: 'Error 404',
-          url: '/404',
+          url: '/app/404',
           icon: 'icon-star',
         },
         {
           name: 'Error 500',
-          url: '/500',
+          url: '/app/500',
           icon: 'icon-star',
         },
       ],
