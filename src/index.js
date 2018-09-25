@@ -18,9 +18,10 @@ import reducers from './reducers';
 import './index.css';
 
 // pages
-import SignIn from './views/Pages/Login';
+import SignIn from './views/Login';
 import Page404 from './views/Pages/Page404';
 import App from './App';
+import Dash from './views/Dash';
 
 // create store
 let store = createStore(reducers, applyMiddleware(thunk));
@@ -29,7 +30,7 @@ ReactDOM.render(
 	<Provider store={store}>
 		<HashRouter>
 			<Switch>
-				<Route exact path="/s" component={SignIn} />
+				<Route exact path="/" component={SignIn} />
 				<Route path="/app" component={App} />
 				<Route component={Page404} />
 			</Switch>

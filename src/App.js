@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch , Redirect} from 'react-router-dom';
+import { connect } from 'react-redux';
 import './App.css';
 // Styles
 // CoreUI Icons Set
@@ -15,13 +16,20 @@ import './scss/style.css'
 
 // Containers
 import { DefaultLayout } from './containers';
-// Pages
-import { Login, Page404, Page500, Register } from './views/Pages';
+
+//actions 
+
+import * as actions from './actions/auth';
 
 // import { renderRoutes } from 'react-router-config';
 
 class App extends Component {
   render() {
+
+  	let {authenticated} = this.props.auth;
+
+  	if(!authenticated)
+            return (<Redirect to={{pathname: '/'}} />);
     return (
       <HashRouter>
         <Switch>
@@ -32,4 +40,10 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state, ownProps) {
+    return {
+        auth : state.auth
+    }
+}
+
+export default connect(mapStateToProps, actions)(App);
