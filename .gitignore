@@ -21,4 +21,3 @@ yarn-debug.log*
 yarn-error.log*
 
 ## exclude css from git, as we used sass.
-src/**/*.css
