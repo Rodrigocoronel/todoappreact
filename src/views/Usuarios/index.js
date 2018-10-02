@@ -15,7 +15,7 @@ class Dash extends Component {
     
       return (
         <div className="container-fluid">
-            Ventana de inicio
+            Registro de Usuarios
         </div>    
     );
   }
