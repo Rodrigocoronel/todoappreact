@@ -15,8 +15,7 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-        <span>WeNatives MX.</span>
-        <span className="ml-auto">Powered by Fernando, El Blady, y el Rico no!</span>
+        <span className="ml-auto"><i> WeNatives MX. </i></span>
       </React.Fragment>
     );
   }

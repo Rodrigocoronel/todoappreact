@@ -2,16 +2,7 @@ export default
 {
     items:
     [
-        {
-            name: 'PAPAS & BEER',
-            url: '/dashboard',
-            icon: 'icon-basket-loaded',
-            badge: {
-                variant: 'info',
-            },
-        },
-        
-        
+
         {
             title: true,
             name: 'Botellas',
@@ -22,7 +13,7 @@ export default
             class: ''             
         },
         {
-            name: 'Entradas',
+            name: 'Registro',
             url: '/app/agregarBotellas',
             icon: 'icon-pencil',
         },
@@ -31,8 +22,6 @@ export default
             url: '/app/buscarBotellas',
             icon: 'icon-magnifier',
         },
-        
-        
         {
             title: true,
             name: 'Almacenes',
@@ -46,8 +35,6 @@ export default
             url: '/app/almacenes',
             icon: 'icon-pencil',
         },
-        
-        
         {
             title: true,
             name: 'Movimientos',
@@ -57,7 +44,7 @@ export default
             },
         },
         {
-            name: 'Traspasos',
+            name: 'Entradas / Salidas',
             url: '/app/traspasos',
             icon: 'icon-pencil',
         },
@@ -66,8 +53,6 @@ export default
             url: '/app/reportes',
             icon: 'icon-magnifier',
         },
-        
-        
         {
             title: true,
             name: 'Usuarios',
@@ -81,10 +66,9 @@ export default
             url: '/app/usuarios',
             icon: 'icon-pencil',
         },
-
         { divider: true, },
         {
-            name: 'Salir',
+            name: 'SALIR',
             url: '/dashboard',
         },
     ],

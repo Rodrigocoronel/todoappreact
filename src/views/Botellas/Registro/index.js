@@ -15,7 +15,7 @@ class Dash extends Component {
         botella : {
             folio : '',
             insumo : '',
-            desc_nsumo : '',
+            desc_insumo : '',
             fecha_compra : '',
             almacen_actual : ''
         }
@@ -44,13 +44,13 @@ class Dash extends Component {
   handleSubmit(evt){
     evt.preventDefault();
       var {botella} = this.state;
-      
-        console.log(botella);
-      
+         
       api().post('/BotellaNueva',botella)
-          .then(function(response){
-          
-          console.log(response)
+          .then(function(response)
+      {
+ 
+           
+
       });
   }
     
@@ -72,23 +72,23 @@ class Dash extends Component {
                                     <div className="col-sm-12">
                                         <div className="form-group">
                                             <label>Folio:</label>
-                                            <input className="form-control" type="text" id="folio" placeholder="########" value = {botella.folio} name="folio" onChange = {this.handleInputChange} />
+                                            <input className="form-control" type="text" placeholder="########" value = {botella.folio} name="folio" onChange = {this.handleInputChange} />
                                         </div>
                                         <div className="form-group">
                                             <label>Codigo de insumo:</label>
-                                            <input className="form-control" type="text" id="codigoInsumo" placeholder="########" value = {botella.insumo} name="insumo" onChange = {this.handleInputChange} />
+                                            <input className="form-control" type="text" placeholder="########" value = {botella.insumo} name="insumo" onChange = {this.handleInputChange} />
                                         </div>
                                         <div className="form-group">
                                             <label>Descripcion:</label>
-                                            <input className="form-control" type="text" id="descripcionInsumo" placeholder="" value = {botella.desc_insumo} name="desc_insumo" onChange = {this.handleInputChange} />
+                                            <input className="form-control" type="text" placeholder="" value = {botella.desc_insumo} name="desc_insumo" onChange = {this.handleInputChange} />
                                         </div>
                                         <div className="form-group">
                                             <label>Fecha de compra:</label>
-                                            <input className="form-control" type="date" id="fechaDeCompra" placeholder="dd/mm/aa" value = {botella.fecha_compra} name="fecha_compra" onChange = {this.handleInputChange} />
+                                            <input className="form-control" type="date" placeholder="dd/mm/aa" value = {botella.fecha_compra} name="fecha_compra" onChange = {this.handleInputChange} />
                                         </div>
                                         <div className="form-group">
                                             <label>Almacen actual:</label>
-                                            <input className="form-control" type="text" id="almacenActual" placeholder="#" value = {botella.almacen_actual} name="almacen_actual" onChange = {this.handleInputChange} />
+                                            <input className="form-control" type="text" placeholder="#" value = {botella.almacen_actual} name="almacen_actual" onChange = {this.handleInputChange} />
                                         </div>
                                         <div>
                                             <button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} >Registrar</button>

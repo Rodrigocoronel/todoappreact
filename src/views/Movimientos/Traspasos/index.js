@@ -77,9 +77,14 @@ handleInputChange(event) {
                                             <label>Descripcion de insumo:</label>
                                             <input className="form-control" type="text" readOnly value = {movimiento.id} name="insumo" onChange = {this.handleInputChange} />
                                         </div>
-                                        <div className="form-group">
-                                            <label>Tipo de movimiento:</label>
-                                            <input className="form-control" type="text" readOnly value = {movimiento.almacen_origen_id} name="movimiento_id" onChange = {this.handleInputChange} />
+                                        <div class="form-group">
+                                            <label >Movimiento:</label>
+                                            <select className="form-control" id="select1" name="select1">
+                                                <option value="0">Selecciona un movimiento...</option>
+                                                <option value="1">Entrada</option>
+                                                <option value="2">Salida</option>
+                                                <option value="3">Cancelación</option>
+                                            </select>
                                         </div>
                                         <div className="form-group">
                                             <label>Almacen:</label>

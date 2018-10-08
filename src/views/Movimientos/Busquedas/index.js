@@ -62,24 +62,30 @@ class Dash extends Component {
         <div className="container-fluid">
             <div className="animated fadeIn">
                 <div className="row">
-                    <div className="col-sm-8">
+                    <div className="col-sm-12">
                         <div className="card">
                             <div className="card-header">
                                 <strong>Reporte De Movimientos</strong>
                             </div>
                             <div className="card-body">
                                 <div className="row">
-                                    <div className="col-sm-6">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
                                             <label>Fecha inicial:</label>
                                              <input className="form-control" type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
                                         </div>
 
                                     </div>
-                                    <div className="col-sm-6">
+                                    <div className="col-sm-4">
                                         <div className="form-group">
-                                            <label>Fecha inicial:</label>
+                                            <label>Fecha final:</label>
                                             <input className="form-control" type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-4">
+                                        <div className="form-group">
+                                            <label>Almacen:</label>
+                                            <input className="form-control" type="date"  readOnly value = {movimiento.almacen_origen_id} name="fecha_compra" onChange = {this.handleInputChange} />
                                         </div>
                                     </div>
                                 </div>
@@ -92,6 +98,39 @@ class Dash extends Component {
                         </div>
                     </div>
                 </div>
+
+                <div className="row">
+
+<div className="col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fa fa-align-justify"></i> Reporte de movimientos
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-responsive-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Movimiento</th>
+                                            <th>Producto</th>
+                                            <th>Usuario</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2012/01/01</td>
+                                            <td>Entrada</td>
+                                            <td>Buchacas</td>
+                                            <td>Pepe</td>
+                                        </tr>        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+</div>
+
+
             </div>
         </div>    
     );
