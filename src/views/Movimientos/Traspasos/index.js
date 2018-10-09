@@ -1,10 +1,38 @@
 import React, { Component } from 'react';
-import { Button, Col, Row } from 'reactstrap';
+//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
 
 import * as actions from '../../../actions/dash.js';
 
-import {api} from '../../../actions/_request';
+//import {api} from '../../../actions/_request';
+
+const VentanaDeError = () => 
+(
+    <div className="card">
+        <div className="card-header">
+            <strong> Error!!! </strong>
+        </div>
+        <div className="card-body">
+            <div className="alert alert-warning" role="alert">
+                <strong> No se registro el movimiento </strong>
+            </div>
+        </div>
+    </div>
+)
+
+const VentanaDeGuardadoExitoso = () => 
+(
+    <div className="card">
+        <div className="card-header">
+            <strong> Confirmación </strong>
+        </div>
+        <div className="card-body">
+            <div className="alert alert-success" role="alert">
+                <strong> El movimiento fue registrado exitosamente </strong>
+            </div>
+        </div>
+    </div>
+)
 
 class Dash extends Component {
 
@@ -61,7 +89,7 @@ handleInputChange(event) {
         <div className="container-fluid">
             <div className="animated fadeIn">
                 <div className="row">
-                    <div className="col-sm-6">
+                    <div className="col-lg-6 col-sm-12">
                         <div className="card">
                             <div className="card-header">
                                 <strong>Registro De Movimientos</strong>
@@ -77,7 +105,7 @@ handleInputChange(event) {
                                             <label>Descripcion de insumo:</label>
                                             <input className="form-control" type="text" readOnly value = {movimiento.id} name="insumo" onChange = {this.handleInputChange} />
                                         </div>
-                                        <div class="form-group">
+                                        <div className="form-group">
                                             <label >Movimiento:</label>
                                             <select className="form-control" id="select1" name="select1">
                                                 <option value="0">Selecciona un movimiento...</option>
@@ -101,6 +129,10 @@ handleInputChange(event) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className="col-lg-6 col-sm-12">
+                        { <VentanaDeError /> }
+                        { <VentanaDeGuardadoExitoso /> }
                     </div>
                 </div>
             </div>

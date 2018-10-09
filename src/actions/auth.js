@@ -1,4 +1,4 @@
-import { request,api } from './_request';
+import { request } from './_request';
 
 export const login = (params) =>
 {   

@@ -1,15 +1,58 @@
 import React, { Component } from 'react';
-import { Button, Col, Row } from 'reactstrap';
+//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
-
 import * as actions from '../../actions/dash.js';
+//import {api} from '../../actions/_request';
 
-import {api} from '../../actions/_request';
+
+const ListaDeAlmacenes = ({almacen}) => 
+(
+    <div className="card">
+        <div className="card-header">
+            <strong>Almacenes</strong>
+        </div>
+        <div className="card-body">
+            <table className="table table-responsive-sm table-striped">
+                <thead>
+                    <tr>
+                        <th width="25%"> Codigo </th>
+                        <th width="75%"> Nombre </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {/*
+                    almacen.map((item, i) => 
+                        <tr key = { i } >
+                            <td> { item.id } </td>
+                            <td> { item.nombre } </td>
+                        </tr>
+                    )*/
+                }
+                </tbody>
+            </table>  
+        </div>
+    </div>
+)
 
 class Almacenes extends Component {
 
+    constructor(props){
+        super(props)
+
+        this.state={
+            almacen : {
+                id : '',
+                nombre : '',
+            },
+        }
+      
+        //this.handleInputChange = this.handleInputChange.bind(this);
+        //this.handleSubmit = this.handleSubmit.bind(this);
+    }
 
 render() {
+
+    let almacen = this.state;
 
       return (
         <div className="container-fluid">
@@ -44,25 +87,7 @@ render() {
                         </div>
                     </div>
                     <div className="col-sm-12 col-lg-6">
-                        <div className="card">
-                            <div className="card-header">
-                                <strong>Almacenes</strong>
-                            </div>
-                            <div className="card-body">
-                                <table class="table table-responsive-sm table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th width="25%"> Codigo </th>
-                                            <th width="75%"> Nombre </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <td>1</td>
-                                        <td>General</td>
-                                    </tbody>
-                                </table>  
-                            </div>
-                        </div>
+                        { <ListaDeAlmacenes almacen = {almacen} /> }
                     </div>
                 </div>
             </div>

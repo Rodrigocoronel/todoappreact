@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Col, Row } from 'reactstrap';
+//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
 
 import * as actions from '../../actions/dash.js';
 
-import {api} from '../../actions/_request';
+//import {api} from '../../actions/_request';
 
 class Dash extends Component {
 

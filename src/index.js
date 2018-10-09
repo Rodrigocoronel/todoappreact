@@ -21,7 +21,7 @@ import './index.css';
 import SignIn from './views/Login';
 import Page404 from './views/Pages/Page404';
 import App from './App';
-import Dash from './views/Dash';
+//import Dash from './views/Dash';
 
 // create store
 let store = createStore(reducers, applyMiddleware(thunk));
