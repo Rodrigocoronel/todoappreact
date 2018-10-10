@@ -74,7 +74,7 @@ class Dash extends Component
         }
         this.limpiarState = this.limpiarState.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
     handleInputChange(event) 
@@ -88,31 +88,47 @@ class Dash extends Component
         this.setState({ botella: botella  });
     }
     
-    handleSubmit(evt)
+    handleKeyPress(event)
     {
-        evt.preventDefault();
+        event.preventDefault();
         var {botella} = this.state;
         let temp = this;
-      
-        api().get(`/Botella/${botella.folio}`)
-        .then(function(response)
+        var datos = new Array();
+
+        botella.error = 1;
+        ( (event.key === 'Enter') && (botella.folio) ) ? datos = botella.folio.split("^") : "" ;
+
+        if(datos.length===6)
         {
-            if(response.status === 200)
+            botella.folio = datos[0];
+        }
+            
+            api().get(`/Botella/${botella.folio}`)
+            .then(function(response)
             {
-                if(response.data[0] == null)
+                if(response.status === 200)
                 {
-                    temp.limpiarState();
+                    if(response.data[0] == null)
+                    {
+                        temp.limpiarState();
+                    }
+                    else
+                    { 
+                        botella = response.data[0];
+                        botella.error = 0;
+                        temp.setState({
+                            botella: botella,
+                        });
+                    }
                 }
-                else
-                { 
-                    botella = response.data[0];
-                    botella.error = 0;
-                    temp.setState({
-                        botella: botella,
-                    });
-                }
-            }
-        });
+            });
+        // }
+        // else
+        // {
+        //     this.setState({
+        //         botella: botella,
+        //     });
+        // }
     }
   
     limpiarState()
@@ -149,23 +165,23 @@ class Dash extends Component
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label>Folio:</label>
-                                                <input className="form-control" type="text" value = {botella.folio} name="folio" onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label>Código de insumo:</label>
-                                                <label className="form-control" type="text" name="insumo"> {botella.insumo} </label>
+                                                <label className="form-control" type="text" readOnly name="insumo"> {botella.insumo} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Descripción:</label>
-                                                <label className="form-control" type="text" name="desc_insumo"> {botella.desc_insumo} </label>
+                                                <label className="form-control" type="text" readOnly name="desc_insumo"> {botella.desc_insumo} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Fecha de compra:</label>
-                                                <label className="form-control" type="date" name="fecha_compra"> {botella.fecha_compra} </label>
+                                                <label className="form-control" type="date" readOnly name="fecha_compra"> {botella.fecha_compra} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Almacén actual:</label>
-                                                <label className="form-control" type="text" name="almacen_actual"> {botella.almacen?botella.almacen.nombre:''} </label>
+                                                <label className="form-control" type="text" readOnly name="almacen_actual"> {botella.almacen?botella.almacen.nombre:''} </label>
                                             </div>
                                             <div>
                                                 <button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
