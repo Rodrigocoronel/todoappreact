@@ -119,8 +119,9 @@ class Dash extends Component
                         });
                     }
                 }
-                target.select();
+                
             });
+            target.select();
         }
     }
             
@@ -158,7 +159,7 @@ class Dash extends Component
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label>Folio:</label>
-                                                <input className="form-control" type="text" ref="campoFolio" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" autoFocus placeholder="#" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label>Código de insumo:</label>

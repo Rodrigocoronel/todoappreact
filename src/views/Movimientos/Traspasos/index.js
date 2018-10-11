@@ -88,39 +88,65 @@ handleInputChange(event) {
       return (
         <div className="container-fluid">
             <div className="animated fadeIn">
+
+
                 <div className="row">
                     <div className="col-lg-6 col-sm-12">
                         <div className="card">
                             <div className="card-header">
                                 <strong>Registro De Movimientos</strong>
+                                <button class="btn btn-success" type="button" data-toggle="modal" data-target="#successModal">ENTRADA</button>
+                                <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#warningModal">SALIDA</button>
+                                <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#dangerModal">CANCELACION</button>
+                            </div>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    <div className="form-group">
+                                        <label >Movimiento:</label>
+                                        <select className="form-control" id="select1" name="select1">
+                                            <option value="0">Selecciona un movimiento...</option>
+                                            <option value="1">Entrada</option>
+                                            <option value="2">Salida</option>
+                                            <option value="3">Cancelación</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-lg-6 col-sm-12">
+                        <div className="card">
+                            <div className="card-header">
+                                <strong>Registro De Movimientos</strong>
+                                <button class="btn btn-success" type="button" data-toggle="modal" data-target="#successModal">ENTRADA</button>
+                                <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#warningModal">SALIDA</button>
+                                <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#dangerModal">CANCELACION</button>
                             </div>
                             <div className="card-body">
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <div className="form-group">
                                             <label>Folio:</label>
-                                            <input className="form-control" type="text" value = {movimiento.folio} name="folio" onChange = {this.handleInputChange} />
+                                            <input className="form-control" type="text" autoFocus value = {movimiento.folio} name="folio" onChange = {this.handleInputChange} />
                                         </div>
                                         <div className="form-group">
                                             <label>Descripcion de insumo:</label>
                                             <input className="form-control" type="text" readOnly value = {movimiento.id} name="insumo" onChange = {this.handleInputChange} />
                                         </div>
-                                        <div className="form-group">
-                                            <label >Movimiento:</label>
-                                            <select className="form-control" id="select1" name="select1">
-                                                <option value="0">Selecciona un movimiento...</option>
-                                                <option value="1">Entrada</option>
-                                                <option value="2">Salida</option>
-                                                <option value="3">Cancelación</option>
-                                            </select>
-                                        </div>
+
                                         <div className="form-group">
                                             <label>Almacen:</label>
                                             <input className="form-control" type="text" readOnly value = {movimiento.fecha} name="almacen_origen_id" onChange = {this.handleInputChange} />
                                         </div>
-                                                                                <div className="form-group">
+                                        <div className="form-group">
                                             <label>Fecha de movimiento:</label>
-                                            <input className="form-control" type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
+                                            <input className="form-control" type="text" placeholder="autoasigned" readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
                                         </div>
                                         <div>
                                             <button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Registrar Movimiento </button>

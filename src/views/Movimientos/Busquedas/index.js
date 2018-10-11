@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 //import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
-
 import * as actions from '../../../actions/dash.js';
-
 //import {api} from '../../../actions/_request';
-
 
 const ReporteVacio = () =>
 (
@@ -70,11 +67,9 @@ class Dash extends Component {
 				user : ''
 			}
 	  	}
-	  
 	  	this.handleInputChange = this.handleInputChange.bind(this);
 	  	this.handleSubmit = this.handleSubmit.bind(this);
   	}
-
 
 	handleInputChange(event) {
  
@@ -90,7 +85,6 @@ class Dash extends Component {
 			movimiento: movimiento
 		});
   	}
-
 	
 	handleSubmit(evt){
 		evt.preventDefault();
@@ -112,24 +106,42 @@ class Dash extends Component {
 								</div>
 								<div className="card-body">
 									<div className="row">
-										<div className="col-sm-4">
+										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
 												<label>Fecha inicial:</label>
-												 <input className="form-control" type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
+												 <input className="form-control" autoFocus type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
 											</div>
 										</div>
-										<div className="col-sm-4">
+										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
 												<label>Fecha final:</label>
 												<input className="form-control" type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
 											</div>
 										</div>
-										<div className="col-sm-4">
+										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
-												<label>Almacen:</label>
-												<input className="form-control" type="date"  readOnly value = {movimiento.almacen_origen_id} name="fecha_compra" onChange = {this.handleInputChange} />
-											</div>
+                                            	<label >Almacén:</label>
+                                            	<select className="form-control" id="select1" name="select1">
+                                                	<option value="0">Selecciona un almacén...</option>
+                                                	<option value="1">1</option>
+                                                	<option value="2">2</option>
+                                                	<option value="3">3</option>
+                                                	<option value="4">4</option>
+                                                	<option value="5">5</option>
+                                            	</select>
+                                        	</div>
 										</div>
+										<div className="col-lg-3 col-sm-6">
+											<div className="form-group">
+                                            	<label >Movimiento:</label>
+                                            	<select className="form-control" id="select1" name="select1">
+                                                	<option value="0">Selecciona un movimiento...</option>
+                                                	<option value="1">Entrada</option>
+	                                                <option value="2">Salida</option>
+	                                                <option value="3">Cancelación</option>
+                                            	</select>
+                                       		</div>
+                                       	</div>
 									</div>
 									<div className="row">
 										<div className="col-sm-12">

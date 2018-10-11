@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
 
-const VentanaCargaExitosa = () =>
+const VentanaCargaExitosa = () => // CODIGO 1
 (
     <div className="card">
         <div className="card-header">
@@ -18,7 +18,7 @@ const VentanaCargaExitosa = () =>
     </div>
 )
 
-const VentanaErrorDeCodigo = () =>
+const VentanaErrorDeCodigo = () => // CODIGO 2
 (
     <div className="card">
         <div className="card-header">
@@ -32,7 +32,7 @@ const VentanaErrorDeCodigo = () =>
     </div>
 )
 
-const VentanaErrorDeServidor = () =>
+const VentanaErrorDeServidor = () => // CODIGO 3
 (
     <div className="card">
         <div className="card-header">
@@ -40,7 +40,7 @@ const VentanaErrorDeServidor = () =>
         </div>
         <div className="card-body">
             <div className="alert alert-warning" role="alert">
-                <strong> Codigo No Guardado </strong>
+                <strong> Codigo Duplicado </strong>
             </div>
         </div>
     </div>
@@ -111,10 +111,14 @@ class Dash extends Component
                 {
                     if(response.status === 200)
                     {
-                        temp.error = 1;
-                        temp.setState({
-                            botella: botella,
-                        });    
+                        console.log(response.data);
+                        if(response.data)
+                        {
+                            botella.error = 1;
+                            temp.setState({
+                                botella: botella,
+                            });
+                        }
                     }
                 });
             }
@@ -159,23 +163,23 @@ class Dash extends Component
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label>Folio:</label>
-                                                <input className="form-control" type="text" placeholder="#" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" autoFocus placeholder="#" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label>Codigo de insumo:</label>
-                                                <input className="form-control" type="text" readOnly placeholder="" value = {botella.insumo} name="insumo" />
+                                                <input className="form-control" type="text" readOnly value = {botella.insumo} name="insumo" />
                                             </div>
                                             <div className="form-group">
                                                 <label>Descripcion:</label>
-                                                <input className="form-control" type="text" readOnly placeholder="" value = {botella.desc_insumo} name="desc_insumo" />
+                                                <input className="form-control" type="text" readOnly value = {botella.desc_insumo} name="desc_insumo" />
                                             </div>
                                             <div className="form-group">
                                                 <label>Fecha de compra:</label>
-                                                <input className="form-control" type="date" readOnly placeholder="" value = {botella.fecha_compra} name="fecha_compra" />
+                                                <input className="form-control" type="date" readOnly value = {botella.fecha_compra} name="fecha_compra" />
                                             </div>
                                             <div className="form-group">
                                                 <label>Almacen actual:</label>
-                                                <input className="form-control" type="text" readOnly placeholder="" value = {botella.almacen_actual} name="almacen_actual" />
+                                                <input className="form-control" type="text" readOnly value = {botella.almacen_actual} name="almacen_actual" />
                                             </div>
                                         </div>
                                     </div>

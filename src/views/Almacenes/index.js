@@ -72,7 +72,7 @@ render() {
                                         </div>
                                         <div className="form-group">
                                             <label>Nombre:</label>
-                                             <input className="form-control" type="text" name="insumo" onChange = {this.handleInputChange} />
+                                             <input className="form-control" type="text" autoFocus name="insumo" onChange = {this.handleInputChange} />
                                         </div>
                                     </div>
                                 </div>
