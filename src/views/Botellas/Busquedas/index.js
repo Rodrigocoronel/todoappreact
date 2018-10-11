@@ -65,7 +65,7 @@ class Dash extends Component
             botella : {
                 folio : '',
                 insumo : '',
-                desc_nsumo : '',
+                desc_insumo : '',
                 fecha_compra : '',
                 almacen_actual : '',
                 mov : [],
@@ -90,19 +90,17 @@ class Dash extends Component
     
     handleKeyPress(event)
     {
-        event.preventDefault();
+        const target = event.target;
         var {botella} = this.state;
         let temp = this;
         var datos = new Array();
 
-        botella.error = 1;
-        ( (event.key === 'Enter') && (botella.folio) ) ? datos = botella.folio.split("^") : "" ;
-
-        if(datos.length===6)
+        if ( (event.key === 'Enter') && (botella.folio) )
         {
-            botella.folio = datos[0];
-        }
-            
+            botella.error = 1;
+            datos = botella.folio.split("^");
+            datos.length===6 ? botella.folio = datos[0] : "";
+        
             api().get(`/Botella/${botella.folio}`)
             .then(function(response)
             {
@@ -121,16 +119,11 @@ class Dash extends Component
                         });
                     }
                 }
+                target.select();
             });
-        // }
-        // else
-        // {
-        //     this.setState({
-        //         botella: botella,
-        //     });
-        // }
+        }
     }
-  
+            
     limpiarState()
     {
         this.setState({
@@ -165,7 +158,7 @@ class Dash extends Component
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label>Folio:</label>
-                                                <input className="form-control" type="text" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" ref="campoFolio" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label>Código de insumo:</label>

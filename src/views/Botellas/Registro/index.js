@@ -83,49 +83,46 @@ class Dash extends Component
 
     handleKeyPress(event)
     {
-
-        event.preventDefault();
-
+        const target = event.target;
         var {botella} = this.state;
         let temp = this;
         var datos = new Array();
 
-        botella.error = 2; // Codigo invalido
-        ( (event.key === 'Enter') && (botella.folio) ) ? datos = botella.folio.split("^") : "" ;
-
-        if(datos.length===6)
-        {
-            botella.folio = datos[0];
-            botella.insumo = datos[3];
-            botella.desc_insumo = datos[4];
-            var fecha = datos[2].split("/");
-            botella.fecha_compra = new Date(fecha[2],fecha[1]-1,fecha[0]).toISOString().slice(0,10);
-            botella.almacen_actual = 1;
-
-            botella.error=3;
-            this.setState({
-                botella: botella
-            });
-
-            api().post('/BotellaNueva',botella)
-            .then(function(response)
+        if( (event.key === 'Enter') && (botella.folio) ) 
+        { 
+            datos = botella.folio.split("^")
+            botella.error = 2;
+            if(datos.length===6)
             {
-                if(response.status === 200)
+                botella.folio = datos[0];
+                botella.insumo = datos[3];
+                botella.desc_insumo = datos[4];
+                var fecha = datos[2].split("/");
+                botella.fecha_compra = new Date(fecha[2],fecha[1]-1,fecha[0]).toISOString().slice(0,10);
+                botella.almacen_actual = 1;
+
+                botella.error=3;
+                this.setState({
+                    botella: botella
+                });
+
+                api().post('/BotellaNueva',botella)
+                .then(function(response)
                 {
-                    temp.error = 1;
-                    temp.setState({
-                        botella: botella,
-                    });    
-                }
-                else
-                {
-                    temp.limpiarState();
-                }
-            });
-        }
-        else
-        {
-            this.limpiarState();
+                    if(response.status === 200)
+                    {
+                        temp.error = 1;
+                        temp.setState({
+                            botella: botella,
+                        });    
+                    }
+                });
+            }
+            else
+            {
+                this.limpiarState();
+            }
+            target.select();
         }
     }
 
