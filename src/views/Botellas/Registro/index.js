@@ -86,7 +86,7 @@ class Dash extends Component
         const target = event.target;
         var {botella} = this.state;
         let temp = this;
-        var datos = new Array();
+        var datos = [];
 
         if( (event.key === 'Enter') && (botella.folio) ) 
         { 

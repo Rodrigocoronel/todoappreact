@@ -51,7 +51,7 @@ class Almacenes extends Component {
 
     componentWillMount()
     {
-        var {almacenes} = new Array();
+        var {almacenes} = this.state;
         let temp = this;
 
         api().get(`/Almacenes`)
@@ -62,8 +62,6 @@ class Almacenes extends Component {
                 if(response.data[0] != null)
                 {
                     almacenes = response.data;
-                    for(var a=1; a<response.data.length; a++) { almacenes[a-1] = almacenes[a]; }
-                    almacenes[response.data.length-1]='';
                     temp.setState({
                         almacenes : almacenes,
                     })
@@ -94,7 +92,7 @@ class Almacenes extends Component {
                                     <div className="row">
                                         <div className="col-sm-12">
                                             <div className="form-group">
-                                                <label>Folio:</label>
+                                                <label>Código:</label>
                                                 <input className="form-control" placeholder="autoasigned" type="text" readOnly name="folio" />
                                             </div>
                                             <div className="form-group">

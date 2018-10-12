@@ -93,7 +93,7 @@ class Dash extends Component
         const target = event.target;
         var {botella} = this.state;
         let temp = this;
-        var datos = new Array();
+        var datos = [];
 
         if ( (event.key === 'Enter') && (botella.folio) )
         {
@@ -108,7 +108,8 @@ class Dash extends Component
                 {
                     if(response.data[0] == null)
                     {
-                        temp.limpiarState();
+                        botella.folio = datos[0];
+                        temp.limpiarState(datos[0]);
                     }
                     else
                     { 
@@ -119,18 +120,17 @@ class Dash extends Component
                         });
                     }
                 }
-                
             });
             target.select();
         }
     }
             
-    limpiarState()
+    limpiarState(datos)
     {
         this.setState({
             botella : 
             {
-                //folio : '',
+                folio : datos,
                 insumo : '',
                 desc_nsumo : '',
                 fecha_compra : '',
