@@ -94,11 +94,12 @@ class Dash extends Component
         var {botella} = this.state;
         let temp = this;
         var datos = [];
+        
 
         if ( (event.key === 'Enter') && (botella.folio) )
         {
             botella.error = 1;
-            datos = botella.folio.split("^");
+            datos = botella.folio.toString().split("^");
             datos.length===6 ? botella.folio = datos[0] : "";
         
             api().get(`/Botella/${botella.folio}`)
@@ -121,8 +122,9 @@ class Dash extends Component
                     }
                 }
             });
-            target.select();
+           
         }
+        target.select();  
     }
             
     limpiarState(datos)
@@ -132,7 +134,7 @@ class Dash extends Component
             {
                 folio : datos,
                 insumo : '',
-                desc_nsumo : '',
+                desc_insumo : '',
                 fecha_compra : '',
                 almacen_actual : '',
                 mov : [],
@@ -176,9 +178,6 @@ class Dash extends Component
                                             <div className="form-group">
                                                 <label>Almacén actual:</label>
                                                 <label className="form-control" type="text" readOnly name="almacen_actual"> {botella.almacen?botella.almacen.nombre:''} </label>
-                                            </div>
-                                            <div>
-                                                <button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
                                             </div>
                                         </div>
                                     </div>

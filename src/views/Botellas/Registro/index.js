@@ -90,7 +90,7 @@ class Dash extends Component
 
         if( (event.key === 'Enter') && (botella.folio) ) 
         { 
-            datos = botella.folio.split("^")
+            datos = botella.folio.toString().split("^")
             botella.error = 2;
             if(datos.length===6)
             {
@@ -126,9 +126,9 @@ class Dash extends Component
             {
                 this.limpiarState();
             }
-            target.select();
+           
         }
-    }
+    target.select(); }
 
     limpiarState()
     {

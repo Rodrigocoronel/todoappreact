@@ -144,7 +144,7 @@ class Dash extends Component {
                                        	</div>
 									</div>
 									<div className="row">
-										<div className="col-sm-12">
+										<div className="col-sm-12 col-lg-3">
 											<button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
 										</div>
 									</div>

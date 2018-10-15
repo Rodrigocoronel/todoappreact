@@ -8,14 +8,11 @@ import * as actions from '../../actions/dash.js';
 
 class Dash extends Component {
 
-
   render() {
-    
-
     
       return (
         <div className="container-fluid">
-            Ventana de inicio
+            ...
         </div>    
     );
   }

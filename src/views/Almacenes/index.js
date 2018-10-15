@@ -72,7 +72,6 @@ class Almacenes extends Component {
 
     handleSubmit(evt){
         evt.preventDefault();
-
     }
 
     render() {
