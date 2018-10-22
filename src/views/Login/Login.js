@@ -36,7 +36,7 @@ class Login extends Component {
 
     let{email,password} = this.state;
 
-    console.log('we are login')
+    //console.log('we are login')
 
     this.props.login({email : email, password : password});
   }

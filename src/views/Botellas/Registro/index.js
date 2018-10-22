@@ -46,7 +46,7 @@ const VentanaErrorDeServidor = () => // CODIGO 3
     </div>
 )
 
-class Dash extends Component
+class Agregar extends Component
 {
     constructor(props){
         super(props)
@@ -57,10 +57,16 @@ class Dash extends Component
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
-                almacen_actual : '',
+                almacen_id : '',
+                transito : '',
                 error : 0,
                 guardado : 0,
             },
+            mensaje : {
+                tipo : '',
+                titulo : '',
+                texto : '',
+            }
         }
         this.limpiarState = this.limpiarState.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -99,7 +105,8 @@ class Dash extends Component
                 botella.desc_insumo = datos[4];
                 var fecha = datos[2].split("/");
                 botella.fecha_compra = new Date(fecha[2],fecha[1]-1,fecha[0]).toISOString().slice(0,10);
-                botella.almacen_actual = 1;
+                botella.almacen_id = 1;
+                botella.transito = 0;
 
                 botella.error=3;
                 this.setState({
@@ -111,7 +118,6 @@ class Dash extends Component
                 {
                     if(response.status === 200)
                     {
-                        console.log(response.data);
                         if(response.data)
                         {
                             botella.error = 1;
@@ -120,15 +126,15 @@ class Dash extends Component
                             });
                         }
                     }
+                    target.select(); 
                 });
             }
             else
             {
                 this.limpiarState();
-            }
-           
+            }   
         }
-    target.select(); }
+    }
 
     limpiarState()
     {
@@ -139,7 +145,7 @@ class Dash extends Component
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
-                almacen_actual : '',
+                almacen_id : '',
                 error : 2,
             }
         });
@@ -179,7 +185,7 @@ class Dash extends Component
                                             </div>
                                             <div className="form-group">
                                                 <label>Almacen actual:</label>
-                                                <input className="form-control" type="text" readOnly value = {botella.almacen_actual} name="almacen_actual" />
+                                                <input className="form-control" type="text" readOnly value = {botella.almacen_id} name="almacen_actual" />
                                             </div>
                                         </div>
                                     </div>
@@ -203,4 +209,4 @@ function mapStateToProps(state, ownProps) {
     }
 };
 
-export default connect(mapStateToProps, actions)(Dash)
+export default connect(mapStateToProps, actions)(Agregar)

@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 //import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
 
-import * as actions from '../../actions/dash.js';
+import * as actions from '../../../actions/dash.js';
 
 //import {api} from '../../actions/_request';
 
-class Dash extends Component {
+class Registro extends Component {
 
 
   render() {
@@ -28,4 +28,4 @@ function mapStateToProps(state, ownProps) {
     }
 };
 
-export default connect(mapStateToProps, actions)(Dash)
+export default connect(mapStateToProps, actions)(Registro)

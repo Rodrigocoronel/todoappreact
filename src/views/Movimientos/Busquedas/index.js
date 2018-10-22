@@ -39,10 +39,10 @@ const Reporte = () =>
 					</thead>
 					<tbody>
 						<tr>
-							<td>2012/01/01</td>
-							<td>Entrada</td>
-							<td>Buchacas</td>
-							<td>Pepe</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
 						</tr>        
 					</tbody>
 				</table>
@@ -51,7 +51,7 @@ const Reporte = () =>
 	</div>
 )
 
-class Dash extends Component {
+class Reportes extends Component {
 
 	constructor(props){
 		super(props)
@@ -61,8 +61,7 @@ class Dash extends Component {
 				folio : '',
 				botella_id : '',
 				movimiento_id : '',
-				almacen_origen_id : '',
-				almacen_destino_id : '',
+				almacen_id : '',
 				fecha : '',
 				user : ''
 			}
@@ -89,6 +88,9 @@ class Dash extends Component {
 	handleSubmit(evt){
 		evt.preventDefault();
 	  	var {movimiento} = this.state;
+
+	  	if(!movimiento.fecha)
+	  	console.log("faltan datos");
 	}
 
  	render() {
@@ -147,6 +149,9 @@ class Dash extends Component {
 										<div className="col-sm-12 col-lg-3">
 											<button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
 										</div>
+										<div className="col-sm-12 col-lg-3">
+											<button className="btn btn-block btn-outline-warning" type="button" disabled=""> <strong> Se debe indicar una fecha </strong> </button>	
+										</div>
 									</div>
 								</div>
 							</div>
@@ -171,4 +176,4 @@ function mapStateToProps(state, ownProps) {
 	}
 };
 
-export default connect(mapStateToProps, actions)(Dash)
+export default connect(mapStateToProps, actions)(Reportes)

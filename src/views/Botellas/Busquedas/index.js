@@ -40,8 +40,8 @@ const VentanaDeMovimientos = ({botella}) =>
                         <tr key = { i } >
                             <td> { i+1 } </td>
                             <td> { item.fecha } </td>
-                            <td> { <TipoDeMovimiento movimiento_id = {item.movimiento_id} /> } </td>
-                            <td> { item.almacen_id } </td>
+                            <td> { item.movimiento_id===1 ? "Entrada" : item.movimiento_id===2 ? "Salida" : "Cancenlación" } </td>
+                            <td> { item.almacen_nombre } </td>
                         </tr>
                     )
                 }
@@ -51,12 +51,7 @@ const VentanaDeMovimientos = ({botella}) =>
     </div>
 )
 
-const TipoDeMovimiento = ({movimiento_id}) =>
-(    
-    movimiento_id===1 ? "Entrada" : movimiento_id===2 ? "Salida" : "Cancenlacion" 
-)
-
-class Dash extends Component 
+class Buscar extends Component 
 {
     constructor(props){
         super(props)
@@ -67,7 +62,8 @@ class Dash extends Component
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
-                almacen_actual : '',
+                almacen_id : '',
+                transito : '',
                 mov : [],
                 error : 0,
             },
@@ -92,16 +88,15 @@ class Dash extends Component
     {
         const target = event.target;
         var {botella} = this.state;
-        let temp = this;
         var datos = [];
-        
+        let temp = this;
 
         if ( (event.key === 'Enter') && (botella.folio) )
         {
             botella.error = 1;
             datos = botella.folio.toString().split("^");
-            datos.length===6 ? botella.folio = datos[0] : "";
-        
+            if(datos.length===6) botella.folio = datos[0];
+
             api().get(`/Botella/${botella.folio}`)
             .then(function(response)
             {
@@ -117,14 +112,13 @@ class Dash extends Component
                         botella = response.data[0];
                         botella.error = 0;
                         temp.setState({
-                            botella: botella,
-                        });
+                           botella: botella,
+                        });               
                     }
+                    target.select();
                 }
             });
-           
         }
-        target.select();  
     }
             
     limpiarState(datos)
@@ -136,7 +130,7 @@ class Dash extends Component
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
-                almacen_actual : '',
+                almacen_id : '',
                 mov : [],
                 error : 1,
             }
@@ -176,7 +170,7 @@ class Dash extends Component
                                                 <label className="form-control" type="date" readOnly name="fecha_compra"> {botella.fecha_compra} </label>
                                             </div>
                                             <div className="form-group">
-                                                <label>Almacén actual:</label>
+                                                <label>Ubicación actual:</label>
                                                 <label className="form-control" type="text" readOnly name="almacen_actual"> {botella.almacen?botella.almacen.nombre:''} </label>
                                             </div>
                                         </div>
@@ -202,4 +196,4 @@ function mapStateToProps(state, ownProps)
     }
 };
 
-export default connect(mapStateToProps, actions)(Dash)
+export default connect(mapStateToProps, actions)(Buscar)

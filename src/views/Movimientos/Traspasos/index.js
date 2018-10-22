@@ -4,44 +4,17 @@ import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
 
-const VentanaDeError = () => 
+const VentanaDeMensaje = (props) => 
 (
     <div className="card">
         <div className="card-header">
-            <strong> Error!!! </strong>
+            <strong> {props.tipo} </strong>
         </div>
         <div className="card-body">
-            <div className="alert alert-warning" role="alert">
-                <strong> Codigo No Encontrado </strong>
+            <div className={props.estilo} role="alert">
+                <strong> {props.mens} </strong>
             </div>
         </div>
-    </div>
-)
-
-const VentanaDeGuardadoExitoso = () => 
-(
-    <div className="card">
-        <div className="card-header">
-            <strong> Confirmación </strong>
-        </div>
-        <div className="card-body">
-            <div className="alert alert-success" role="alert">
-                <strong> El movimiento fue registrado </strong>
-            </div>
-        </div>
-    </div>
-)
-
-const SelectAlmacenes = ({almacenes}) =>
-(
-    <div className="form-group">
-        <label> Almacen: </label>
-        <select className="form-control" id="select2" name="select2">
-            <option value="0"> Selecciona un almacen... </option>
-            {
-                almacenes.map((item, i) => <option key={i} value={i} > {item.nombre} </option> )
-            } 
-        </select>
     </div>
 )
 
@@ -51,7 +24,7 @@ const TituloDeSalida = () => ( <div> <button className="btn btn-warning" type="b
 
 const TituloDeCancelacion = () => ( <div> <button className="btn btn-danger" type="button" data-toggle="modal" data-target="#dangerModal"><strong>Cancelación de venta </strong></button> </div> )
 
-class Dash extends Component {
+class Traspasos extends Component {
 
     constructor(props){
         super(props)
@@ -65,17 +38,10 @@ class Dash extends Component {
                 fecha : '',
                 user : ''
             },
-            botella : 
-            {
-                folio : '',
-                insumo : '',
-                desc_insumo : '',
-                fecha_compra : '',
-                almacen_actual : '',
-                mov : [],
-            },
             almacenes : [],
-            tipoDeMovimiento : '1',
+            almacen : '1',
+            tipoDeMovimiento : '1', // 1-Entrada, 2-Salida, 3-Cancelacion
+            insumo : '',
             error : 0,     // 0-Vacio, 1-Ok, 2-No encontrado
         }
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -109,11 +75,11 @@ class Dash extends Component {
         const value = target.value;
         const name = target.name;
 
-        var {botella} = this.state;  
-        botella[name] = value;
+        var {movimiento} = this.state;  
+        movimiento[name] = value;
       
         this.setState({
-            botella: botella
+            movimiento: movimiento
         });
     }
 
@@ -121,59 +87,51 @@ class Dash extends Component {
         event.preventDefault();
         const target = event.target;
         const value = target.value;
+        const name = target.name;
 
-        var {tipoDeMovimiento} = this.state;
-        tipoDeMovimiento = value.toString();
- 
         this.setState({
-            tipoDeMovimiento: tipoDeMovimiento
+            [name]:value
         });   
     }
 
     handleKeyPress(event)
     {
         const target = event.target;
-        var {botella} = this.state;
-        var {error} = this.state;
+        var {movimiento} = this.state;
+        var {error, tipoDeMovimiento, almacen, insumo} = this.state;
         let temp = this;   
         var datos = [];
 
-        error=2;
-        if ( (event.key === 'Enter') && (botella.folio) )
+        if(movimiento.folio) datos = movimiento.folio.toString().split("^");
+        if ( (event.key === 'Enter') && ( datos.length===6 ) )
         {
-            datos = botella.folio.toString().split("^");
-            if(datos.length===6 )
+            movimiento.folio = datos[0];
+            insumo = datos[4];
+            movimiento.movimiento_id = tipoDeMovimiento;
+            movimiento.almacen_id = almacen;
+
+            api().post('/MovimientoNuevo',movimiento)
+            .then(function(response)
             {
-                botella.folio = datos[0];
-                api().get(`/Botella/${botella.folio}`)
-                .then(function(response)
+                error=2;
+                if(response.status === 200)
                 {
-                    error=2;
-                    if(response.status === 200)
+                    if(response.data)
                     {
-                        if(response.data[0] == null)
-                        {
-                            botella.desc_insumo = "";
-                        }
-                        else
-                        { 
-                            error = 1;
-                            botella = response.data[0];
-                        }
-                        temp.setState({ botella : botella, error : error, });  
+                        console.log(response.data); 
+                        error = 1;
                     }
-                    
-                });
-            }
-            else
-            {
-               this.setState({ error : error, });  
-            }
+                    temp.setState({ movimiento : movimiento, error : error, insumo : insumo });  
+                }
+                target.select(); 
+            });
         }
         else
         {
-            this.setState({ error : error, });
+            error=2;
+            this.setState({ error : error });
         }
+        
         target.select();
     }
 
@@ -183,7 +141,7 @@ class Dash extends Component {
         var {almacenes} = this.state;
         var {error} = this.state;
         var {movimiento} = this.state;
-        var {botella} = this.state;
+        var {insumo} = this.state;
     
         return (
             <div className="container-fluid">
@@ -199,7 +157,7 @@ class Dash extends Component {
                                         <div className="col-lg-6">
                                             <div className="form-group">
                                                 <label> Movimiento: </label>
-                                                <select className="form-control" id="select1" name="select1" onChange={this.handleChange} >
+                                                <select value={this.state.tipoDeMovimiento} className="form-control" id="tipoDeMovimiento" name="tipoDeMovimiento" onChange={this.handleChange} >
                                                     <option value="0">Selecciona un movimiento... </option>
                                                     <option value="1">Entrada </option>
                                                     <option value="2">Salida </option>
@@ -207,15 +165,23 @@ class Dash extends Component {
                                                 </select>
                                             </div>
                                         </div>
-                                         <div className="col-lg-6">
-                                            { <SelectAlmacenes almacenes = {almacenes}/> }
+                                        <div className="col-lg-6">
+                                            <div className="form-group">
+                                                <label> Almacen: </label>
+                                                <select value={this.state.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleChange}>
+                                                    <option value="0"> Selecciona un almacen... </option>
+                                                    {
+                                                        almacenes.map((item, i) => <option key={i} value={item.id} > {item.nombre} </option> )
+                                                    }
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="col-lg-6 col-sm-12">
-                            { error === 1 ? <VentanaDeGuardadoExitoso /> : error === 2 ? <VentanaDeError /> : "" }
+                            { error === 1 ? <VentanaDeMensaje tipo = {"Confirmación"} estilo={"alert alert-success"} mens={"El movimiento fue registrado"} /> : error === 2 ? <VentanaDeMensaje tipo = {"Error!!!"} estilo={"alert alert-warning"} mens={"Codigo No Encontrado"} /> : "" }
                         </div>
                         <div className="col-lg-6 col-sm-12">
                             <div className="card">
@@ -227,11 +193,11 @@ class Dash extends Component {
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label> Folio: </label>
-                                                <input className="form-control" type="text" autoFocus value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" autoFocus value = {movimiento.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label> Descripcion de insumo: </label>
-                                                <input className="form-control" type="text" readOnly value = {botella.desc_insumo} name="insumo" />
+                                                <input className="form-control" type="text" readOnly value = {insumo} name="insumo" />
                                             </div>
                                             <div className="form-group">
                                                 <label> Fecha de movimiento: </label>
@@ -256,4 +222,4 @@ function mapStateToProps(state, ownProps) {
     }
 };
 
-export default connect(mapStateToProps, actions)(Dash)
+export default connect(mapStateToProps, actions)(Traspasos)
