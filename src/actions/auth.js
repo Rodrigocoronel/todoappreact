@@ -1,5 +1,17 @@
 import { request } from './_request';
 
+export const logout = (params) =>
+{   
+    return (dispatch) =>
+    {   
+        localStorage.removeItem('session_token_PAPAS');
+        dispatch({
+            type: 'DESCONECTADO',
+            payload: 'Desconectado'
+        });
+    }
+}
+
 export const login = (params) =>
 {   
     return (dispatch) =>

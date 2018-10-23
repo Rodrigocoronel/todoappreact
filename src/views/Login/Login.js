@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
-
+import logo from '../../assets/img/brand/logob.jpg'
 import { Redirect } from 'react-router-dom';
-
 import { connect } from 'react-redux';
-
 import * as actions from '../../actions/auth.js';
+
 
 class Login extends Component {
 
@@ -33,11 +32,7 @@ class Login extends Component {
 
   handleSubmit(evt){
     evt.preventDefault();
-
     let{email,password} = this.state;
-
-    //console.log('we are login')
-
     this.props.login({email : email, password : password});
   }
 
@@ -97,9 +92,7 @@ class Login extends Component {
                 <Card className="text-white bg-primary py-5 d-md-down-none" style={{ width: 44 + '%' }}>
                   <CardBody className="text-center">
                     <div>
-                      <h2>Sign up</h2>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
+                      <img src={logo} width="300"/>
                     </div>
                   </CardBody>
                 </Card>

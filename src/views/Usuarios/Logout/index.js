@@ -1,31 +1,40 @@
 import React, { Component } from 'react';
-//import { Button, Col, Row } from 'reactstrap';
+//mport { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+
+import { Redirect } from 'react-router-dom';
+
 import { connect } from 'react-redux';
+import * as actions from '../../../actions/auth.js';
 
-import * as actions from '../../actions/dash.js';
+class Logout extends Component {
 
-//import {api} from '../../actions/_request';
+	constructor(props){
+    	super(props)
 
-class Salir extends Component {
+	    this.state={
+    		email : '',
+        	password : '',
+    	}
+    }
 
+	render() {
 
-  render() {
-    
+    	let {email,password} = this.state;
 
-    
-      return (
-        <div className="container-fluid">
-            Registro de Usuarios
-        </div>    
-    );
-  }
+	    //if(this.props.auth.authenticated)
+		//return <Redirect to={'/app'} />;
+
+		this.props.logout({email : email, password : password});
+		return (
+			<div> WA </div>
+		);
+	}
 }
 
 function mapStateToProps(state, ownProps) {
     return {
-        dash : state.dash,
         auth : state.auth
     }
 };
 
-export default connect(mapStateToProps, actions)(Salir)
+export default connect(mapStateToProps, actions)(Logout)

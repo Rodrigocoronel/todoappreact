@@ -41,7 +41,7 @@ const ControlDeUsuarios = Loadable({
 });
 
 const Logout = Loadable({
-  loader: () => import('./views/Usuarios/Registro'),
+  loader: () => import('./views/Usuarios/Logout'),
   loading: Loading,
 });
 
@@ -54,8 +54,8 @@ const routes = [
   { path: '/app/almacenes', name: 'Almacenes', component: ControlDeAlmacenes },        // Registro de almacenes
   { path: '/app/traspasos', name: 'Traspasos', component: Movimientos },               // Traspazos entre almacenes
   { path: '/app/reportes', name: 'Reportes', component: ReporteDeMovimientos },       // Reporte de movimiento de productos
-  { path: '/app/Registro', name: 'Usuarios', component: ControlDeUsuarios },          // Registro de usuarios
-  { path: '/app/Logout', name: 'Logout', component: Logout },          // Registro de usuarios
+  { path: '/app/registro', name: 'Usuarios', component: ControlDeUsuarios },          // Registro de usuarios
+  { path: '/app/logout', name: 'Logout', component: Logout },                       // Logout
 ];
 
 export default routes;

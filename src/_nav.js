@@ -63,13 +63,13 @@ export default
         },
         {
             name: 'Registro',
-            url: '/app/usuarios/registro',
+            url: '/app/registro',
             icon: 'icon-pencil',
         },
         { divider: true, },
         {
             name: 'SALIR',
-            url: '/app/usuarios/logout',
+            url: '/app/logout',
             icon: 'icon-logout',
         },
     ],
