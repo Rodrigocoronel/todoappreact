@@ -2,7 +2,7 @@ const initialState =
 {
     error_message      : '',
     loading            : false,
-    authenticated      : false,
+    authenticated      : true,
     user               : undefined,
     session_token      : undefined,
 };

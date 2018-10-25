@@ -1,13 +1,23 @@
-import { request } from './_request';
+import {api ,request } from './_request';
 
 export const logout = (params) =>
 {   
     return (dispatch) =>
     {   
-        localStorage.removeItem('session_token_PAPAS');
-        dispatch({
-            type: 'DESCONECTADO',
-            payload: 'Desconectado'
+        //Borrar de la base de datos
+
+        api().post('/logout')
+        .then(function(response)
+        {
+            if(response.status === 200)
+            {
+                //Borrar de la memoria locas
+                localStorage.removeItem('session_token_PAPAS');
+                dispatch({
+                    type: 'DESCONECTADO',
+                    payload: 'Desconectado'
+                });
+            }
         });
     }
 }
@@ -23,7 +33,8 @@ export const login = (params) =>
             client_id       : 2,
             client_secret   : 'D64E8GGRiUFFyajFkP8ZRqLK1sHxUKEaOn38m3vB',
             grant_type      : 'password'
-        }).then(function(response)
+        })
+        .then(function(response)
         {
             if(response.status === 200)
             {
