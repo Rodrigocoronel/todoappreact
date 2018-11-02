@@ -20,6 +20,12 @@ export default (state = initialState, action) =>
             return { 
                 ...state, 
                 authenticated: false,
+                error_message : 'La sesion del usuario ha sido cerrada',
+            };
+        case "ERROR":
+            return {
+                ...state,
+                authenticated: false,
                 error_message : 'Usuario o Password Incorrectas',
             };
 

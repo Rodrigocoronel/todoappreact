@@ -54,7 +54,7 @@ class Login extends Component {
                     {this.props.auth.error_message}
                     <Form onSubmit={this.handleSubmit}>
                       <h1>Login</h1>
-                      <p className="text-muted">Sign In to your account</p>
+                      <p className="text-muted">Ingresa a tu cuenta</p>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -89,11 +89,13 @@ class Login extends Component {
                     </Form>
                   </CardBody>
                 </Card>
-                <Card className="text-white bg-secondary py-5 d-md-down-none" style={{ width: 44 + '%' }}>
-                  <CardBody className="text-center">
-                    <div>
-                      <img src={logo} alt="" width="300"/>
+                <Card className="text-white bg-secondary py-5 d-md-down-none">
+                  <CardBody className="text-center h-100">
+                  <div className="row h-100">
+                    <div className="col-12 align-self-center">
+                      <img className="imagen" src={logo} alt="" />
                     </div>
+                  </div>
                   </CardBody>
                 </Card>
               </CardGroup>

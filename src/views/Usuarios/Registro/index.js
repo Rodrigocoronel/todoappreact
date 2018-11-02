@@ -81,7 +81,7 @@ class Registro extends Component {
 												<i className="fa fa-asterisk"></i>
 											</span>
 										</div>
-										<input className="form-control" id="password" type="password" name="password" placeholder="Contraseña" />
+										<input className="form-control" id="password1" type="password" name="password1" placeholder="Contraseña" />
 									</div>
 									<div>
 									{
@@ -96,7 +96,7 @@ class Registro extends Component {
 												<i className="fa fa-asterisk"></i>
 											</span>
 										</div>
-										<input className="form-control" id="password" type="password" name="password" placeholder="Contraseña" />
+										<input className="form-control" id="password2" type="password" name="password2" placeholder="Contraseña" />
 									</div>
 									<div>
 									{

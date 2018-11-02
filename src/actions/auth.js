@@ -11,12 +11,12 @@ export const logout = (params) =>
         {
             if(response.status === 200)
             {
-                //Borrar de la memoria locas
+                //Borrar de la memoria local
                 localStorage.removeItem('session_token_PAPAS');
                 dispatch({
                     type: 'DESCONECTADO',
                     payload: 'Desconectado'
-                });
+                })
             }
         });
     }
@@ -43,16 +43,16 @@ export const login = (params) =>
                 {
                     type: 'CONECTADO',
                     payload: response.data
-                });
+                })
             }
-            else
+        })
+        .catch(function(error)
+        {
+            dispatch(
             {
-                dispatch(
-                {
-                    type: 'DESCONETADO',
-                    payload: 'Datos incorrectos.'
-                });
-            }
-        });  
+                type: 'ERROR',
+                payload: 'Datos incorrectos.'
+            })
+        })
     }
 }
