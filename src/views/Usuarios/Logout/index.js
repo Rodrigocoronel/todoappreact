@@ -1,8 +1,4 @@
 import React, { Component } from 'react';
-//mport { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
-
-//import { Redirect } from 'react-router-dom';
-
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/auth.js';
 
@@ -17,13 +13,11 @@ class Logout extends Component {
     	}
     }
 
-	render() {
-
+	render() 
+    {
     	let {email,password} = this.state;
 		this.props.logout({email : email, password : password});
-		return (
-			<div> WA </div>
-		);
+		return ( <div> </div> );
 	}
 }
 

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 //import {api} from '../../../actions/_request';
@@ -77,7 +76,6 @@ class Reportes extends Component {
 		const name = target.name;
 
 		var {movimiento} = this.state;
-	  
 		movimiento[name] = value;
 	  
 		this.setState({
@@ -89,8 +87,7 @@ class Reportes extends Component {
 		evt.preventDefault();
 	  	var {movimiento} = this.state;
 
-	  	if(!movimiento.fecha)
-	  	console.log("faltan datos");
+	  	if(!movimiento.fecha) console.log("faltan datos");
 	}
 
  	render() {

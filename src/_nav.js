@@ -2,7 +2,6 @@ export default
 {
     items:
     [
-
         {
             title: true,
             name: 'Botellas',

@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
-
 import * as actions from '../../../actions/dash.js';
-
 //import {api} from '../../actions/_request';
 
 const VentanaDeMensaje = (props) => 
@@ -40,12 +37,8 @@ class Registro extends Component {
 	handleSubmit(evt){
 		evt.preventDefault();
 	  	var {error} = this.state;
-
 	  	error.guardado===0 ? error.guardado = 1 : error.guardado === 1 ? error.guardado = 2 : error.guardado = 0;
-
-	  	this.setState({
-			error: error
-		});
+	  	this.setState({ error: error });
 	}
 
 	render() {

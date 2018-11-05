@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
@@ -66,6 +65,7 @@ class Buscar extends Component
                 transito : '',
                 mov : [],
                 error : 0,
+                fin : 0,
             },
         }
         this.limpiarState = this.limpiarState.bind(this);
@@ -81,7 +81,7 @@ class Buscar extends Component
 
         var {botella} = this.state;
         botella[name] = value;
-        this.setState({ botella: botella  });
+        this.setState({ botella: botella});
     }
     
     handleKeyPress(event)
@@ -93,6 +93,7 @@ class Buscar extends Component
 
         if ( (event.key === 'Enter') && (botella.folio) )
         {
+            
             botella.error = 1;
             datos = botella.folio.toString().split("^");
             if(datos.length===6) botella.folio = datos[0];
@@ -100,6 +101,7 @@ class Buscar extends Component
             api().get(`/Botella/${botella.folio}`)
             .then(function(response)
             {
+                
                 if(response.status === 200)
                 {
                     if(response.data[0] == null)
@@ -112,12 +114,19 @@ class Buscar extends Component
                         botella = response.data[0];
                         botella.error = 0;
                         temp.setState({
-                           botella: botella,
-                        });               
+                           botella: botella});               
                     }
                     target.select();
                 }
+            })
+            .catch(error =>
+            {
+                temp.setState({botella: botella });
             });
+        }
+        else
+        {
+            temp.setState({botella: botella });
         }
     }
             
@@ -133,6 +142,7 @@ class Buscar extends Component
                 almacen_id : '',
                 mov : [],
                 error : 1,
+                
             }
         })
     }

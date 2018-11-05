@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
-//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
-
 import * as actions from '../../actions/dash.js';
-
-//import {api} from '../../actions/_request';
 
 class Dash extends Component {
 
-  render() {
-    
-      return (
-        <div className="container-fluid">
-            ...
-        </div>    
-    );
-  }
+	render()
+	{
+		return (
+			<div> Ventana De Inicio </div>
+		);
+	}
 }
 
 function mapStateToProps(state, ownProps) {

@@ -7,18 +7,16 @@ const propTypes = {
 
 const defaultProps = {};
 
-class DefaultFooter extends Component {
-  render() {
-
-    // eslint-disable-next-line
-    const { children, ...attributes } = this.props;
-
-    return (
-      <React.Fragment>
-        <span className="ml-auto"><i> WeNatives 2018. </i></span>
-      </React.Fragment>
-    );
-  }
+class DefaultFooter extends Component 
+{
+	render() 
+	{
+		return (
+			<React.Fragment>
+				<span className="ml-auto"><i> WeNatives 2018. </i></span>
+			</React.Fragment>
+		);
+	}
 }
 
 DefaultFooter.propTypes = propTypes;

@@ -5,7 +5,6 @@ export const logout = (params) =>
     return (dispatch) =>
     {   
         //Borrar de la base de datos
-
         api().post('/logout')
         .then(function(response)
         {
@@ -19,6 +18,41 @@ export const logout = (params) =>
                 })
             }
         });
+    }
+}
+
+export const checkToken = (params) =>
+{
+    return (dispatch) =>
+    {
+        let token = localStorage.getItem('session_token_PAPAS');
+
+        token = JSON.parse(token);
+
+        if(token !== null)
+        {
+            let AuthorizationToken = token.token_type + " " + token.access_token;
+
+            request.get('api/user',
+            {
+                responseType: 'json',
+                headers: {'Authorization': AuthorizationToken}
+            })
+            .then(function(response) 
+            {
+                if(response.status === 200)
+                {
+                    dispatch(
+                    {
+                        type: 'CONECTADO',
+                        payload: token
+                    });
+                }
+            })
+            .catch(function(error) {
+                localStorage.removeItem('session_token_PAPAS');
+            });
+        }
     }
 }
 

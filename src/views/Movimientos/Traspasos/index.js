@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import { Button, Col, Row } from 'reactstrap';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
@@ -51,6 +50,8 @@ class Traspasos extends Component {
             tMov : 1,    // 1-Entrada, 2-Salida, 3-Cancelacion, 4-Venta, 5-Baja, 6-Traspaso
             insumo : '',
             error : 0,     // 0-Vacio, 1-Ok, 2-No encontrado
+            fin : 0, // 1-Fin: El ultimo caracter leido fue el final de la cadena Qr
+            tarjeta : ";1370010000003023=991?", // Registro de tarjeta (TEMPORAL)
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -71,25 +72,26 @@ class Traspasos extends Component {
                 if(response.data[0] != null)
                 {
                     almacenes = response.data;
-                    temp.setState({
-                        almacenes : almacenes,
-                    })
+                    temp.setState({ almacenes : almacenes })
                 }
             }
         });
     }
 
-    handleInputChange(event) {
+    handleInputChange(event)
+    {
         const target = event.target;
         const value = target.value;
         const name = target.name;
 
-        var {movimiento} = this.state;  
-        movimiento[name] = value;
-      
-        this.setState({
-            movimiento: movimiento
-        });
+        var {movimiento,fin} = this.state;
+        if(fin===1)
+        {
+            movimiento[name]='';
+            fin=0;
+        }
+        movimiento[name] = movimiento[name] + value;
+        this.setState({ movimiento: movimiento, fin:  fin});
     }
 
     handleChange(event){
@@ -106,50 +108,72 @@ class Traspasos extends Component {
     handleKeyPress(event)
     {
         const target = event.target;
-        var {movimiento} = this.state;
-        var {error, tMov, almacen, insumo} = this.state;
+        var {movimiento,fin} = this.state;
+        var {error, tMov, almacen, insumo, tarjeta} = this.state;
         let temp = this;   
         var datos = [];
-
         if(movimiento.folio) datos = movimiento.folio.toString().split("^");
         if ( (event.key === 'Enter') && ( datos.length===6 ) )
         {
+            fin=1;
             movimiento.folio = datos[0];
             insumo = datos[4];
             movimiento.movimiento_id = tMov;
             movimiento.almacen_id = almacen;
-            if(tMov===3)
+
+            if( tMov===3 || tMov===5 )
             {
                 swal({
-                  title: 'Error!',
-                      text: 'Do you want to continue',
-                        type: 'error',
-                         confirmButtonText: 'Cool'
-                    })
-            }
-
-            api().post('/MovimientoNuevo',movimiento)
-            .then(function(response)
-            {
-                error=2;
-                if(response.status === 200)
+                    title: 'Clave De Autorización',
+                    input: 'password',
+                    inputPlaceholder: 'Enter your password',
+                }).then((result) =>
                 {
-                    if(response.data)
+                    if(result.value===tarjeta)
                     {
-                        console.log(response.data); 
-                        error = 1;
+                        swal('Movimiento autorizado','','success');
+                        api().post('/MovimientoNuevo',movimiento)
+                        .then(function(response)
+                        {
+                            error=2;
+                            if(response.status === 200)
+                            {
+                                if(response.data) { error = 1; }
+                                fin=1;
+                                temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                            }
+                            target.select(); 
+                        });
                     }
-                    temp.setState({ movimiento : movimiento, error : error, insumo : insumo });  
-                }
-                target.select(); 
-            });
+                    else
+                    {
+                        swal('Clave incorrecta','','error');
+                        temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                    }
+                    target.select(); 
+                });
+            }
+            else
+            {
+                api().post('/MovimientoNuevo',movimiento)
+                .then(function(response)
+                {
+                    error=2;
+                    if(response.status === 200)
+                    {
+                        if(response.data) { error = 1; }
+                        fin=1;
+                        temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                    }
+                    target.select(); 
+                });
+            }
         }
         else
         {
             error=2;
-            this.setState({ error : error });
+            this.setState({ error : error, fin : fin });
         }
-        
         target.select();
     }
 
@@ -208,6 +232,8 @@ class Traspasos extends Component {
                                                 <div className="col-4"> <button className={this.state.clase1} onClick={(e)=>this.seleccionarMovimiento(e,1)} type="button"> <strong> ENTRADA </strong> </button> </div>
                                                 <div className="col-4"> <button className={this.state.clase2} onClick={(e)=>this.seleccionarMovimiento(e,2)} type="button"> <strong> SALIDA </strong> </button> </div>
                                                 <div className="col-4"> <button className={this.state.clase3} onClick={(e)=>this.seleccionarMovimiento(e,3)} type="button"> <strong> CANCELACIÓN </strong> </button> </div>
+                                            </div>
+                                            <div className="row mt-4">
                                                 <div className="col-4"> <button className={this.state.clase4} onClick={(e)=>this.seleccionarMovimiento(e,4)} type="button"> <strong> VENTA </strong> </button> </div>
                                                 <div className="col-4"> <button className={this.state.clase5} onClick={(e)=>this.seleccionarMovimiento(e,5)} type="button"> <strong> BAJA </strong> </button> </div>
                                                 <div className="col-4"> <button className={this.state.clase6} onClick={(e)=>this.seleccionarMovimiento(e,6)} type="button"> <strong> TRASPASO </strong> </button> </div>

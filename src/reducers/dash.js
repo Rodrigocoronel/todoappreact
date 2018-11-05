@@ -1,9 +1,8 @@
 const initialState =
 {
-    loading            : false,
-    data 			: [],
+    loading : false,
+    data : [],
 };
-
 
 export default (state = initialState, action) =>
 {
