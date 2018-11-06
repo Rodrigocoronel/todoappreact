@@ -18,12 +18,12 @@ const VentanaDeMensaje = (props) =>
     </div>
 )
 
-const Entrada = () => ( <div> <button className="btn btn-success" type="button" data-toggle="modal" data-target="#successModal"> <strong> Registro De Entrada </strong> </button> </div> )
-const Salida = () => ( <div> <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#warningModal"> <strong> Registro De Salida </strong> </button> </div> )
-const Cancelacion = () => ( <div> <button className="btn btn-danger" type="button" data-toggle="modal" data-target="#dangerModal"><strong> Cancelación De Venta </strong></button> </div> )
-const Venta = () => ( <div> <button className="btn btn-success" type="button" data-toggle="modal" data-target="#dangerModal"><strong> Venta De Botellas </strong></button> </div> )
-const Baja = () => ( <div> <button className="btn btn-danger" type="button" data-toggle="modal" data-target="#dangerModal"><strong> Baja Por Merma </strong></button> </div> )
-const Traspaso = () => ( <div> <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#dangerModal"><strong> Traspaso Entre Barras </strong></button> </div> )
+const Entrada =     () => ( <div> <button className="btn btn-success" type="button" data-toggle="modal" data-target="#successModal"> <strong> Registro De Entrada   </strong> </button> </div> )
+const Salida =      () => ( <div> <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#warningModal"> <strong> Registro De Salida    </strong> </button> </div> )
+const Cancelacion = () => ( <div> <button className="btn btn-danger"  type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Cancelación De Venta  </strong> </button> </div> )
+const Venta =       () => ( <div> <button className="btn btn-success" type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Venta De Botellas     </strong> </button> </div> )
+const Baja =        () => ( <div> <button className="btn btn-danger"  type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Baja Por Merma        </strong> </button> </div> )
+const Traspaso =    () => ( <div> <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Traspaso Entre Barras </strong> </button> </div> )
 
 class Traspasos extends Component {
 
@@ -92,6 +92,7 @@ class Traspasos extends Component {
         }
         movimiento[name] = movimiento[name] + value;
         this.setState({ movimiento: movimiento, fin:  fin});
+        console.log(target);
     }
 
     handleChange(event){
@@ -100,9 +101,7 @@ class Traspasos extends Component {
         const value = target.value;
         const name = target.name;
 
-        this.setState({
-            [name]:value
-        });   
+        this.setState({ [name]:value });
     }
 
     handleKeyPress(event)
@@ -179,11 +178,12 @@ class Traspasos extends Component {
 
     seleccionarMovimiento(event,btn)
     {
+        const target = event.target;
         var {clase1, clase2, clase3, clase4, clase5, clase6} = this.state;
         var {tMov} = this.state;
         var tipoTemp = 'btn btn-lg btn-primary active btn90';
         
-        clase1 = clase2 = clase3 = clase4 = clase5 = clase6 ='btn btn-lg btn-info active btn90';
+        clase1 = clase2 = clase3 = clase4 = clase5 = clase6 = 'btn btn-lg btn-info active btn90';
         switch(btn){
             case 1: clase1 = tipoTemp; break;
             case 2: clase2 = tipoTemp; break;
@@ -195,6 +195,7 @@ class Traspasos extends Component {
         }
         tMov = btn;
         this.setState({clase1:clase1, clase2:clase2, clase3:clase3, clase4:clase4, clase5:clase5, clase6:clase6, tMov : tMov});
+                        console.log(target);
     }
 
     render() {

@@ -81,20 +81,18 @@ class Agregar extends Component
         var {botella} = this.state;
 
         botella[name] = value;      
-
-        this.setState({
-            botella: botella
-        });
+        this.setState({ botella: botella });
     }
 
     handleKeyPress(event)
     {
         const target = event.target;
+        const tecla = event.key;
         var {botella} = this.state;
         let temp = this;
         var datos = [];
 
-        if( (event.key === 'Enter') && (botella.folio) ) 
+        if( (tecla === 'Enter') && (botella.folio) ) 
         { 
             datos = botella.folio.toString().split("^")
             botella.error = 2;
@@ -108,25 +106,20 @@ class Agregar extends Component
                 botella.almacen_id = 1;
                 botella.transito = 0;
 
-                botella.error=3;
-                this.setState({
-                    botella: botella
-                });
-
                 api().post('/BotellaNueva',botella)
                 .then(function(response)
                 {
                     if(response.status === 200)
                     {
-                        if(response.data)
-                        {
-                            botella.error = 1;
-                            temp.setState({
-                                botella: botella,
-                            });
-                        }
+                        response.data ? botella.error = 1 : botella.error = 3;
                     }
+                    temp.setState({ botella: botella });
                     target.select(); 
+                })
+                .catch(error =>
+                {
+                    botella.error=3;
+                    this.setState({ botella: botella });
                 });
             }
             else
@@ -141,7 +134,6 @@ class Agregar extends Component
         this.setState({
             botella : 
             {
-                //folio : '',
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
