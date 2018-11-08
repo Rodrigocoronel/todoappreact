@@ -75,12 +75,12 @@ class Buscar extends Component
 
     handleInputChange(event) 
     {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-
+        const value = event.target.value;
+        const name = event.target.name;
         var {botella} = this.state;
+
         botella[name] = value;
+        botella.error=0;
         this.setState({ botella: botella});
     }
     
@@ -93,15 +93,13 @@ class Buscar extends Component
 
         if ( (event.key === 'Enter') && (botella.folio) )
         {
-            
             botella.error = 1;
             datos = botella.folio.toString().split("^");
             if(datos.length===6) botella.folio = datos[0];
 
             api().get(`/Botella/${botella.folio}`)
             .then(function(response)
-            {
-                
+            { 
                 if(response.status === 200)
                 {
                     if(response.data[0] == null)
@@ -113,8 +111,7 @@ class Buscar extends Component
                     { 
                         botella = response.data[0];
                         botella.error = 0;
-                        temp.setState({
-                           botella: botella});               
+                        temp.setState({ botella: botella });               
                     }
                     target.select();
                 }
@@ -142,7 +139,6 @@ class Buscar extends Component
                 almacen_id : '',
                 mov : [],
                 error : 1,
-                
             }
         })
     }

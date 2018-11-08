@@ -75,12 +75,12 @@ class Agregar extends Component
 
     handleInputChange(event)
     {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
+        const value = event.target.value;
+        const name = event.target.name;
         var {botella} = this.state;
 
-        botella[name] = value;      
+        botella[name] = value;
+        botella.error=0;
         this.setState({ botella: botella });
     }
 

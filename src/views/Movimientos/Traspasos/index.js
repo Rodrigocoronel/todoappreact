@@ -39,12 +39,13 @@ class Traspasos extends Component {
                 fecha : '',
                 user : ''
             },
-            clase1 : 'btn btn-lg btn-primary active btn90',
-            clase2 : 'btn btn-lg btn-info active btn90',
-            clase3 : 'btn btn-lg btn-info active btn90',
-            clase4 : 'btn btn-lg btn-info active btn90',
-            clase5 : 'btn btn-lg btn-info active btn90',
-            clase6 : 'btn btn-lg btn-info active btn90',
+            clase : ['',
+                    'btn btn-lg btn-primary active btn90',
+                    'btn btn-lg btn-info active btn90',
+                    'btn btn-lg btn-info active btn90',
+                    'btn btn-lg btn-info active btn90',
+                    'btn btn-lg btn-info active btn90',
+                    'btn btn-lg btn-info active btn90'],
             almacenes : [],
             almacen : '1',
             tMov : 1,    // 1-Entrada, 2-Salida, 3-Cancelacion, 4-Venta, 5-Baja, 6-Traspaso
@@ -80,27 +81,20 @@ class Traspasos extends Component {
 
     handleInputChange(event)
     {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
+        const value = event.target.value;
+        const name = event.target.name;
+        var {movimiento, fin, error} = this.state;
 
-        var {movimiento,fin} = this.state;
-        if(fin===1)
-        {
-            movimiento[name]='';
-            fin=0;
-        }
+        if(fin===1) { fin=0; movimiento[name]=''; }
+        error=0;
         movimiento[name] = movimiento[name] + value;
-        this.setState({ movimiento: movimiento, fin:  fin});
-        console.log(target);
+        this.setState({ movimiento : movimiento, fin : fin, error : error });
     }
 
     handleChange(event){
         event.preventDefault();
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-
+        const value = event.target.value;
+        const name = event.target.name;
         this.setState({ [name]:value });
     }
 
@@ -111,100 +105,102 @@ class Traspasos extends Component {
         var {error, tMov, almacen, insumo, tarjeta} = this.state;
         let temp = this;   
         var datos = [];
-        if(movimiento.folio) datos = movimiento.folio.toString().split("^");
-        if ( (event.key === 'Enter') && ( datos.length===6 ) )
-        {
-            fin=1;
-            movimiento.folio = datos[0];
-            insumo = datos[4];
-            movimiento.movimiento_id = tMov;
-            movimiento.almacen_id = almacen;
 
-            if( tMov===3 || tMov===5 )
+        if (event.key === 'Enter' && movimiento.folio)
+        {
+            datos = movimiento.folio.toString().split("^");
+            if (datos.length===6 )
             {
-                swal({
-                    title: 'Clave De Autorización',
-                    input: 'password',
-                    inputPlaceholder: 'Enter your password',
-                }).then((result) =>
+                fin=1;
+                movimiento.folio = datos[0];
+                insumo = datos[4];
+                movimiento.movimiento_id = tMov;
+                movimiento.almacen_id = almacen;
+
+                if( tMov===3 || tMov===5 )
                 {
-                    if(result.value===tarjeta)
+                    swal({
+                        title: 'Clave De Autorización',
+                        input: 'password',
+                        inputPlaceholder: 'Enter your password',
+                    }).then((result) =>
                     {
-                        swal('Movimiento autorizado','','success');
-                        api().post('/MovimientoNuevo',movimiento)
-                        .then(function(response)
+                        if(result.value===tarjeta)
                         {
-                            error=2;
-                            if(response.status === 200)
+                            api().post('/MovimientoNuevo',movimiento)
+                            .then(function(response)
                             {
-                                if(response.data) { error = 1; }
-                                fin=1;
-                                temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
-                            }
-                            target.select(); 
-                        });
-                    }
-                    else
+                                error=2;
+                                if(response.status === 200)
+                                {
+                                    if(response.data)
+                                    {
+                                        error = 1;
+                                        tMov===3 ? swal('Cancelacion autorizada','','success') : swal('Baja de botella autorizada','','success');
+                                    }
+                                    fin=1;
+                                    temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                                }
+                                target.select();
+                            })
+                            .catch(error =>
+                            {
+                                error=2;
+                                target.select();
+                            });
+                        }
+                        else
+                        {
+                            swal('Autorización inválida','','error');
+                            temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                        }
+                        target.select(); 
+                    });
+                }
+                else
+                {
+                    api().post('/MovimientoNuevo',movimiento)
+                    .then(function(response)
                     {
-                        swal('Clave incorrecta','','error');
-                        temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
-                    }
-                    target.select(); 
-                });
+                        error=2;
+                        if(response.status === 200)
+                        {
+                            if(response.data) { error = 1; }
+                            fin=1;
+                            temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                        }
+                        target.select();
+                    })
+                    .catch(error =>
+                    {
+                        error=2;
+                        this.setState({ error : error, fin : fin });
+                    });
+                }
             }
             else
             {
-                api().post('/MovimientoNuevo',movimiento)
-                .then(function(response)
-                {
-                    error=2;
-                    if(response.status === 200)
-                    {
-                        if(response.data) { error = 1; }
-                        fin=1;
-                        temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
-                    }
-                    target.select(); 
-                });
+                error=2;
+                this.setState({ error : error, fin : fin });
             }
-        }
-        else
-        {
-            error=2;
-            this.setState({ error : error, fin : fin });
         }
         target.select();
     }
 
     seleccionarMovimiento(event,btn)
     {
-        const target = event.target;
-        var {clase1, clase2, clase3, clase4, clase5, clase6} = this.state;
-        var {tMov} = this.state;
+        var {clase, tMov} = this.state;
         var tipoTemp = 'btn btn-lg btn-primary active btn90';
-        
-        clase1 = clase2 = clase3 = clase4 = clase5 = clase6 = 'btn btn-lg btn-info active btn90';
-        switch(btn){
-            case 1: clase1 = tipoTemp; break;
-            case 2: clase2 = tipoTemp; break;
-            case 3: clase3 = tipoTemp; break;
-            case 4: clase4 = tipoTemp; break;
-            case 5: clase5 = tipoTemp; break;
-            case 6: clase6 = tipoTemp; break;
-            default:
-        }
+        for(var i=1;i<=6;i++) { clase[i] = 'btn btn-lg btn-info active btn90'; }
+        clase[btn] = tipoTemp;
         tMov = btn;
-        this.setState({clase1:clase1, clase2:clase2, clase3:clase3, clase4:clase4, clase5:clase5, clase6:clase6, tMov : tMov});
-                        console.log(target);
+        this.setState({ clase : clase, tMov : tMov});
+        this.folio.focus();
     }
 
     render() {
     
-        var {tMov} = this.state;
-        var {almacenes} = this.state;
-        var {error} = this.state;
-        var {movimiento} = this.state;
-        var {insumo} = this.state;
+        var {tMov, almacenes, error, movimiento, insumo} = this.state;
     
         return (
             <div className="container-fluid">
@@ -228,16 +224,16 @@ class Traspasos extends Component {
                                                 </select>
                                             </div>
                                         </div>
-                                        <div className="col-lg-12">
-                                            <div className="row">
-                                                <div className="col-4"> <button className={this.state.clase1} onClick={(e)=>this.seleccionarMovimiento(e,1)} type="button"> <strong> ENTRADA </strong> </button> </div>
-                                                <div className="col-4"> <button className={this.state.clase2} onClick={(e)=>this.seleccionarMovimiento(e,2)} type="button"> <strong> SALIDA </strong> </button> </div>
-                                                <div className="col-4"> <button className={this.state.clase3} onClick={(e)=>this.seleccionarMovimiento(e,3)} type="button"> <strong> CANCELACIÓN </strong> </button> </div>
+                                        <div className="col-lg-12 text-center">
+                                            <div className="row ">
+                                                <div className="col-lg-4 col-md-6"> <button className={this.state.clase[1]} onClick={(e)=>this.seleccionarMovimiento(e,1)} type="button"> <strong> ENTRADA </strong> </button> </div>
+                                                <div className="col-lg-4 col-md-6"> <button className={this.state.clase[2]} onClick={(e)=>this.seleccionarMovimiento(e,2)} type="button"> <strong> SALIDA </strong> </button> </div>
+                                                <div className="col-lg-4 col-md-6"> <button className={this.state.clase[3]} onClick={(e)=>this.seleccionarMovimiento(e,3)} type="button"> <strong> CANCELACIÓN </strong> </button> </div>
                                             </div>
                                             <div className="row mt-4">
-                                                <div className="col-4"> <button className={this.state.clase4} onClick={(e)=>this.seleccionarMovimiento(e,4)} type="button"> <strong> VENTA </strong> </button> </div>
-                                                <div className="col-4"> <button className={this.state.clase5} onClick={(e)=>this.seleccionarMovimiento(e,5)} type="button"> <strong> BAJA </strong> </button> </div>
-                                                <div className="col-4"> <button className={this.state.clase6} onClick={(e)=>this.seleccionarMovimiento(e,6)} type="button"> <strong> TRASPASO </strong> </button> </div>
+                                                <div className="col-4"> <button className={this.state.clase[4]} onClick={(e)=>this.seleccionarMovimiento(e,4)} type="button"> <strong> VENTA </strong> </button> </div>
+                                                <div className="col-4"> <button className={this.state.clase[5]} onClick={(e)=>this.seleccionarMovimiento(e,5)} type="button"> <strong> BAJA </strong> </button> </div>
+                                                <div className="col-4"> <button className={this.state.clase[6]} onClick={(e)=>this.seleccionarMovimiento(e,6)} type="button"> <strong> TRASPASO </strong> </button> </div>
                                             </div>
                                         </div>
 
@@ -246,7 +242,7 @@ class Traspasos extends Component {
                             </div>
                         </div>
                         <div className="col-xl-5 col-lg-9 col-md-10 col-sm-12">
-                            { error === 1 ? <VentanaDeMensaje tipo = {"Confirmación"} estilo={"alert alert-success"} mens={"El movimiento fue registrado"} /> : error === 2 ? <VentanaDeMensaje tipo = {"Error!!!"} estilo={"alert alert-warning"} mens={"Codigo No Encontrado"} /> : "" }
+                            { error ===0 ? "" : error === 1 ? <VentanaDeMensaje tipo = {"Confirmación"} estilo={"alert alert-success"} mens={"El movimiento fue registrado"} /> : error === 2 ? <VentanaDeMensaje tipo = {"Error!!!"} estilo={"alert alert-warning"} mens={"Codigo De Botella No Encontrado"} /> : "" }
                         </div>
                         <div className="col-xl-7 col-lg-9 col-md-10 col-sm-12">
                             <div className="card">
@@ -258,7 +254,7 @@ class Traspasos extends Component {
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label> Folio: </label>
-                                                <input className="form-control" type="text" autoFocus value = {movimiento.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" ref={(input) => { this.folio = input; }} autoFocus value = {movimiento.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label> Descripcion de insumo: </label>
