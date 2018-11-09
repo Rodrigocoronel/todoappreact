@@ -26,7 +26,7 @@ const VentanaErrorDeCodigo = () => // CODIGO 2
         </div>
         <div className="card-body">
             <div className="alert alert-warning" role="alert">
-                <strong> Codigo Invalido </strong>
+                <strong> Código Inválido </strong>
             </div>
         </div>
     </div>
@@ -40,7 +40,7 @@ const VentanaErrorDeServidor = () => // CODIGO 3
         </div>
         <div className="card-body">
             <div className="alert alert-warning" role="alert">
-                <strong> Codigo Duplicado </strong>
+                <strong> La botella ya se encuentra registrada </strong>
             </div>
         </div>
     </div>
@@ -125,6 +125,7 @@ class Agregar extends Component
             else
             {
                 this.limpiarState();
+                target.select();
             }   
         }
     }

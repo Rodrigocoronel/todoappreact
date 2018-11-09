@@ -96,6 +96,7 @@ class Traspasos extends Component {
         const value = event.target.value;
         const name = event.target.name;
         this.setState({ [name]:value });
+        this.folio.focus();
     }
 
     handleKeyPress(event)
@@ -106,12 +107,12 @@ class Traspasos extends Component {
         let temp = this;   
         var datos = [];
 
+        if (event.key === 'Enter') fin=1;
         if (event.key === 'Enter' && movimiento.folio)
         {
             datos = movimiento.folio.toString().split("^");
             if (datos.length===6 )
             {
-                fin=1;
                 movimiento.folio = datos[0];
                 insumo = datos[4];
                 movimiento.movimiento_id = tMov;
@@ -137,6 +138,11 @@ class Traspasos extends Component {
                                     {
                                         error = 1;
                                         tMov===3 ? swal('Cancelacion autorizada','','success') : swal('Baja de botella autorizada','','success');
+                                    }
+                                    else
+                                    {
+                                        error = 0;
+                                        tMov===3 ? swal('Cancelacion rechazada','','error') : swal('Baja de botella rechazada','','error');
                                     }
                                     fin=1;
                                     temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  

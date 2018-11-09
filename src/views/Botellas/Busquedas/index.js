@@ -120,6 +120,7 @@ class Buscar extends Component
             {
                 temp.setState({botella: botella });
             });
+            target.select();
         }
         else
         {
