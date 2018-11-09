@@ -39,7 +39,7 @@ const VentanaDeMovimientos = ({botella}) =>
                         <tr key = { i } >
                             <td> { i+1 } </td>
                             <td> { item.fecha } </td>
-                            <td> { parseInt(item.movimiento_id) === 1 ? "Entrada" : parseInt(item.movimiento_id)d === 2 ? "Salida" : parseInt(item.movimiento_id) === 3 ? "Cancenlación" : parseInt(item.movimiento_id) === 4 ? "Venta" : parseInt(item.movimiento_id) === 5 ? "Baja" : "Traspaso" } </td>
+                            <td> { parseInt(item.movimiento_id) === 1 ? "Entrada" : parseInt(item.movimiento_id) === 2 ? "Salida" : parseInt(item.movimiento_id) === 3 ? "Cancenlación" : parseInt(item.movimiento_id) === 4 ? "Venta" : parseInt(item.movimiento_id) === 5 ? "Baja" : "Traspaso" } </td>
                             <td> { item.almacen_nombre } </td>
                         </tr>
                     )
