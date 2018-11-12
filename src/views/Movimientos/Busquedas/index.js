@@ -27,22 +27,32 @@ const Reporte = () =>
 				<i className="fa fa-align-justify"></i> <strong> Reporte de movimientos </strong>
 			</div>
 			<div className="card-body">
-				<table className="table table-responsive-sm table-striped">
+				<table className="table table-responsive-sm table-striped table-bordered table-sm">
+
 					<thead>
 						<tr>
-							<th>Fecha</th>
-							<th>Movimiento</th>
-							<th>Producto</th>
-							<th>Usuario</th>
+							<th width="10%"> Fecha </th>
+							<th width="10%"> Movimiento </th>
+							<th width="10%"> Codigo </th>
+							<th width="50%"> Producto </th>
+							<th width="20%"> Almacen </th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>        
+							<td>1</td>
+							<td>1</td>
+							<td>1</td>
+							<td>1</td>
+							<td>1</td>
+						</tr>     
+												<tr>
+							<td>1</td>
+							<td>1</td>
+							<td>1</td>
+							<td>1</td>
+							<td>1</td>
+						</tr>    
 					</tbody>
 				</table>
 			</div>
@@ -63,7 +73,8 @@ class Reportes extends Component {
 				almacen_id : '',
 				fecha : '',
 				user : ''
-			}
+			},
+			estado : 0,
 	  	}
 	  	this.handleInputChange = this.handleInputChange.bind(this);
 	  	this.handleSubmit = this.handleSubmit.bind(this);
@@ -92,7 +103,7 @@ class Reportes extends Component {
 
  	render() {
 	
-		let{movimiento} = this.state;
+		let{movimiento, estado} = this.state;
 	
 	  	return (
 			<div className="container-fluid">
@@ -107,14 +118,14 @@ class Reportes extends Component {
 									<div className="row">
 										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
-												<label>Fecha inicial:</label>
-												 <input className="form-control" autoFocus type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
+												<label>Fecha específica o inicial:</label>
+												 <input className="form-control" autoFocus type="date" value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
 											</div>
 										</div>
 										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
 												<label>Fecha final:</label>
-												<input className="form-control" type="date"  readOnly value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
+												<input className="form-control" type="date" value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
 											</div>
 										</div>
 										<div className="col-lg-3 col-sm-6">
@@ -155,10 +166,7 @@ class Reportes extends Component {
 						</div>
 					</div>
 					<div className="row">
-						{ <Reporte /> }
-					</div>
-					<div className="row">
-						{ <ReporteVacio /> }
+						{ estado === 0 ? <Reporte /> : <ReporteVacio /> }
 					</div>
 				</div>
 			</div>    

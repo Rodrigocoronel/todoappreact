@@ -264,11 +264,11 @@ class Traspasos extends Component {
                                             </div>
                                             <div className="form-group">
                                                 <label> Descripcion de insumo: </label>
-                                                <input className="form-control" type="text" readOnly value = {insumo} name="insumo" />
+                                                <label className="form-control" type="text" readOnly value = {insumo} name="insumo" />
                                             </div>
                                             <div className="form-group">
                                                 <label> Fecha de movimiento: </label>
-                                                <input className="form-control" type="text" placeholder="autoasigned" readOnly value = {movimiento.fecha} name="fecha_compra" />
+                                                <label className="form-control" type="text" placeholder="autoasigned" readOnly value = {movimiento.fecha} name="fecha_compra" />
                                             </div>
                                         </div>
                                     </div>

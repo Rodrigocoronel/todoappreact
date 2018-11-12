@@ -1,0 +1,40 @@
+const Pendientes = () =>
+(
+
+	REGISTRO =>
+	- Alta por gerente
+
+	BUSQUEDAS =>
+	// - Cambiar colores a movimientos
+	// - Entrada -> Verde
+	// - Salida -> Amarillo
+	// - Cancelacion -> Rojo
+	// - Traspaso -> Amarillo
+	// - Baja -> Rojo
+	// - Venta -> Gris
+
+	ALMACENES =>
+	// - Cambiar a dos ventanas de renglon en lugar de dos columnas
+	- Agregar campos de "Estado" y "Descripcion"
+	// - Agregar boton de activar/desactivar
+
+	TRANSFERENCIAS =>
+	- Mensaje al cancelar baja
+	- Almacenar y avisar en reporte de doble venta
+	- Enviar aviso al intentar doble venta
+
+	REPORTES =>
+	- Hacer consultas
+	- Poner colores a movimientos
+
+	USUARIOS =>
+	- Grabar usuarios
+	- Agregar opcion de tarjeta
+
+	LOGIN =>
+	- Opcion de login con tarjeta o pass
+
+	GENERAL =>
+	- Input's a Label's
+
+)
