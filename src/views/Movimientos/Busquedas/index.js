@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
-//import {api} from '../../../actions/_request';
+import {api} from '../../../actions/_request';
+
+const MensajeDeError = (props) => 
+( 
+	<div> <button className="btn btn-block btn-outline-warning" type="button" disabled> <strong> {props.mens} </strong> </button> </div>
+)
 
 const ReporteVacio = () =>
 (
@@ -74,36 +79,114 @@ class Reportes extends Component {
 				fecha : '',
 				user : ''
 			},
+			busqueda : {
+				fechaInicial : '',
+				fechaFinal : '',
+				almacen : "0",
+				movimiento : "0",
+				error : 0,
+			},
 			estado : 0,
+			almacenes : [],
 	  	}
 	  	this.handleInputChange = this.handleInputChange.bind(this);
 	  	this.handleSubmit = this.handleSubmit.bind(this);
   	}
 
-	handleInputChange(event) {
- 
-		const target = event.target;
+    componentWillMount()
+    {
+        var {almacenes} = this.state;
+        let temp = this;
+
+        api().get(`/Almacenes`)
+        .then(function(response)
+        {
+            if(response.status === 200)
+            {
+                if(response.data[0] != null)
+                {
+                    almacenes = response.data;
+                    temp.setState({ almacenes : almacenes })
+                }
+            }
+        });
+    }
+
+	handleInputChange(event)
+	{
+ 		const target = event.target;
 		const value = target.value;
 		const name = target.name;
 
-		var {movimiento} = this.state;
-		movimiento[name] = value;
+		var {busqueda} = this.state;
+		busqueda[name] = value;
 	  
-		this.setState({
-			movimiento: movimiento
-		});
+		this.setState({ busqueda: busqueda });
   	}
-	
-	handleSubmit(evt){
-		evt.preventDefault();
-	  	var {movimiento} = this.state;
 
-	  	if(!movimiento.fecha) console.log("faltan datos");
+	handleSubmit(event)
+	{
+		event.preventDefault();
+		var {busqueda, estado} = this.state;
+		let temp = this;
+
+		if(busqueda.fechaInicial) // Si hay fecha inicial
+		{
+			if(busqueda.fechaFinal) // Si hay fecha final
+			{
+				if( busqueda.fechaFinal > busqueda.fechaInicial ) // Si la fecha final es mas grande que la inicia;
+				{
+					busqueda.error=1; //Segunda fecha mas grande - OK
+				}
+				else
+				{
+					busqueda.error=3; // Si la segunda fecha es mas chica - ERROR 3
+				}
+			}
+			else
+			{
+				busqueda.error=1; // Si no hay fecha final - OK
+			}
+		}
+		else
+		{
+			busqueda.error=2; // Si no hay fecha inicial - ERROR 2
+		}
+
+		if(busqueda.error === 1) // Si todo salió bien
+		{
+			// Hacer consulta
+			api().get('/Movimientos',busqueda)
+			.then(function(response)
+			{
+				if(response.status === 200)
+				{
+					if(response.data[0] != null)
+					{
+						estado = 1;
+					}
+					else
+					{
+						// No hay registros
+						estado=2;
+					}
+				}
+			})
+			.catch(error =>
+			{
+				
+			});
+		}
+		else
+		{
+			estado = 0;
+			this.setState({ busqueda : busqueda, estado : estado });
+		}
 	}
 
  	render() {
 	
-		let{movimiento, estado} = this.state;
+		let{almacenes, estado, busqueda} = this.state;
 	
 	  	return (
 			<div className="container-fluid">
@@ -118,37 +201,38 @@ class Reportes extends Component {
 									<div className="row">
 										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
-												<label>Fecha específica o inicial:</label>
-												 <input className="form-control" autoFocus type="date" value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
+												<label> Fecha específica o inicial: </label>
+												 <input className="form-control" autoFocus type="date" value = {busqueda.fechaInicial} name="fechaInicial" onChange = {this.handleInputChange} />
 											</div>
 										</div>
 										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
-												<label>Fecha final:</label>
-												<input className="form-control" type="date" value = {movimiento.fecha} name="fecha_compra" onChange = {this.handleInputChange} />
+												<label> Fecha final: </label>
+												<input className="form-control" type="date" value = {busqueda.fechaFinal} name="fechaFinal" onChange = {this.handleInputChange} />
 											</div>
 										</div>
 										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
-                                            	<label >Almacén:</label>
-                                            	<select className="form-control" id="select1" name="select1">
-                                                	<option value="0">Selecciona un almacén...</option>
-                                                	<option value="1">1</option>
-                                                	<option value="2">2</option>
-                                                	<option value="3">3</option>
-                                                	<option value="4">4</option>
-                                                	<option value="5">5</option>
-                                            	</select>
+                                            	<label> Almacén: </label>
+                                                <select value={busqueda.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleInputChange}>
+                                                    <option value="0"> Selecciona un almacen... </option>
+                                                    {
+                                                        almacenes.map((item, i) => <option key={i} value={item.id} > {item.nombre} </option> )
+                                                    }
+                                                </select>
                                         	</div>
 										</div>
 										<div className="col-lg-3 col-sm-6">
 											<div className="form-group">
-                                            	<label >Movimiento:</label>
-                                            	<select className="form-control" id="select1" name="select1">
-                                                	<option value="0">Selecciona un movimiento...</option>
-                                                	<option value="1">Entrada</option>
-	                                                <option value="2">Salida</option>
-	                                                <option value="3">Cancelación</option>
+                                            	<label> Movimiento: </label>
+                                            	<select value={busqueda.movimiento} className="form-control" id="movimiento" name="movimiento" onChange={this.handleInputChange}>
+                                                	<option value="0"> Selecciona un movimiento...</option>
+                                                	<option value="1"> Entrada     </option>
+	                                                <option value="2"> Salida      </option>
+	                                                <option value="3"> Cancelación </option>
+	                                                <option value="4"> Venta       </option>
+	                                                <option value="5"> Baja        </option>
+	                                                <option value="6"> Traspaso    </option>
                                             	</select>
                                        		</div>
                                        	</div>
@@ -158,7 +242,7 @@ class Reportes extends Component {
 											<button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
 										</div>
 										<div className="col-sm-12 col-lg-3">
-											<button className="btn btn-block btn-outline-warning" type="button" disabled=""> <strong> Se debe indicar una fecha </strong> </button>	
+											{ busqueda.error === 2 ? <MensajeDeError mens = {"Se debe indicar una fecha"} /> : busqueda.error === 3 ? <MensajeDeError mens = {"La fecha final debe ser mayor"} /> : "" }
 										</div>
 									</div>
 								</div>
@@ -166,7 +250,7 @@ class Reportes extends Component {
 						</div>
 					</div>
 					<div className="row">
-						{ estado === 0 ? <Reporte /> : <ReporteVacio /> }
+						{ estado === 1 ? <Reporte /> : "" }
 					</div>
 				</div>
 			</div>    
