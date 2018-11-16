@@ -5,7 +5,7 @@ import {api} from '../../../actions/_request';
 
 const MensajeDeError = (props) => 
 ( 
-	<div> <button className="btn btn-block btn-outline-warning" type="button" disabled> <strong> {props.mens} </strong> </button> </div>
+	<div> <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> {props.mens} </strong> </button> </div>
 )
 
 const ReporteVacio = () =>
@@ -130,6 +130,7 @@ class Reportes extends Component {
 		var {busqueda, estado} = this.state;
 		let temp = this;
 
+	
 		if(busqueda.fechaInicial) // Si hay fecha inicial
 		{
 			if(busqueda.fechaFinal) // Si hay fecha final
@@ -156,26 +157,33 @@ class Reportes extends Component {
 		if(busqueda.error === 1) // Si todo salió bien
 		{
 			// Hacer consulta
-			api().get('/Movimientos',busqueda)
-			.then(function(response)
-			{
-				if(response.status === 200)
-				{
-					if(response.data[0] != null)
-					{
-						estado = 1;
-					}
-					else
-					{
-						// No hay registros
-						estado=2;
-					}
-				}
-			})
-			.catch(error =>
-			{
+			var cadena = `/ReporteDeMovimientos?fechaInicial=${busqueda.fechaInicial}`;
+			busqueda.fechaFinal === ''  ? '' : cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
+			busqueda.almacen === "0"    ? '' : cadena = cadena + `&almacen=${busqueda.almacen}`;
+			busqueda.movimiento === "0" ? '' : cadena = cadena + `&movimiento=${busqueda.movimiento}`;
+			console.log(cadena);
+		
+			// api().get(cadena)
+			// .then(function(response)
+			// {
+			// 	if(response.status === 200)
+			// 	{
+			// 		if(response.data[0] != null)
+			// 		{
+			// 			estado = 1;
+			// 		}
+			// 		else
+			// 		{
+			// 			// No hay registros
+			// 			estado=2;
+			// 		}
+			// 	}
+			// })
+			// .catch(error =>
+			// {
 				
-			});
+			// });
+			this.setState({ busqueda : busqueda, estado : estado });
 		}
 		else
 		{
