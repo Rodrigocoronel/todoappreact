@@ -180,19 +180,19 @@ class Buscar extends Component
                                             </div>
                                             <div className="form-group">
                                                 <label>Código de insumo:</label>
-                                                <label className="form-control" type="text" readOnly name="insumo"> {botella.insumo} </label>
+                                                <label className="form-control" type="text" name="insumo"> {botella.insumo} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Descripción:</label>
-                                                <label className="form-control" type="text" readOnly name="desc_insumo"> {botella.desc_insumo} </label>
+                                                <label className="form-control" type="text" name="desc_insumo"> {botella.desc_insumo} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Fecha de compra:</label>
-                                                <label className="form-control" type="date" readOnly name="fecha_compra"> {botella.fecha_compra} </label>
+                                                <label className="form-control" type="date" name="fecha_compra"> {botella.fecha_compra} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Ubicación actual:</label>
-                                                <label className="form-control" type="text" readOnly name="almacen_actual"> {botella.almacen?botella.almacen.nombre:''} </label>
+                                                <label className="form-control" type="text" name="almacen_actual"> {botella.almacen?botella.almacen.nombre:''} </label>
                                             </div>
                                         </div>
                                     </div>

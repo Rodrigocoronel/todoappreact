@@ -8,6 +8,20 @@ const MensajeDeError = (props) =>
 	<div> <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> {props.mens} </strong> </button> </div>
 )
 
+const TipoDeMovimiento = ({mov}) =>
+(
+    <div>
+    {
+        mov === 1 ? <div className="badge badge-success">   Entrada   </div> :
+        mov === 2 ? <div className="badge badge-warning">   Salida    </div> :
+        mov === 3 ? <div className="badge badge-danger"> Cancenlación </div> :
+        mov === 4 ? <div className="badge badge-secondary"> Venta     </div> :
+        mov === 5 ? <div className="badge badge-danger">    Baja      </div> :
+                    <div className="badge badge-warning">   Traspaso  </div>
+     } 
+    </div>
+)
+
 const ReporteVacio = () =>
 (
 	<div className="col-sm-12">
@@ -35,30 +49,24 @@ const Reporte = ({movimientos}) =>
 				<table className="table table-responsive-sm table-striped table-bordered table-sm">
 					<thead>
 						<tr>
-							<th width="8%">  No. </th>
-							<th width="12%"> Fecha </th>
-							<th width="10%"> Movimiento </th>
-							<th width="10%"> Codigo </th>
-							<th width="40%"> Producto </th>
-							<th width="20%"> Almacen </th>
+							<th width="8%">  <center> No.        </center> </th>
+							<th width="15%"> <center> Fecha      </center> </th>
+							<th width="10%"> <center> Movimiento </center> </th>
+							<th width="12%"> <center> Codigo     </center> </th>
+							<th width="40%"> <center> Producto   </center> </th>
+							<th width="15%"> <center> Almacen    </center> </th>
 						</tr>
 					</thead>
 					<tbody>
 					{
 						movimientos.map((item, i) => 
 							<tr key = { i } >
-								<td> { i+1 } </td>
-								<td> { item.fecha } </td>
-								<td> { item.movimiento_id === 1 ? "Entrada" : 
-									   item.movimiento_id === 2 ? "Salida" :
-									   item.movimiento_id === 3 ? "Cancelación" :
-									   item.movimiento_id === 4 ? "Venta" :
-									   item.movimiento_id === 5 ? "Baja" : "Traspaso"
-									 }
-								</td>
-								<td> { item.botella_id } </td>
-								<td> { item.botella_id } </td>
-								<td> { item.almacen_id } </td>
+								<td> <center> { i+1 }             </center> </td>
+								<td> <center> { item.fecha }      </center> </td>
+								<td> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
+								<td> <center> { item.botella_id } </center> </td>
+								<td>		  { item.botella_desc }           </td>
+								<td> <center> { item.almacen_id } </center> </td>
 							</tr>
 						)
 					}
@@ -136,35 +144,23 @@ class Reportes extends Component {
 		let temp = this;
 
 		if(busqueda.fechaInicial) // Si hay fecha inicial
-		{
 			if(busqueda.fechaFinal) // Si hay fecha final
-			{
 				if( busqueda.fechaFinal > busqueda.fechaInicial ) // Si la fecha final es mas grande que la inicia;
-				{
 					busqueda.error=1; //Segunda fecha mas grande - OK
-				}
 				else
-				{
 					busqueda.error=3; // Si la segunda fecha es mas chica - ERROR 3
-				}
-			}
 			else
-			{
 				busqueda.error=1; // Si no hay fecha final - OK
-			}
-		}
 		else
-		{
 			busqueda.error=2; // Si no hay fecha inicial - ERROR 2
-		}
 
 		if(busqueda.error === 1) // Si todo salió bien
 		{
 			// Hacer consulta
 			var cadena = `/ReporteDeMovimientos?fechaInicial=${busqueda.fechaInicial}`;
-			busqueda.fechaFinal === ''  ? '' : cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
-			busqueda.almacen === "0"    ? '' : cadena = cadena + `&almacen=${busqueda.almacen}`;
-			busqueda.movimiento === "0" ? '' : cadena = cadena + `&movimiento=${busqueda.movimiento}`;
+			busqueda.fechaFinal === ''  ? "" : cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
+			busqueda.almacen === "0"    ? "" : cadena = cadena + `&almacen=${busqueda.almacen}`;
+			busqueda.movimiento === "0" ? "" : cadena = cadena + `&movimiento=${busqueda.movimiento}`;
 		
 			api().get(cadena)
 			.then(function(response)

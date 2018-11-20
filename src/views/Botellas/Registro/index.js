@@ -170,15 +170,15 @@ class Agregar extends Component
                                             </div>
                                             <div className="form-group">
                                                 <label>Descripcion:</label>
-                                                <input className="form-control" type="text" readOnly value = {botella.desc_insumo} name="desc_insumo" />
+                                                <label className="form-control" type="text" name="desc_insumo"> {botella.desc_insumo} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Fecha de compra:</label>
-                                                <input className="form-control" type="date" readOnly value = {botella.fecha_compra} name="fecha_compra" />
+                                                <label className="form-control" type="date" name="fecha_compra"> {botella.fecha_compra} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Almacen actual:</label>
-                                                <input className="form-control" type="text" readOnly value = {botella.almacen_id} name="almacen_actual" />
+                                                <label className="form-control" type="text" name="almacen_actual"> {botella.almacen_id} </label>
                                             </div>
                                         </div>
                                     </div>
