@@ -24,7 +24,7 @@ const ReporteVacio = () =>
     </div>
 )
 
-const Reporte = () =>
+const Reporte = ({movimientos}) =>
 (
 	<div className="col-sm-12">
 		<div className="card">
@@ -33,31 +33,35 @@ const Reporte = () =>
 			</div>
 			<div className="card-body">
 				<table className="table table-responsive-sm table-striped table-bordered table-sm">
-
 					<thead>
 						<tr>
-							<th width="10%"> Fecha </th>
+							<th width="8%">  No. </th>
+							<th width="12%"> Fecha </th>
 							<th width="10%"> Movimiento </th>
 							<th width="10%"> Codigo </th>
-							<th width="50%"> Producto </th>
+							<th width="40%"> Producto </th>
 							<th width="20%"> Almacen </th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>1</td>
-							<td>1</td>
-							<td>1</td>
-							<td>1</td>
-							<td>1</td>
-						</tr>     
-												<tr>
-							<td>1</td>
-							<td>1</td>
-							<td>1</td>
-							<td>1</td>
-							<td>1</td>
-						</tr>    
+					{
+						movimientos.map((item, i) => 
+							<tr key = { i } >
+								<td> { i+1 } </td>
+								<td> { item.fecha } </td>
+								<td> { item.movimiento_id === 1 ? "Entrada" : 
+									   item.movimiento_id === 2 ? "Salida" :
+									   item.movimiento_id === 3 ? "Cancelación" :
+									   item.movimiento_id === 4 ? "Venta" :
+									   item.movimiento_id === 5 ? "Baja" : "Traspaso"
+									 }
+								</td>
+								<td> { item.botella_id } </td>
+								<td> { item.botella_id } </td>
+								<td> { item.almacen_id } </td>
+							</tr>
+						)
+					}
 					</tbody>
 				</table>
 			</div>
@@ -88,6 +92,7 @@ class Reportes extends Component {
 			},
 			estado : 0,
 			almacenes : [],
+			movimientos : [],
 	  	}
 	  	this.handleInputChange = this.handleInputChange.bind(this);
 	  	this.handleSubmit = this.handleSubmit.bind(this);
@@ -127,10 +132,9 @@ class Reportes extends Component {
 	handleSubmit(event)
 	{
 		event.preventDefault();
-		var {busqueda, estado} = this.state;
+		var {busqueda, estado, movimientos} = this.state;
 		let temp = this;
 
-	
 		if(busqueda.fechaInicial) // Si hay fecha inicial
 		{
 			if(busqueda.fechaFinal) // Si hay fecha final
@@ -161,28 +165,31 @@ class Reportes extends Component {
 			busqueda.fechaFinal === ''  ? '' : cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
 			busqueda.almacen === "0"    ? '' : cadena = cadena + `&almacen=${busqueda.almacen}`;
 			busqueda.movimiento === "0" ? '' : cadena = cadena + `&movimiento=${busqueda.movimiento}`;
-			console.log(cadena);
 		
-			// api().get(cadena)
-			// .then(function(response)
-			// {
-			// 	if(response.status === 200)
-			// 	{
-			// 		if(response.data[0] != null)
-			// 		{
-			// 			estado = 1;
-			// 		}
-			// 		else
-			// 		{
-			// 			// No hay registros
-			// 			estado=2;
-			// 		}
-			// 	}
-			// })
-			// .catch(error =>
-			// {
+			api().get(cadena)
+			.then(function(response)
+			{
+				if(response.status === 200)
+				{
+					if(response.data[0] != null)
+					{
+						estado = 1;
+						movimientos = response.data;
+						temp.setState({ movimientos : movimientos, estado : estado })
+
+					}
+					else
+					{
+						// No hay registros
+						estado=2;
+						temp.setState({ estado : estado })
+					}
+				}
+			})
+			.catch(error =>
+			{
 				
-			// });
+			});
 			this.setState({ busqueda : busqueda, estado : estado });
 		}
 		else
@@ -194,7 +201,7 @@ class Reportes extends Component {
 
  	render() {
 	
-		let{almacenes, estado, busqueda} = this.state;
+		let{almacenes, estado, busqueda, movimientos} = this.state;
 	
 	  	return (
 			<div className="container-fluid">
@@ -258,7 +265,7 @@ class Reportes extends Component {
 						</div>
 					</div>
 					<div className="row">
-						{ estado === 1 ? <Reporte /> : "" }
+						{ estado === 1 ? <Reporte movimientos = {movimientos} /> : estado === 2 ? <ReporteVacio /> : "" }
 					</div>
 				</div>
 			</div>    
