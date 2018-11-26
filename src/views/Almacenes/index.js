@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/dash.js';
 import {api} from '../../actions/_request';
+import swal from 'sweetalert2';
 
 class Almacenes extends Component {
 
@@ -16,11 +17,12 @@ class Almacenes extends Component {
                 activo : '',
                 descripcion : '',
             },
+            error : 0,
             almacenes : [],
         }
         this.activarDesactivar = this.activarDesactivar.bind(this);
-        //this.handleInputChange = this.handleInputChange.bind(this);
-        //this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentWillMount()
@@ -36,9 +38,7 @@ class Almacenes extends Component {
                 if(response.data[0] != null)
                 {
                     almacenes = response.data;
-                    temp.setState({
-                        almacenes : almacenes,
-                    })
+                    temp.setState({ almacenes : almacenes })
                 }
             }
         });
@@ -47,23 +47,82 @@ class Almacenes extends Component {
     activarDesactivar(event,btn)
     {
         event.preventDefault();
-        var {almacen} = this.state; 
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
+        var {almacenes, almacen} = this.state;
+        let temp = this;
+        almacen = almacenes[btn];
+        api().post('/CambiarEstado',almacen)
+        .then(function(response)
+        {
+            if(response.status === 200)
+            {
+                if(response.data)
+                {
+                    if( parseInt(almacenes[btn].activo,10) === 0 )
+                    {
+                        almacenes[btn].activo = 1;
+                        swal('Almacen activado','','success')
+                    }
+                    else
+                    {
+                        almacenes[btn].activo = 0;
+                        swal('Almacen desactivado','','error')
+                    }
+                    temp.setState({ almacenes : almacenes });
+                } 
+            }
+        })
+        .catch(error =>
+        {
 
-        console.log(btn);
+        });
 
-
-        //this.setState({ almacen : almacen });
+        this.setState({ almacenes : almacenes });
     }
 
-    handleSubmit(evt){
+    handleSubmit(evt)
+    {
         evt.preventDefault();
+        var {almacen, error} = this.state;
+        let temp = this;
+
+        if( (!almacen.nombre === '') && (!almacen.descripcion === '') )
+        {
+            almacen.activo = '1';
+            api().post('/AlmacenNuevo',almacen)
+            .then(function(response)
+            {
+                if(response.status === 200)
+                {
+                    response.data ? error = 2 : "";
+                }
+                temp.setState({ almacen : almacen, error : error });
+            })
+            .catch(error =>
+            {
+                error = 1;
+                temp.setState({ almacen : almacen, error : error });
+            });
+        }
+        else
+        {
+            error === 1 ? error = 2 : error = 1;
+            this.setState({ almacen : almacen, error : error });
+        }
+    }
+
+    handleInputChange(event) 
+    {
+        const value = event.target.value;
+        const name = event.target.name;
+        var {almacen} = this.state;
+
+        almacen[name] = value;
+        this.setState({ almacen : almacen });
     }
 
     render() {
 
+        var {error} = this.state;
         let almacen = this.state;
 
         return (
@@ -80,22 +139,25 @@ class Almacenes extends Component {
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label>Código:</label>
-                                                <input className="form-control" placeholder="autoasigned" type="text" readOnly name="folio" />
+                                                <input className="form-control" placeholder="autoasigned" type="text" readOnly value={almacen.id} name="id" />
                                             </div>
                                             <div className="form-group">
                                                 <label>Nombre:</label>
-                                                <input className="form-control" type="text" autoFocus name="insumo" onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" autoFocus value={almacen.nombre} name="nombre" onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label>Descripción:</label>
-                                                <input className="form-control" type="text" name="insumo" onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" value={almacen.descripcion} name="descripcion" onChange = {this.handleInputChange} />
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-sm-12">
-                                            <div>
+                                            <div className="form-group">
                                                 <button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit}> Guardar </button>
+                                            </div>
+                                            <div className="form-group">
+                                            {
+                                                error === 0 ? "" :
+                                                error === 1 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> No se guardaron los datos </strong> </button> :
+                                                <button className="btn btn-block btn-outline-success" type="button" disabled> <strong> La información fue guardada correctamente </strong> </button>
+                                            }
                                             </div>
                                         </div>
                                     </div>
