@@ -93,7 +93,7 @@ class Almacenes extends Component {
             {
                 if(response.status === 200)
                 {
-                    response.data ? error = 2 : "";
+                    if(response.data) error = 2;
                 }
                 temp.setState({ almacen : almacen, error : error });
             })

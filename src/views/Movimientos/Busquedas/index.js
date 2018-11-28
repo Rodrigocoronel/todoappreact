@@ -158,9 +158,9 @@ class Reportes extends Component {
 		{
 			// Hacer consulta
 			var cadena = `/ReporteDeMovimientos?fechaInicial=${busqueda.fechaInicial}`;
-			busqueda.fechaFinal === ''  ? "" : cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
-			busqueda.almacen === "0"    ? "" : cadena = cadena + `&almacen=${busqueda.almacen}`;
-			busqueda.movimiento === "0" ? "" : cadena = cadena + `&movimiento=${busqueda.movimiento}`;
+			if(!busqueda.fechaFinal === '')  cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
+			if(!busqueda.almacen === "0")    cadena = cadena + `&almacen=${busqueda.almacen}`;
+			if(!busqueda.movimiento === "0") cadena = cadena + `&movimiento=${busqueda.movimiento}`;
 		
 			api().get(cadena)
 			.then(function(response)
