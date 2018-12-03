@@ -16,7 +16,7 @@ const Pendientes = () =>
 	ALMACENES =>
 	// - Cambiar a dos ventanas de renglon en lugar de dos columnas
 	// - Agregar campos de "Estado" y "Descripcion"
-	- Agregar boton de activar/desactivar
+	// - Agregar boton de activar/desactivar
 
 	TRANSFERENCIAS =>
 	- Mensaje al cancelar baja
@@ -29,14 +29,14 @@ const Pendientes = () =>
 
 	USUARIOS =>
 	- Grabar usuarios
-	- Agregar opcion de tarjeta
-	- Asignar Almacen
+	// Agregar opcion de tarjeta
+	// Asignar Almacen
 
 	LOGIN =>
 	- Opcion de login con tarjeta o pass
 
 	GENERAL =>
 	// - Input's a Label's
-	- Refresh en el mismo moddulo
+	- Refresh en el mismo modulo
 
 )

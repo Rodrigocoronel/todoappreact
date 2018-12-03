@@ -222,7 +222,7 @@ class Traspasos extends Component {
                                         <div className="col-lg-12">
                                             <div className="form-group">
                                                 <label> Almacen: </label>
-                                                <select value={this.state.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleChange}>
+                                                <select value={this.state.almacen} className="form-control" name="almacen" onChange={this.handleChange}>
                                                     <option value="0"> Selecciona un almacen... </option>
                                                     {
                                                         almacenes.map((item, i) => <option key={i} value={item.id} > {item.nombre} </option> )
