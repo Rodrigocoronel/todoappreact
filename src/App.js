@@ -13,20 +13,39 @@ import { DefaultLayout } from './containers';
 
 import * as actions from './actions/auth';
 
-class App extends Component {
-	
-	render() 
+class App extends Component 
+{
+	componentDidMount() 
+	{
+        let { authenticated } = this.props.auth;
+        if(authenticated) this.props.whoiam();
+    }
+	render()
 	{
 		let {authenticated} = this.props.auth;
+		let {user} = this.props.auth;
 
-		if(!authenticated) return ( <Redirect to={{pathname: '/'}} /> );
-		return (
-			<HashRouter>
-				<Switch>
-					<Route path="/" name="Home" component={DefaultLayout} />
-				</Switch>
-			</HashRouter>
-		);
+		if(!authenticated) 
+		{
+			return ( <Redirect to={{pathname: '/'}} /> ) 
+		}
+		else 
+		{
+			if(user)
+			{
+				return( 
+					<HashRouter>
+						<Switch>
+							<Route path="/" name="Home" component={DefaultLayout} />
+						</Switch>
+					</HashRouter>
+				)
+			}
+			else
+			{
+				return(<div> </div>)
+			}
+		}
 	}
 }
 

@@ -2,10 +2,6 @@ import axios from 'axios';
 
  export const API_URL = 'http://127.0.0.1:8000/api';
  export const API_UR = 'http://127.0.0.1:8000';
-
-// http://api.papas.wenatives.com/
-//export const API_URL = 'http://api.papas.wenatives.com/api';
-//export const API_UR = 'http://api.papas.wenatives.com';
  
 export const request = axios.create({
 	baseURL 		: API_UR,
@@ -26,8 +22,8 @@ export const api = () => {
 		headers 		: {'Authorization': AuthorizationToken }
 
 	});
-
 }
+
 export const api_formdata = () => {
 
 	let token = localStorage.getItem('session_token_PAPAS');

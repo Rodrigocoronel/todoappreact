@@ -90,3 +90,20 @@ export const login = (params) =>
         })
     }
 }
+
+export const whoiam = () =>
+{
+    return (dispatch) => {
+
+        api().get('/user')
+        .then(function(response)
+        {
+            dispatch(
+            {
+                type: 'AUTH_WHOIAM_SUCCESS',
+                payload: response.data
+            });
+        });
+
+    }
+}

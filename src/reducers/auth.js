@@ -14,12 +14,12 @@ export default (state = initialState, action) =>
         case "CONECTADO":
             return { 
                 ...state, 
-                authenticated: true
+                authenticated : true
             };
         case "DESCONECTADO":
             return { 
                 ...state, 
-                authenticated: false,
+                authenticated : false,
                 error_message : 'La sesion del usuario ha sido cerrada',
             };
         case "ERROR":
@@ -28,7 +28,11 @@ export default (state = initialState, action) =>
                 authenticated: false,
                 error_message : 'Usuario o Password Incorrectas',
             };
-
+        case "AUTH_WHOIAM_SUCCESS":
+            return {
+                ...state,
+                user: action.payload,
+            };
         default:
             return state;
     }

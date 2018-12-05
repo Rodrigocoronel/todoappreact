@@ -1,8 +1,7 @@
-const Pendientes = () =>
-(
-
+Pendientes = () =>
+{
 	REGISTRO =>
-	- Alta por gerente
+	// Alta por gerente
 
 	BUSQUEDAS =>
 	// - Cambiar colores a movimientos
@@ -19,16 +18,16 @@ const Pendientes = () =>
 	// - Agregar boton de activar/desactivar
 
 	TRANSFERENCIAS =>
-	- Mensaje al cancelar baja
-	- Almacenar y avisar en reporte de doble venta
-	- Enviar aviso al intentar doble venta
+	* Mensaje al cancelar baja
+	* Almacenar y avisar en reporte de doble venta
+	* Enviar aviso al intentar doble venta
 
 	REPORTES =>
 	// - Hacer consultas
 	// - Poner colores a movimientos
 
 	USUARIOS =>
-	- Grabar usuarios
+	// Grabar usuarios
 	// Agregar opcion de tarjeta
 	// Asignar Almacen
 
@@ -37,6 +36,7 @@ const Pendientes = () =>
 
 	GENERAL =>
 	// - Input's a Label's
-	- Refresh en el mismo modulo
+	* Refresh en el mismo modulo
+	* Ventana de inicio
 
-)
+}

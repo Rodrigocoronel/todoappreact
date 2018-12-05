@@ -7,7 +7,7 @@ class Dash extends Component {
 	render()
 	{
 		return (
-			<div> Ventana De Inicio </div>
+			<div> <i className="icons font-2xl d-block mt-5 cui-chart"> </i> </div>
 		);
 	}
 }

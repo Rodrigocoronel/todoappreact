@@ -2,21 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
-//import swal from 'sweetalert2';
-
-const VentanaDeMensaje = (props) => 
-(
-	<div className="card">
-		<div className="card-header">
-			<strong> {props.tipo} </strong>
-		</div>
-		<div className="card-body">
-			<div className={props.estilo} role="alert">
-				<strong> {props.mens} </strong>
-			</div>
-		</div>
-	</div>
-)
+import swal from 'sweetalert2';
 
 class Registro extends Component {
 
@@ -32,27 +18,28 @@ class Registro extends Component {
 				area : '',
 				tipo : '',
 				tarjeta : '',
-				activo : '',
+				activo : '0',
 			},
 			usuarios : [],
 			almacenes : [],
 			almacenActual : 0,
 			botonGuardar : 1, // 1 - Registrar, 2 - Guardar Cambios,
 			botonTarjeta : 0,
-			error : 0, // 0 - Vacio, 1 - No guardo, 2 - <> pass, 3 - OK
+			estiloPass: '',
 		}
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.modificar = this.modificar.bind(this);
 		this.eliminarTarjeta = this.eliminarTarjeta.bind(this);
+		this.agregarTarjeta = this.agregarTarjeta.bind(this);
 	}
 
 	componentWillMount()
-    {
-        this.cargarUsuarios();
+	{
+		this.cargarUsuarios();
 		this.cargarAlmacenes();
-		if(this.state.error === 3) this.clearUser(); 
-    }
+		this.clearUser(); 
+	}
 
     cargarUsuarios=()=>
     {
@@ -91,14 +78,14 @@ class Registro extends Component {
 	handleSubmit(evt)
 	{
 		evt.preventDefault();
-		var {error, usuario} = this.state;
-		let temp = this;
-		var ruta='/Usuario';
+		var {usuario, estiloPass} = this.state;
+		var ruta='';
 
-		error = 0;
+		estiloPass = '';
 		if(!(usuario.password === usuario.password2))
 		{
-			this.setState({ error : 2 });
+			estiloPass = 'is-invalid';
+			this.setState({ estiloPass : estiloPass });
 		}
 		else
 		{
@@ -108,16 +95,15 @@ class Registro extends Component {
 			{
 				if(response.status === 200)
 				{
-					if(response.data) error = 3;
+					if(response.data) swal('Los datos fueron guardados','','success');
 				}
-				temp.setState({ error : error, usuario :  usuario });
 			})
-			.catch(error =>
-			{
-				error = 1;
-				temp.setState({ error : error, usuario :  usuario });
+			.catch(error => {
+				swal('No se guardaron los datos','','error');
 			});
-			this.componentWillMount();
+			this.cargarUsuarios();
+			this.clearUser();
+			this.setState({ estiloPass : '' });
 		}
 	}
 
@@ -132,8 +118,8 @@ class Registro extends Component {
 				password2 : '',
 				area : '',
 				tipo : '',
-				tarjeta : '',
-				activo : '',
+				tarjeta : null,
+				activo : '0',
 			}
 		})
 	}
@@ -151,16 +137,62 @@ class Registro extends Component {
 		let {usuario, usuarios, botonTarjeta} = this.state;
 		usuario = usuarios[btn];
 		usuario.password2 = usuario.password;
-		usuario.tarjeta === '' ? botonTarjeta = 0 : botonTarjeta = 1;
-		this.setState({ usuario : usuario, botonGuardar : 2, botonTarjeta : botonTarjeta });
+		usuario.tarjeta === null ? botonTarjeta = 0 : botonTarjeta = 1;
+		this.setState({ usuario : usuario, botonGuardar : 2, botonTarjeta : botonTarjeta, estiloPass : '' });
 	}
 
 	eliminarTarjeta()
 	{
 		var {usuario, botonTarjeta} = this.state;
-		usuario.tarjeta = '';
-		botonTarjeta = 0;
-		this.setState({ usuario : usuario, botonTarjeta : botonTarjeta });
+
+		swal({
+			title: 'Eliminar la tarjeta?',
+			type: 'warning',
+  			showCancelButton: true,
+  			confirmButtonColor: '#3085d6',
+  			cancelButtonColor: '#d33',
+			confirmButtonText: 'Si',
+			cancelButtonText: 'No',
+		}).then((result) => 
+		{
+			if (result.value) 
+			{
+				usuario.tarjeta = null;
+				botonTarjeta = 0;
+				swal('Tarjeta eliminada','','success');
+				this.setState({ usuario : usuario, botonTarjeta : botonTarjeta });
+  			}
+  			else
+  			{
+				swal('No se borro la tarjeta','','error');
+  			}
+		})
+	}
+
+	agregarTarjeta()
+	{
+		var {usuario, botonTarjeta} =  this.state;
+		let temp = this;
+		
+		swal({
+			title: 'Tarjeta de acceso',
+			input: 'password',
+			inputPlaceholder: 'Desliza tu tarjeta',
+		}).then((result) =>
+		{
+			if(result.value === '')
+			{
+				swal('No se registro ninguna tarjeta','','error');
+			}
+			else
+			{
+				usuario.tarjeta = result.value; 
+				botonTarjeta = 1;
+				swal('Tarjeta registrada','','success');
+				temp.setState({ usuario : usuario, botonTarjeta : botonTarjeta });
+			}
+			
+		});
 	}
 
 	handleInputChange(event) 
@@ -170,13 +202,13 @@ class Registro extends Component {
 		var {usuario, botonTarjeta} = this.state;
 
 		usuario[name] = value;
-		usuario.tarjeta === ''? botonTarjeta = 0 : botonTarjeta = 1;
+		usuario.tarjeta === null ? botonTarjeta = 0 : botonTarjeta = 1;
 		this.setState({ usuario : usuario, botonTarjeta : botonTarjeta });
 	}
 
 	render() {
 
-		var {error, botonGuardar, botonTarjeta, almacenes} = this.state;
+		var {botonGuardar, botonTarjeta, almacenes} = this.state;
 		let {usuario, usuarios} = this.state;
 
 		return (
@@ -224,28 +256,33 @@ class Registro extends Component {
 									</div>
 									Escribe una dirección de correo electrónico válida
 								</div>
-								<div className="row ml-1 mr-1 form-group">
-									<div className="input-group">
-										<div className="input-group-prepend">
-											<span className="input-group-text">
-												<i className="fa fa-asterisk"></i>
-											</span>
+									<div>
+										<div className="row ml-1 mr-1 form-group">
+											<div className="input-group">
+												<div className="input-group-prepend">
+													<span className="input-group-text">
+														<i className="fa fa-asterisk"></i>
+													</span>
+												</div>
+												<input required className={"form-control "+this.state.estiloPass} value={usuario.password} type="password" name="password" placeholder="Contraseña" onChange = {this.handleInputChange} />
+											</div>
+											{ this.state.estiloPass === '' ? 'Escribe la contraseña' : '' }
 										</div>
-										<input required className="form-control" value={usuario.password} type="password" name="password" placeholder="Contraseña" onChange = {this.handleInputChange} />
-									</div>
-									Escribe la contraseña
-								</div>
-								<div className="row ml-1 mr-1 form-group">
-									<div className="input-group">
-										<div className="input-group-prepend">
-											<span className="input-group-text">
-												<i className="fa fa-asterisk"></i>
-											</span>
+										<div className="row ml-1 mr-1 form-group">
+											<div className="input-group">
+												<div className="input-group-prepend">
+													<span className="input-group-text">
+														<i className="fa fa-asterisk"></i>
+													</span>
+												</div>
+												<input required className={"form-control "+this.state.estiloPass} value={usuario.password2} type="password" name="password2" placeholder="Contraseña" onChange = {this.handleInputChange} />
+											</div>
+											{ 
+												this.state.estiloPass === '' ? 'Vuelve a escribir la contraseña' :
+												<div className="letraRoja"> Las contraseñas no coinciden </div>
+											}
 										</div>
-										<input required className="form-control" value={usuario.password2} type="password" name="password2" placeholder="Contraseña" onChange = {this.handleInputChange} />
-									</div>
-									Vuelve a escribir la contraseña
-								</div>
+									</div>	
 								<div className="row ml-1 mr-1 form-group">
 									<div className="col-6 pl-0 pr-2">
 										<div className="input-group">
@@ -280,39 +317,25 @@ class Registro extends Component {
 										Selecciona el tipo de usuario
 									</div>
 								</div>
-								{
-									botonTarjeta === 1?
-										<div className="row ml-1 mr-1 form-group">
-											<div className="col-9 pl-0 pr-2">
-												<div className="input-group">
-													<div className="input-group-prepend">
-														<span className="input-group-text">
-															<i className="fa fa-id-card"></i>
-														</span>
-													</div>
-													<input className="form-control" value={usuario.tarjeta} type="password" name="tarjeta" placeholder="Tarjeta RFID" onChange = {this.handleInputChange} />
+									<div className="row ml-1 mr-1 form-group">
+										<div className="col-9 pl-0 pr-2">
+											<div className="input-group">
+												<div className="input-group-prepend">
+													<span className="input-group-text">
+														<i className="fa fa-id-card"></i>
+													</span>
 												</div>
-												Ingresa el número de tarjeta de acceso (opcional)
+												<input className="form-control" readOnly type="password" name="tarjeta" value={usuario.tarjeta===null ? '' : usuario.tarjeta} />
 											</div>
-											<div className="col-3 pl-2 pr-0">
-												<button className="btn btn-danger w-100" type="submit" onClick={this.eliminarTarjeta}> Eliminar Tarjeta </button>
-											</div>
+											Ingresa el número de tarjeta de acceso (opcional)
 										</div>
-									:
-										<div className="row ml-1 mr-1 form-group">
-											<div className="col-12 pl-0 pr-0">
-												<div className="input-group">
-													<div className="input-group-prepend">
-														<span className="input-group-text">
-															<i className="fa fa-id-card"></i>
-														</span>
-													</div>
-													<input className="form-control" value={usuario.tarjeta} type="password" name="tarjeta" placeholder="Tarjeta RFID" onChange = {this.handleInputChange} />
-												</div>
-												Ingresa el número de tarjeta de acceso (opcional)
-											</div>
+										<div className="col-3 pl-2 pr-0">
+										{
+											botonTarjeta === 1 ? <button className="btn btn-danger w-100" type="button" onClick={this.eliminarTarjeta}> <strong> Eliminar Tarjeta </strong> </button>
+											: <button className="btn btn-block btn-info active w-100" type="button" onClick={this.agregarTarjeta}> <strong> Agregar Tarjeta </strong> </button>
+										}
 										</div>
-								}
+									</div>
 								<div>
 								{
 									botonGuardar === 1 ? 
@@ -333,13 +356,6 @@ class Registro extends Component {
 							</form>
 						</div>
 					</div>
-				</div>
-				<div className="col-12">
-				{
-					error === 3 ? <VentanaDeMensaje tipo = {"Confirmación"} estilo={"alert alert-success"} mens={"Los datos fueron guardados"} /> :
-					error === 2 ? <VentanaDeMensaje tipo = {"Error!!!"}     estilo={"alert alert-warning"} mens={"Las contraseñas no son iguales"} /> :
-					error === 1 ? <VentanaDeMensaje tipo = {"Error!!!"}     estilo={"alert alert-warning"} mens={"No se registraron los datos"} /> : ""
-				}
 				</div>
 				<div className="col-12">
 					<div className="card">

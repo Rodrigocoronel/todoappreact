@@ -4,26 +4,28 @@ import logo from '../../assets/img/brand/logob.jpg'
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/auth.js';
-
+import swal from 'sweetalert2';
 
 class Login extends Component {
 
-	constructor(props){
+	constructor(props)
+	{
 		super(props)
 		this.state={
 			email : '',
 			password : '',
 		}
-
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
-	componentDidMount(){
+	componentDidMount()
+	{
 		this.props.checkToken();
 	}
 
-	handleInputChange(event) {
+	handleInputChange(event)
+	{
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
@@ -31,10 +33,47 @@ class Login extends Component {
 		this.setState({[name]: value});
 	}
 
-	handleSubmit(evt){
+	handleSubmit(evt)
+	{
 		evt.preventDefault();
 		let{email,password} = this.state;
 		this.props.login({email : email, password : password});
+	}
+
+	accesoRFID()
+	{
+		swal({
+			input: 'password',
+			inputPlaceholder: 'Desliza tu tarjeta',
+			showCloseButton: true,
+			showConfirmButton: false,
+			imageUrl: '/assets/img/swipe.gif',
+			imageWidth: 300,
+			imageHeight: 200
+		}).then((result) =>
+		{
+			if(result.value === ';1370010000003023=991?')
+			{
+				swal({
+					title:'Bienvenido',
+					text: 'Cargando...',
+					showConfirmButton: false,
+					timer: 1500,
+					onOpen: () => {
+						swal.showLoading()
+					}
+				});
+			}
+			else
+			{
+				swal({
+					title: 'Acceso no autorizado',
+					type: 'error',
+					showConfirmButton: false,
+					timer: 1500,
+				});
+			}
+		});
 	}
 
 	render() 
@@ -71,11 +110,14 @@ class Login extends Component {
 												</InputGroupAddon>
 												<Input type="password" placeholder="Password" autoComplete="current-password" name='password' required value={password} onChange={this.handleInputChange} />
 											</InputGroup>
-											<Row>
+											<Row className="mb-4">
 												<Col xs="6">
 													<Button color="primary" onClick={this.submit} className="px-4">Login</Button>
 												</Col>
 											</Row>
+											<InputGroup className="mb-4">
+												<Button className="btn btn-ghost-primary" onClick={this.accesoRFID}> <i className="fa fa-id-card"> </i> Ingresar con tarjeta RFID </Button>
+											</InputGroup>
 										</Form>
 									</CardBody>
 								</Card>
