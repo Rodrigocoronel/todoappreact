@@ -109,32 +109,38 @@ class Buscar extends Component
         {
             botella.error = 1;
             datos = botella.folio.toString().split("^");
-            if(datos.length===6) botella.folio = datos[0];
-
-            api().get(`/Botella/${botella.folio}`)
-            .then(function(response)
-            { 
-                if(response.status === 200)
-                {
-                    if(response.data[0] == null)
-                    {
-                        botella.folio = datos[0];
-                        temp.limpiarState(datos[0]);
-                    }
-                    else
-                    { 
-                        botella = response.data[0];
-                        botella.error = 0;
-                        temp.setState({ botella: botella });               
-                    }
-                    target.select();
-                }
-            })
-            .catch(error =>
+            if(datos.length===6)
             {
-                temp.setState({botella: botella });
-            });
-            target.select();
+                botella.folio = datos[0];
+                api().get(`/Botella/${botella.folio}`)
+                .then(function(response)
+                { 
+                    if(response.status === 200)
+                    {
+                        if(response.data[0] == null)
+                        {
+                            botella.folio = datos[0];
+                            temp.limpiarState();
+                        }
+                        else
+                        { 
+                            botella = response.data[0];
+                            botella.error = 0;
+                            temp.setState({ botella: botella });               
+                        }
+                        target.select();
+                    }
+                })
+                .catch(error =>
+                {   
+                    temp.limpiarState();
+                });
+            }
+            else
+            {
+                this.limpiarState();
+                target.select();
+            }
         }
         else
         {
@@ -142,12 +148,12 @@ class Buscar extends Component
         }
     }
             
-    limpiarState(datos)
+    limpiarState()
     {
         this.setState({
             botella : 
             {
-                folio : datos,
+                folio : '',
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',

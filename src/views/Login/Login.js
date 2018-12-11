@@ -5,6 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/auth.js';
 import swal from 'sweetalert2';
+import {api} from '../../actions/_request';
 
 class Login extends Component {
 
@@ -12,8 +13,11 @@ class Login extends Component {
 	{
 		super(props)
 		this.state={
-			email : '',
-			password : '',
+			usuario : {
+				email : '',
+				password : '',
+				tarjeta : '',
+			},
 		}
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,19 +33,21 @@ class Login extends Component {
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
-
-		this.setState({[name]: value});
+		var {usuario} = this.state;
+		usuario[name] = value;
+		this.setState({usuario : usuario});
 	}
 
 	handleSubmit(evt)
 	{
 		evt.preventDefault();
-		let{email,password} = this.state;
-		this.props.login({email : email, password : password});
+		let{usuario} = this.state;
+		this.props.login({ email : usuario.email, password : usuario.password });
 	}
 
-	accesoRFID()
+	accesoRFID = () =>
 	{
+		let {usuario} = this.state;
 		swal({
 			input: 'password',
 			inputPlaceholder: 'Desliza tu tarjeta',
@@ -52,33 +58,42 @@ class Login extends Component {
 			imageHeight: 200
 		}).then((result) =>
 		{
-			if(result.value === ';1370010000003023=991?')
+			usuario.tarjeta = result.value;
+			console.log(usuario.tarjeta);
+			api().get('/Tarjeta',usuario)
+			.then(function(response)
 			{
-				swal({
-					title:'Bienvenido',
-					text: 'Cargando...',
-					showConfirmButton: false,
-					timer: 1500,
-					onOpen: () => {
-						swal.showLoading()
-					}
-				});
-			}
-			else
+			// 	if(response.status === 200)
+			// 	{
+			// 		if(response.data)
+			// 		{
+
+			// 			swal({
+			// 				title:'Bienvenido',
+			// 				text: 'Cargando...',
+			// 				showConfirmButton: false,
+			// 				timer: 1500,
+			// 				onOpen: () => { swal.showLoading() }
+			// 			});
+			// 		}
+			// 	}
+			})
+			.catch(error =>
 			{
-				swal({
-					title: 'Acceso no autorizado',
-					type: 'error',
-					showConfirmButton: false,
-					timer: 1500,
-				});
-			}
+				console.log(error);
+			// 	swal({
+			// 		title: 'Acceso no autorizado',
+			// 		type: 'error',
+			// 		showConfirmButton: false,
+			// 		timer: 1500,
+			// 	});
+			});
 		});
 	}
 
 	render() 
 	{
-		let {email,password} = this.state;
+		let {usuario} = this.state;
 
 		if(this.props.auth.authenticated) return <Redirect to={'/app'} />;
 
@@ -100,7 +115,7 @@ class Login extends Component {
 														<i className="icon-user"></i>
 													</InputGroupText>
 												</InputGroupAddon>
-												<Input type="text" placeholder="E-mail" autoComplete="username" name='email' required value={email} onChange={this.handleInputChange} />
+												<Input type="text" placeholder="E-mail" autoComplete="username" name='email' required value={usuario.email} onChange={this.handleInputChange} />
 											</InputGroup>
 											<InputGroup className="mb-4">
 												<InputGroupAddon addonType="prepend">
@@ -108,7 +123,7 @@ class Login extends Component {
 														<i className="icon-lock"></i>
 													</InputGroupText>
 												</InputGroupAddon>
-												<Input type="password" placeholder="Password" autoComplete="current-password" name='password' required value={password} onChange={this.handleInputChange} />
+												<Input type="password" placeholder="Password" autoComplete="current-password" name='password' required value={usuario.password} onChange={this.handleInputChange} />
 											</InputGroup>
 											<Row className="mb-4">
 												<Col xs="6">

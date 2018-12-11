@@ -18,25 +18,31 @@ Pendientes = () =>
 	// - Agregar boton de activar/desactivar
 
 	TRANSFERENCIAS =>
-	* Mensaje al cancelar baja
-	* Almacenar y avisar en reporte de doble venta
-	* Enviar aviso al intentar doble venta
+	- Almacenar y avisar en reporte de doble venta
+	- Aviso en doble entrada
 
 	REPORTES =>
 	// - Hacer consultas
 	// - Poner colores a movimientos
+	- Imprimir reportes
+	P Existencia
+	P Corte
 
 	USUARIOS =>
 	// Grabar usuarios
 	// Agregar opcion de tarjeta
 	// Asignar Almacen
+	// Desplegar area
 
 	LOGIN =>
 	- Opcion de login con tarjeta o pass
 
 	GENERAL =>
-	// - Input's a Label's
-	* Refresh en el mismo modulo
-	* Ventana de inicio
+	// Input's a Label's
+	- Refresh en el mismo modulo
+	P Ventana de inicio
+
+	SEGURIDAD
+	- Activar/Desactivar elementos en listas (almacenes, usuarios, barras)
 
 }

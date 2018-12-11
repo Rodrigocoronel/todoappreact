@@ -23,58 +23,46 @@ const TipoDeMovimiento = ({mov}) =>
 )
 
 const ReporteVacio = () =>
-(
-	<div className="col-sm-12">
-		<div className="card">
-        	<div className="card-header">
-            	<strong> Error!!! </strong>
-	        </div>
-    	    <div className="card-body">
-        	    <div className="alert alert-warning" role="alert">
-            	    <strong> No se encontraron movimientos durante el periodo </strong>
-            	</div>
-        	</div>
-    	</div>
-    </div>
+(	<div className="card">
+		<div className="card-header">
+			<strong> Error!!! </strong>
+		</div>
+		<div className="card-body">
+			<div className="alert alert-warning" role="alert">
+				<strong> No se encontraron movimientos durante el periodo </strong>
+			</div>
+		</div>
+	</div>
 )
 
 const Reporte = ({movimientos}) =>
 (
-	<div className="col-sm-12">
-		<div className="card">
-			<div className="card-header">
-				<i className="fa fa-align-justify"></i> <strong> Reporte de movimientos </strong>
-			</div>
-			<div className="card-body">
-				<table className="table table-responsive-sm table-striped table-bordered table-sm">
-					<thead>
-						<tr>
-							<th width="8%">  <center> No.        </center> </th>
-							<th width="15%"> <center> Fecha      </center> </th>
-							<th width="10%"> <center> Movimiento </center> </th>
-							<th width="12%"> <center> Codigo     </center> </th>
-							<th width="40%"> <center> Producto   </center> </th>
-							<th width="15%"> <center> Almacen    </center> </th>
-						</tr>
-					</thead>
-					<tbody>
-					{
-						movimientos.map((item, i) => 
-							<tr key = { i } >
-								<td> <center> { i+1 }             </center> </td>
-								<td> <center> { item.fecha }      </center> </td>
-								<td> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
-								<td> <center> { item.botella_id } </center> </td>
-								<td>		  { item.botella_desc }           </td>
-								<td> <center> { item.almacen_id } </center> </td>
-							</tr>
-						)
-					}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+	<table className="table table-responsive-sm table-striped table-bordered table-sm">
+		<thead>
+			<tr>
+				<th width="8%">  <center> No.        </center> </th>
+				<th width="15%"> <center> Fecha      </center> </th>
+				<th width="10%"> <center> Movimiento </center> </th>
+				<th width="12%"> <center> Codigo     </center> </th>
+				<th width="40%"> <center> Producto   </center> </th>
+				<th width="15%"> <center> Almacen    </center> </th>
+			</tr>
+		</thead>
+		<tbody>
+		{
+			movimientos.map((item, i) => 
+				<tr key = { i } >
+					<td> <center> { i+1 }             </center> </td>
+					<td> <center> { item.fecha }      </center> </td>
+					<td> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
+					<td> <center> { item.botella_id } </center> </td>
+					<td>		  { item.botella_desc }           </td>
+					<td> <center> { item.almacen_id } </center> </td>
+				</tr>
+			)
+		}
+		</tbody>
+	</table>
 )
 
 class Reportes extends Component {
@@ -104,6 +92,7 @@ class Reportes extends Component {
 	  	}
 	  	this.handleInputChange = this.handleInputChange.bind(this);
 	  	this.handleSubmit = this.handleSubmit.bind(this);
+	  	this.imprimirReporte = this.imprimirReporte.bind(this);
   	}
 
     componentWillMount()
@@ -158,9 +147,9 @@ class Reportes extends Component {
 		{
 			// Hacer consulta
 			var cadena = `/ReporteDeMovimientos?fechaInicial=${busqueda.fechaInicial}`;
-			if(!busqueda.fechaFinal === '')  cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
-			if(!busqueda.almacen === "0")    cadena = cadena + `&almacen=${busqueda.almacen}`;
-			if(!busqueda.movimiento === "0") cadena = cadena + `&movimiento=${busqueda.movimiento}`;
+			if(busqueda.fechaFinal !== '')  cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
+			if(busqueda.almacen !== '0')    cadena = cadena + `&almacen=${busqueda.almacen}`;
+			if(busqueda.movimiento !== '0') cadena = cadena + `&movimiento=${busqueda.movimiento}`;
 		
 			api().get(cadena)
 			.then(function(response)
@@ -172,7 +161,6 @@ class Reportes extends Component {
 						estado = 1;
 						movimientos = response.data;
 						temp.setState({ movimientos : movimientos, estado : estado })
-
 					}
 					else
 					{
@@ -193,6 +181,12 @@ class Reportes extends Component {
 			estado = 0;
 			this.setState({ busqueda : busqueda, estado : estado });
 		}
+	}
+
+	imprimirReporte()
+	{
+		let {movimientos} = this.state;
+		console.log(movimientos)
 	}
 
  	render() {
@@ -226,7 +220,7 @@ class Reportes extends Component {
 											<div className="form-group">
                                             	<label> Almacén: </label>
                                                 <select value={busqueda.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleInputChange}>
-                                                    <option value="0"> Selecciona un almacen... </option>
+                                                    <option value={0}> Selecciona un almacen... </option>
                                                     {
                                                         almacenes.map((item, i) => <option key={i} value={item.id} > {item.nombre} </option> )
                                                     }
@@ -247,13 +241,18 @@ class Reportes extends Component {
                                             	</select>
                                        		</div>
                                        	</div>
-									</div>
-									<div className="row">
 										<div className="col-sm-12 col-lg-3">
-											<button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
+											<div className="form-group">
+												<button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
+											</div>
 										</div>
 										<div className="col-sm-12 col-lg-3">
-											{ busqueda.error === 2 ? <MensajeDeError mens = {"Se debe indicar una fecha"} /> : busqueda.error === 3 ? <MensajeDeError mens = {"La fecha final debe ser mayor"} /> : "" }
+											<div className="form-group">
+												{ 
+													busqueda.error === 2 ? <MensajeDeError mens = {"Se debe indicar una fecha"} /> : 
+													busqueda.error === 3 ? <MensajeDeError mens = {"La fecha final debe ser mayor"} /> : ""
+												}
+											</div>
 										</div>
 									</div>
 								</div>
@@ -261,7 +260,23 @@ class Reportes extends Component {
 						</div>
 					</div>
 					<div className="row">
-						{ estado === 1 ? <Reporte movimientos = {movimientos} /> : estado === 2 ? <ReporteVacio /> : "" }
+						<div className="col-sm-12">
+						{
+							estado === 1 ? 
+								<div className="card">
+									<div className="card-header">
+										<i className="fa fa-align-justify"> </i> <strong> Reporte de movimientos </strong>
+										<button className="btn btn-primary" type="button" onClick={this.imprimirReporte} > 
+											<i className="icons font-2xl d-block cui-print"></i>
+										</button>
+									</div>
+									<div className="card-body">
+										{ <Reporte movimientos = {movimientos} /> }
+									</div>
+								</div>
+							: estado === 2 ? <ReporteVacio /> : "" 
+						}
+						</div>
 					</div>
 				</div>
 			</div>    

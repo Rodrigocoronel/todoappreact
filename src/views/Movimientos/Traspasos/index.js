@@ -58,6 +58,7 @@ class Traspasos extends Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.seleccionarMovimiento = this.seleccionarMovimiento.bind(this);
+        this.limpiarState = this.limpiarState.bind(this);
     }
 
     componentWillMount()
@@ -152,6 +153,7 @@ class Traspasos extends Component {
                             .catch(error =>
                             {
                                 error=2;
+                                this.limpiarState();
                                 target.select();
                             });
                         }
@@ -160,6 +162,7 @@ class Traspasos extends Component {
                             swal('Autorización inválida','','error');
                             temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
                         }
+                        this.limpiarState();
                         target.select(); 
                     });
                 }
@@ -180,17 +183,33 @@ class Traspasos extends Component {
                     .catch(error =>
                     {
                         error=2;
+                        this.limpiarState();
                         this.setState({ error : error, fin : fin });
                     });
                 }
             }
             else
             {
-                error=2;
+                error=2;                        
+                this.limpiarState();
                 this.setState({ error : error, fin : fin });
             }
         }
         target.select();
+    }
+
+    limpiarState()
+    {
+        this.setState({
+            movimiento : {
+                folio : '',
+                botella_id : '',
+                movimiento_id : '',
+                almacen_id : '',
+                fecha : '',
+                user : ''
+            }
+        });
     }
 
     seleccionarMovimiento(event,btn)

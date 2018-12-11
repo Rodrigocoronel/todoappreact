@@ -2,6 +2,9 @@ import axios from 'axios';
 
  export const API_URL = 'http://127.0.0.1:8000/api';
  export const API_UR = 'http://127.0.0.1:8000';
+
+ //export const API_URL = 'http://api.papas.wenatives.com/api';
+ //export const API_UR = 'http://api.papas.wenatives.com';
  
 export const request = axios.create({
 	baseURL 		: API_UR,

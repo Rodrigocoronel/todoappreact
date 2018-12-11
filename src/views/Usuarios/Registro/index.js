@@ -80,8 +80,9 @@ class Registro extends Component {
 		evt.preventDefault();
 		var {usuario, estiloPass} = this.state;
 		var ruta='';
+        let self = this;
 
-		estiloPass = '';
+        estiloPass = '';
 		if(!(usuario.password === usuario.password2))
 		{
 			estiloPass = 'is-invalid';
@@ -95,15 +96,22 @@ class Registro extends Component {
 			{
 				if(response.status === 200)
 				{
-					if(response.data) swal('Los datos fueron guardados','','success');
+					if(response.data) 
+					{
+						swal('Los datos fueron guardados','','success');
+						self.cargarUsuarios();
+						self.clearUser();
+						self.setState({ estiloPass : '' });
+					}
 				}
 			})
 			.catch(error => {
 				swal('No se guardaron los datos','','error');
+				self.cargarUsuarios();
+				self.clearUser();
+				self.setState({ estiloPass : '' });
 			});
-			this.cargarUsuarios();
-			this.clearUser();
-			this.setState({ estiloPass : '' });
+
 		}
 	}
 
@@ -387,12 +395,12 @@ class Registro extends Component {
 											</td>
 											<td className="text-center"> { item.name } </td>
 											<td className="text-center"> { item.email } </td>
-											<td className="text-center"> { item.area } </td>
+											<td className="text-center"> { item.almacen?item.almacen.nombre:'' } </td>
 											<td className="text-center">
 											{
-												item.tipo === 1 ? 'General' :
-												item.tipo === 2 ? 'Supervisor' :
-												item.tipo === 3 ? 'Administrador' : ''
+												parseInt(item.tipo,10) === 1 ? 'General' :
+												parseInt(item.tipo,10) === 2 ? 'Supervisor' :
+												parseInt(item.tipo,10) === 3 ? 'Administrador' : ''
 											} 
 											</td>
 											<td className="text-center"> 

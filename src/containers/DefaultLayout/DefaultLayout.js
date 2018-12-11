@@ -36,7 +36,6 @@ class DefaultLayout extends Component
 
 		switch(parseInt(user.tipo,10))
 		{
-			case 0: menuDeUsuario = navigation.papa; break;
 			case 1: menuDeUsuario = navigation.general; break;
 			case 2: menuDeUsuario = navigation.supervisor; break;
 			case 3: menuDeUsuario = navigation.administrador; break;

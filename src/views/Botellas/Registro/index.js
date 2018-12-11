@@ -119,7 +119,7 @@ class Agregar extends Component
                 .catch(error =>
                 {
                     botella.error=3;
-                    this.setState({ botella: botella });
+                    temp.setState({ botella: botella });
                 });
             }
             else
@@ -135,6 +135,7 @@ class Agregar extends Component
         this.setState({
             botella : 
             {
+                folio : '',
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
@@ -186,7 +187,12 @@ class Agregar extends Component
                             </div>
                         </div>
                         <div className="col-sm-12 col-lg-6">
-                            { botella.error === 0 ? "" : botella.error === 1 ? <VentanaCargaExitosa /> : botella.error === 2 ? <VentanaErrorDeCodigo /> :  <VentanaErrorDeServidor /> }
+                            {
+                                botella.error === 0 ? "" :
+                                botella.error === 1 ? <VentanaCargaExitosa /> :
+                                botella.error === 2 ? <VentanaErrorDeCodigo /> :
+                                <VentanaErrorDeServidor />
+                            }
                         </div>
                     </div>
                 </div>
