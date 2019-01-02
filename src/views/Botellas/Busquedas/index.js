@@ -41,20 +41,20 @@ const VentanaDeMovimientos = ({botella}) =>
             <table className="table table-responsive-sm table-striped">
                 <thead>
                     <tr>
-                        <th>No.</th>
-                        <th>Fecha</th>
-                        <th>Movimiento</th>
-                        <th>Almacen</th>
+                        <th width='10%'> <center> No. </center>  </th>
+                        <th width='30%'> <center> Fecha </center> </th>
+                        <th width='20%'> <center> Movimiento </center> </th>
+                        <th width='40%'> <center> Almacen </center> </th>
                     </tr>
                 </thead>
                 <tbody>
                 {
                     botella.mov.map((item, i) => 
                         <tr key = { i } >
-                            <td> { i+1 } </td>
-                            <td> { item.fecha } </td>
-                            <td> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </td>
-                            <td> { item.almacen_nombre } </td>
+                            <td width='10%'> <center> { i+1 } </center>  </td>
+                            <td width='30%'> <center> { item.fecha } </center> </td>
+                            <td width='20%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
+                            <td width='40%'> <center> { item.almacen_nombre } </center> </td>
                         </tr>
                     )
                 }

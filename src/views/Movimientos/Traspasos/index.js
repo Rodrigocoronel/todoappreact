@@ -4,26 +4,40 @@ import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
 import swal from 'sweetalert2';
 
-const VentanaDeMensaje = (props) => 
+const VentanaDeError = () => 
 (
     <div className="card">
         <div className="card-header">
-            <strong> {props.tipo} </strong>
+            <strong> "Error!!!" </strong>
         </div>
         <div className="card-body">
-            <div className={props.estilo} role="alert">
-                <strong> {props.mens} </strong>
+            <div className="alert alert-warning" role="alert">
+                <strong> "Codigo De Botella No Encontrado" </strong>
             </div>
         </div>
     </div>
 )
 
-const Entrada =     () => ( <div> <button className="btn btn-success" type="button" data-toggle="modal" data-target="#successModal"> <strong> Registro De Entrada   </strong> </button> </div> )
-const Salida =      () => ( <div> <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#warningModal"> <strong> Registro De Salida    </strong> </button> </div> )
-const Cancelacion = () => ( <div> <button className="btn btn-danger"  type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Cancelación De Venta  </strong> </button> </div> )
-const Venta =       () => ( <div> <button className="btn btn-success" type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Venta De Botellas     </strong> </button> </div> )
-const Baja =        () => ( <div> <button className="btn btn-danger"  type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Baja Por Merma        </strong> </button> </div> )
-const Traspaso =    () => ( <div> <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Traspaso Entre Barras </strong> </button> </div> )
+const TipoDeMovimiento = ({mov}) =>
+(
+    <div>
+    {
+        mov === 1 ? <div className="badge badge-success">   Entrada   </div> :
+        mov === 2 ? <div className="badge badge-warning">   Salida    </div> :
+        mov === 3 ? <div className="badge badge-danger"> Cancenlación </div> :
+        mov === 4 ? <div className="badge badge-secondary"> Venta     </div> :
+        mov === 5 ? <div className="badge badge-danger">    Baja      </div> :
+                    <div className="badge badge-warning">   Traspaso  </div>
+     } 
+    </div>
+)
+
+const Entrada =     () => ( <button className="btn btn-success" type="button" data-toggle="modal" data-target="#successModal"> <strong> Entrada               </strong> </button> )
+const Salida =      () => ( <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#warningModal"> <strong> Salida                </strong> </button> )
+const Cancelacion = () => ( <button className="btn btn-danger"  type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Cancelación De Venta  </strong> </button> )
+const Venta =       () => ( <button className="btn btn-success" type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Venta                 </strong> </button> )
+const Baja =        () => ( <button className="btn btn-danger"  type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Baja Por Merma        </strong> </button> )
+const Traspaso =    () => ( <button className="btn btn-warning" type="button" data-toggle="modal" data-target="#dangerModal">  <strong> Traspaso Entre Barras </strong> </button> )
 
 class Traspasos extends Component {
 
@@ -35,19 +49,19 @@ class Traspasos extends Component {
                 folio : '',
                 botella_id : '',
                 movimiento_id : '',
+                motivo : '',
                 almacen_id : '',
                 fecha : '',
                 user : ''
             },
-            clase : ['',
-                    'btn btn-lg btn-primary active btn90',
-                    'btn btn-lg btn-info active btn90',
-                    'btn btn-lg btn-info active btn90',
-                    'btn btn-lg btn-info active btn90',
-                    'btn btn-lg btn-info active btn90',
-                    'btn btn-lg btn-info active btn90'],
+            reportes : [],
+            insumos : [],
+            clase : ['','','','','','',''],
+            boton : [0,0,0,0,0,0,0],
+            unBoton : 'btn btn-lg btn-info active btn90 p-3 m-1',
+            elBoton : 'btn btn-lg btn-primary active btn90 p-3 m-1',
             almacenes : [],
-            almacen : '1',
+            almacen : '0',
             tMov : 1,    // 1-Entrada, 2-Salida, 3-Cancelacion, 4-Venta, 5-Baja, 6-Traspaso
             insumo : '',
             error : 0,     // 0-Vacio, 1-Ok, 2-No encontrado
@@ -59,11 +73,15 @@ class Traspasos extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.seleccionarMovimiento = this.seleccionarMovimiento.bind(this);
         this.limpiarState = this.limpiarState.bind(this);
+        this.activarBotones = this.activarBotones.bind(this);
+        this.guardarMovimiento = this.guardarMovimiento.bind(this);
+        this.justificarBaja = this.justificarBaja.bind(this);
+        this.pedirAutorizacion = this.pedirAutorizacion.bind(this);
     }
 
-    componentWillMount()
+    componentDidMount()
     {
-        var {almacenes} = this.state;
+        var {almacenes, almacen, clase} = this.state;
         let temp = this;
 
         api().get(`/Almacenes`)
@@ -78,6 +96,27 @@ class Traspasos extends Component {
                 }
             }
         });
+
+        for(var a=1; a<=6; a++) clase[a]=this.state.unBoton;
+        this.activarBotones();
+        this.props.auth.user.area === -3 ? almacen = '0' : almacen = this.props.auth.user.area;
+        this.setState({almacen : almacen, clase : clase});
+    }
+
+    activarBotones()
+    {
+        var {boton, tMov, clase} = this.state;
+        var tipo = parseInt(this.props.auth.user.tipo,10);
+        var almacen = parseInt(this.props.auth.user.area,10);
+
+        boton[1]=1; boton[2]=1; boton[3]=1; boton[4]=1; boton[5]=1; boton[6]=1; clase[1]=this.state.elBoton;
+        if(tipo > 3) 
+        {                    //     Entrada      Salida Cancelacion       Venta        Baja   Traspaso    Movimiento y boton Actuales
+            if(almacen === 1) { boton[1]=0; boton[2]=1; boton[3]=0; boton[4]=0; boton[5]=1; boton[6]=0; tMov=2; clase[2]=this.state.elBoton; }
+            if(almacen === 2) { boton[1]=1; boton[2]=1; boton[3]=0; boton[4]=0; boton[5]=1; boton[6]=0; tMov=1; }
+            if(almacen >= 3)  { boton[1]=1; boton[2]=0; boton[3]=1; boton[4]=1; boton[5]=1; boton[6]=1; tMov=1; }
+        }
+        this.setState({boton : boton, tMov : tMov, clase : clase});
     }
 
     handleInputChange(event)
@@ -92,7 +131,8 @@ class Traspasos extends Component {
         this.setState({ movimiento : movimiento, fin : fin, error : error });
     }
 
-    handleChange(event){
+    handleChange(event)
+    {
         event.preventDefault();
         const value = event.target.value;
         const name = event.target.name;
@@ -100,92 +140,153 @@ class Traspasos extends Component {
         this.folio.focus();
     }
 
+    justificarBaja()
+    {
+        var {motivo} = this.state;
+        swal({
+            title: 'Selecciona un motivo',
+            input: 'radio',
+            inputOptions: {1:'Quebrada', 2:'En mal estado', 3:'Otro'},
+            inputValidator: (value) => { return !value && 'Debes seleccionar una opción' }
+        }).then((result) =>
+        {
+            if(result.value === '3')
+            {
+                swal({ title: 'Cual es el motivo?', input: 'text', })
+                .then((result) => 
+                {
+                    this.pedirAutorizacion('3:'+result.value);
+                });
+            }
+            else
+            {
+                this.pedirAutorizacion(result.value);
+            }
+        });
+    }
+
+    pedirAutorizacion(motivo)
+    {
+        var {movimiento,fin} = this.state;
+        var {error, tMov, almacen, insumo, tarjeta, reportes, insumos, motivo} = this.state;
+        let temp = this;
+        movimiento.motivo = motivo;
+        swal({
+            title: 'Clave De Autorización',
+            input: 'password',
+            inputPlaceholder: 'Enter your password',
+        }).then((result) =>
+        {
+            if(result.value===tarjeta)
+            {
+                api().post('/MovimientoNuevo',movimiento)
+                .then(function(response)
+                {
+                    error=2;
+                    if(response.status === 200)
+                    {
+                        if(response.data)
+                        {
+                            error = 1;
+                            swal('Movimiento autorizado','','success');
+                        }
+                        else
+                        {
+                            error = 0;
+                            swal('Movimiento rechazado','','error');
+                        }
+                        fin=1;
+                        temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                    }
+                    //target.select();
+                })
+                .catch(error =>
+                {
+                    error=2;
+                    this.limpiarState();
+                    //target.select();
+                });
+            }
+            else
+            {
+                swal('Autorización inválida','','error');
+                temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+            }
+            this.limpiarState();
+            //target.select(); 
+        });
+    }
+
+    guardarMovimiento(motivo,x)
+    {
+        var { movimiento, error, fin, insumo, insumos, reportes } = this.state;
+        let temp = this;
+        movimiento.motivo = motivo;
+
+        let array=[];
+        for (var i = reportes.length - 1; i >= 0; i--) {
+           array.push(reportes[i]); 
+        }
+
+        api().post('/MovimientoNuevo',movimiento)
+        .then(function(response)
+        {
+            error=2;
+            if(response.status === 200)
+            {
+                if(response.data) 
+                {
+                    error = 1;
+                    console.log('antes del push--->',array);
+                    console.log('Movimiento--->',movimiento);
+                    array.push(movimiento);
+                    insumos.push(insumo);
+                    // console.log('despues del push--->',array);
+                }
+                fin=1;
+                temp.setState({ movimiento : movimiento, error : error, fin : fin, insumo : insumo, insumos : insumos, reportes : array });  
+            }
+        })
+        .catch(error =>
+        {
+            error=2;
+            this.limpiarState();
+            temp.setState({ error : error, fin : fin });
+        });
+    }
+
     handleKeyPress(event)
     {
         const target = event.target;
-        var {movimiento,fin} = this.state;
-        var {error, tMov, almacen, insumo, tarjeta} = this.state;
-        let temp = this;   
+        var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
         var datos = [];
-
         if (event.key === 'Enter') fin=1;
-        if (event.key === 'Enter' && movimiento.folio)
+        if(almacen === '0')
+        {
+            swal({ position: 'top-end', toast: true, type: 'error', title: 'Debes seleccionar un almacen', showConfirmButton: false, timer: 2500});
+        }
+        if (event.key === 'Enter' && movimiento.folio && almacen !=='0')
         {
             datos = movimiento.folio.toString().split("^");
-            if (datos.length===6 )
+            if (datos.length === 6 )
             {
                 movimiento.folio = datos[0];
                 insumo = datos[4];
                 movimiento.movimiento_id = tMov;
                 movimiento.almacen_id = almacen;
 
-                if( tMov===3 || tMov===5 )
+                if( tMov === 1 || tMov === 2 || tMov === 4 )
                 {
-                    swal({
-                        title: 'Clave De Autorización',
-                        input: 'password',
-                        inputPlaceholder: 'Enter your password',
-                    }).then((result) =>
-                    {
-                        if(result.value===tarjeta)
-                        {
-                            api().post('/MovimientoNuevo',movimiento)
-                            .then(function(response)
-                            {
-                                error=2;
-                                if(response.status === 200)
-                                {
-                                    if(response.data)
-                                    {
-                                        error = 1;
-                                        tMov===3 ? swal('Cancelacion autorizada','','success') : swal('Baja de botella autorizada','','success');
-                                    }
-                                    else
-                                    {
-                                        error = 0;
-                                        tMov===3 ? swal('Cancelacion rechazada','','error') : swal('Baja de botella rechazada','','error');
-                                    }
-                                    fin=1;
-                                    temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
-                                }
-                                target.select();
-                            })
-                            .catch(error =>
-                            {
-                                error=2;
-                                this.limpiarState();
-                                target.select();
-                            });
-                        }
-                        else
-                        {
-                            swal('Autorización inválida','','error');
-                            temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
-                        }
-                        this.limpiarState();
-                        target.select(); 
-                    });
+                    this.guardarMovimiento('','');
                 }
-                else
+                if( tMov === 5 )
                 {
-                    api().post('/MovimientoNuevo',movimiento)
-                    .then(function(response)
-                    {
-                        error=2;
-                        if(response.status === 200)
-                        {
-                            if(response.data) { error = 1; }
-                            fin=1;
-                            temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
-                        }
-                        target.select();
-                    })
-                    .catch(error =>
-                    {
-                        error=2;
-                        this.limpiarState();
-                        this.setState({ error : error, fin : fin });
-                    });
+                    this.justificarBaja();
+                }
+                
+                if( tMov === 3 || tMov === 6)
+                {
+                    this.pedirAutorizacion('');
                 }
             }
             else
@@ -195,38 +296,35 @@ class Traspasos extends Component {
                 this.setState({ error : error, fin : fin });
             }
         }
+        else
+        {
+            movimiento.folio = '';
+            this.setState({ movimiento : movimiento });
+        }
         target.select();
     }
 
     limpiarState()
     {
         this.setState({
-            movimiento : {
-                folio : '',
-                botella_id : '',
-                movimiento_id : '',
-                almacen_id : '',
-                fecha : '',
-                user : ''
-            }
+            movimiento : { folio : '', botella_id : '', movimiento_id : '', almacen_id : '', fecha : '', user : '' }
         });
     }
 
     seleccionarMovimiento(event,btn)
     {
         var {clase, tMov} = this.state;
-        var tipoTemp = 'btn btn-lg btn-primary active btn90';
-        for(var i=1;i<=6;i++) { clase[i] = 'btn btn-lg btn-info active btn90'; }
-        clase[btn] = tipoTemp;
+        for(var i=1;i<=6;i++) { clase[i] = this.state.unBoton; }
+        clase[btn] = this.state.elBoton;
         tMov = btn;
-        this.setState({ clase : clase, tMov : tMov});
+        this.setState({ clase : clase, tMov : tMov });
         this.folio.focus();
     }
 
-    render() {
-    
-        var {tMov, almacenes, error, movimiento, insumo} = this.state;
-    
+    render() 
+    {
+        var { tMov, almacenes, error, movimiento, insumo, boton, reportes, insumos } = this.state;
+        // console.log(reportes);
         return (
             <div className="container-fluid">
                 <div className="animated fadeIn">
@@ -235,6 +333,7 @@ class Traspasos extends Component {
                             <div className="card">
                                 <div className="card-header">
                                     <strong> Registro De Movimientos </strong>
+                                    { tMov === 1 ? <Entrada /> : tMov === 2 ? <Salida /> : tMov === 3 ? <Cancelacion /> : tMov === 4 ? <Venta /> : tMov === 5 ? <Baja /> : <Traspaso /> }
                                 </div>
                                 <div className="card-body">
                                     <div className="row">
@@ -244,35 +343,28 @@ class Traspasos extends Component {
                                                 <select value={this.state.almacen} className="form-control" name="almacen" onChange={this.handleChange}>
                                                     <option value="0"> Selecciona un almacen... </option>
                                                     {
-                                                        almacenes.map((item, i) => <option key={i} value={item.id} > {item.nombre} </option> )
+                                                        almacenes.map((item, i) =>
+                                                            parseInt(item.activo,10) === 1 ?
+                                                                this.props.auth.user.area === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
+                                                                this.props.auth.user.area === item.id ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
+                                                            : ""
+                                                        )
                                                     }
                                                 </select>
                                             </div>
                                         </div>
                                         <div className="col-lg-12 text-center">
                                             <div className="row ">
-                                                <div className="col-lg-4 col-md-6"> <button className={this.state.clase[1]} onClick={(e)=>this.seleccionarMovimiento(e,1)} type="button"> <strong> ENTRADA </strong> </button> </div>
-                                                <div className="col-lg-4 col-md-6"> <button className={this.state.clase[2]} onClick={(e)=>this.seleccionarMovimiento(e,2)} type="button"> <strong> SALIDA </strong> </button> </div>
-                                                <div className="col-lg-4 col-md-6"> <button className={this.state.clase[3]} onClick={(e)=>this.seleccionarMovimiento(e,3)} type="button"> <strong> CANCELACIÓN </strong> </button> </div>
-                                            </div>
-                                            <div className="row mt-4">
-                                                <div className="col-4"> <button className={this.state.clase[4]} onClick={(e)=>this.seleccionarMovimiento(e,4)} type="button"> <strong> VENTA </strong> </button> </div>
-                                                <div className="col-4"> <button className={this.state.clase[5]} onClick={(e)=>this.seleccionarMovimiento(e,5)} type="button"> <strong> BAJA </strong> </button> </div>
-                                                <div className="col-4"> <button className={this.state.clase[6]} onClick={(e)=>this.seleccionarMovimiento(e,6)} type="button"> <strong> TRASPASO </strong> </button> </div>
+                                                { boton[1] === 1 ? <div className="col-md-6"> <button className={this.state.clase[1]} onClick={(e)=>this.seleccionarMovimiento(e,1)} type="button"> <strong> ENTRADA     </strong> </button> </div> : "" }
+                                                { boton[2] === 1 ? <div className="col-md-6"> <button className={this.state.clase[2]} onClick={(e)=>this.seleccionarMovimiento(e,2)} type="button"> <strong> SALIDA      </strong> </button> </div> : "" }
+                                                { boton[3] === 1 ? <div className="col-md-6"> <button className={this.state.clase[3]} onClick={(e)=>this.seleccionarMovimiento(e,3)} type="button"> <strong> CANCELACIÓN </strong> </button> </div> : "" }
+                                                { boton[4] === 1 ? <div className="col-md-6"> <button className={this.state.clase[4]} onClick={(e)=>this.seleccionarMovimiento(e,4)} type="button"> <strong> VENTA       </strong> </button> </div> : "" }
+                                                { boton[5] === 1 ? <div className="col-md-6"> <button className={this.state.clase[5]} onClick={(e)=>this.seleccionarMovimiento(e,5)} type="button"> <strong> BAJA        </strong> </button> </div> : "" }
+                                                { boton[6] === 1 ? <div className="col-md-6"> <button className={this.state.clase[6]} onClick={(e)=>this.seleccionarMovimiento(e,6)} type="button"> <strong> TRASPASO    </strong> </button> </div> : "" }
                                             </div>
                                         </div>
 
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-5 col-lg-9 col-md-10 col-sm-12">
-                            { error ===0 ? "" : error === 1 ? <VentanaDeMensaje tipo = {"Confirmación"} estilo={"alert alert-success"} mens={"El movimiento fue registrado"} /> : error === 2 ? <VentanaDeMensaje tipo = {"Error!!!"} estilo={"alert alert-warning"} mens={"Codigo De Botella No Encontrado"} /> : "" }
-                        </div>
-                        <div className="col-xl-7 col-lg-9 col-md-10 col-sm-12">
-                            <div className="card">
-                                <div className="card-header">
-                                    { tMov === 1 ? <Entrada /> : tMov === 2 ? <Salida /> : tMov === 3 ? <Cancelacion /> : tMov === 4 ? <Venta /> : tMov === 5 ? <Baja /> : <Traspaso /> }
                                 </div>
                                 <div className="card-body">
                                     <div className="row">
@@ -285,14 +377,48 @@ class Traspasos extends Component {
                                                 <label> Descripcion de insumo: </label>
                                                 <label className="form-control" type="text" readOnly value = {insumo} name="insumo" />
                                             </div>
-                                            <div className="form-group">
-                                                <label> Fecha de movimiento: </label>
-                                                <label className="form-control" type="text" placeholder="autoasigned" readOnly value = {movimiento.fecha} name="fecha_compra" />
-                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div className="col-xl-5 col-lg-9 col-md-10 col-sm-12">
+                            <div className="card">
+                                <div className="card-header">
+                                    <strong> Reporte de Movimientos </strong>
+                                </div>
+                                <div className="card-body">
+                                    <table className="table table-responsive-sm table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th width='10%'> <center> No. </center> </th>
+                                                <th width='20%'> <center> Folio </center> </th>
+                                                <th width='15%'> <center> Movimiento </center> </th>
+                                                <th width='55%'>          Descripcion </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {
+                                            reportes.map((item, i) => 
+                                                <tr key = { i } >
+                                                    <td width='10%'> <center> { i + 1 } </center> </td>
+                                                    <td width='20%'> <center> { item.folio } </center> </td>
+                                                    <td width='15%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
+                                                    <td width='55%'>          { insumos[i] } </td>
+                                                </tr>
+                                            )
+                                        }
+                                        </tbody>
+                                    </table>  
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-xl-7 col-lg-9 col-md-10 col-sm-12">
+                        {
+                            error === 0 ? "" : 
+                            error === 2 ? <VentanaDeError/> : ''
+                        }
                         </div>
                     </div>
                 </div>

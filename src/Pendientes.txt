@@ -4,45 +4,43 @@ Pendientes = () =>
 	// Alta por gerente
 
 	BUSQUEDAS =>
-	// - Cambiar colores a movimientos
-	// - Entrada -> Verde
-	// - Salida -> Amarillo
-	// - Cancelacion -> Rojo
-	// - Traspaso -> Amarillo
-	// - Baja -> Rojo
-	// - Venta -> Gris
 
 	ALMACENES =>
-	// - Cambiar a dos ventanas de renglon en lugar de dos columnas
-	// - Agregar campos de "Estado" y "Descripcion"
-	// - Agregar boton de activar/desactivar
+	- Retorno al cancelar barra
 
 	TRANSFERENCIAS =>
 	- Almacenar y avisar en reporte de doble venta
 	- Aviso en doble entrada
+	// - Salida de almacen general puede pasar a barra
+	- Opciones para bajas
+	- Reporte de salidas
 
 	REPORTES =>
-	// - Hacer consultas
-	// - Poner colores a movimientos
 	- Imprimir reportes
+	Buqueda por nombre
 	P Existencia
 	P Corte
 
 	USUARIOS =>
-	// Grabar usuarios
-	// Agregar opcion de tarjeta
-	// Asignar Almacen
-	// Desplegar area
+	// - 1) Administrador -> Todo
+	// - 2) Supervisor -> Todo?
+	- 3) Gerente -> [usuarios] Autorizaciones
+	// - 4) Almacen General -> Registro, Salida, Baja
+	// - 5) Almacen de licor -> Entrada, Salida, Baja
+	// - 6) Barra -> Entrada, Venta, Cancenlacion, Baja, Transfrencia
+	// - Al asignar area, asignar usuario
+	// - Consultas solo 1, 2, 3
+	// - Reportes solo 1, 2, 3
 
 	LOGIN =>
 	- Opcion de login con tarjeta o pass
+	- Validar si el usuario esta activo
 
 	GENERAL =>
-	// Input's a Label's
 	- Refresh en el mismo modulo
 	P Ventana de inicio
 
 	SEGURIDAD
-	- Activar/Desactivar elementos en listas (almacenes, usuarios, barras)
-
+	// Poner nombre de usuario en la interfaz
+	- Validar tarjeta RFID de gerente
 }

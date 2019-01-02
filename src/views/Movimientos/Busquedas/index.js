@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
+import swal from 'sweetalert2';
 
 const MensajeDeError = (props) => 
 ( 
@@ -75,6 +76,7 @@ class Reportes extends Component {
 				folio : '',
 				botella_id : '',
 				movimiento_id : '',
+				motivo : '',
 				almacen_id : '',
 				fecha : '',
 				user : ''
@@ -95,9 +97,9 @@ class Reportes extends Component {
 	  	this.imprimirReporte = this.imprimirReporte.bind(this);
   	}
 
-    componentWillMount()
+    componentDidMount()
     {
-        var {almacenes} = this.state;
+        var {almacenes, busqueda} = this.state;
         let temp = this;
 
         api().get(`/Almacenes`)
@@ -112,17 +114,17 @@ class Reportes extends Component {
                 }
             }
         });
+        this.props.auth.user.area === -3 ? busqueda.almacen = '0' : busqueda.almacen = this.props.auth.user.area;
+        this.setState({busqueda : busqueda});
     }
 
 	handleInputChange(event)
 	{
- 		const target = event.target;
-		const value = target.value;
-		const name = target.name;
+		const value = event.target.value;
+		const name = event.target.name;
 
 		var {busqueda} = this.state;
 		busqueda[name] = value;
-	  
 		this.setState({ busqueda: busqueda });
   	}
 
@@ -185,8 +187,9 @@ class Reportes extends Component {
 
 	imprimirReporte()
 	{
-		let {movimientos} = this.state;
-		console.log(movimientos)
+		//let {movimientos} = this.state;
+		//console.log(movimientos)
+		swal({ title:'Presiona Ctrl-P para imprimir', showConfirmButton: false, timer: 2500 });
 	}
 
  	render() {
@@ -222,7 +225,12 @@ class Reportes extends Component {
                                                 <select value={busqueda.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleInputChange}>
                                                     <option value={0}> Selecciona un almacen... </option>
                                                     {
-                                                        almacenes.map((item, i) => <option key={i} value={item.id} > {item.nombre} </option> )
+                                                        almacenes.map((item, i) =>
+                                                            parseInt(item.activo,10) === 1 ?
+                                                                this.props.auth.user.area === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
+                                                                this.props.auth.user.area === item.id ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
+                                                            : ""
+                                                        )
                                                     }
                                                 </select>
                                         	</div>

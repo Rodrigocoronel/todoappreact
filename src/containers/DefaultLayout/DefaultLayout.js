@@ -36,16 +36,19 @@ class DefaultLayout extends Component
 
 		switch(parseInt(user.tipo,10))
 		{
-			case 1: menuDeUsuario = navigation.general; break;
+			case 1: menuDeUsuario = navigation.administrador; break;
 			case 2: menuDeUsuario = navigation.supervisor; break;
-			case 3: menuDeUsuario = navigation.administrador; break;
+			case 3: menuDeUsuario = navigation.gerente; break;
+			case 4: menuDeUsuario = navigation.almacenGeneral; break;
+			case 5: menuDeUsuario = navigation.almacenLicor; break;
+			case 6: menuDeUsuario = navigation.barra; break;
 			default:
 		}
 
 		return (
 			<div className="app">
 				<AppHeader fixed>
-					<DefaultHeader />
+					<DefaultHeader usuario={this.props.auth.user.name ? this.props.auth.user.name : ""}/>
 				</AppHeader>
 				<div className="app-body">
 					<AppSidebar fixed display="lg">
