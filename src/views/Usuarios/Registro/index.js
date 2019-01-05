@@ -98,6 +98,7 @@ class Registro extends Component {
 				{
 					if(response.data) 
 					{
+						console.log(response.data);
 						swal('Los datos fueron guardados','','success');
 						self.cargarUsuarios();
 						self.clearUser();
@@ -209,6 +210,30 @@ class Registro extends Component {
 		const name = event.target.name;
 		var {usuario, botonTarjeta} = this.state;
 
+		if(name === 'tipo')
+		{
+			switch (value)
+			{
+				case '2': usuario['area'] = '-3' ; break;
+				case '3': usuario['area'] = '-3' ; break;
+				case '4': usuario['area'] = '1' ;  break;
+				case '5': usuario['area'] = '2' ;  break;
+				case '6': usuario['area'] = '' ;  break;
+				default:
+			}
+
+		}
+		if(name === 'area')
+		{
+			if(parseInt(value,10)<3) usuario['tipo']='';
+			else
+			{
+				if(usuario['tipo'] !=='6')
+				{
+					usuario['tipo']='';
+				}
+			}
+		}
 		usuario[name] = value;
 		usuario.tarjeta === null ? botonTarjeta = 0 : botonTarjeta = 1;
 		this.setState({ usuario : usuario, botonTarjeta : botonTarjeta });
@@ -292,23 +317,8 @@ class Registro extends Component {
 										</div>
 									</div>	
 								<div className="row ml-1 mr-1 form-group">
+
 									<div className="col-6 pl-0 pr-2">
-										<div className="input-group">
-											<div className="input-group-prepend">
-												<span className="input-group-text">
-													<i className="fa fa-building"></i>
-												</span>
-											</div>
-											<select required className="form-control" name="area" value={usuario.area} onChange={this.handleInputChange}>
-											<option value="" disabled="disabled"> Selecciona una opcion... </option>
-											{
-												almacenes.map((item, i) => <option key={i} value={item.id}> {item.nombre} </option> )
-											}
-											</select>
-										</div>
-										Selecciona el area de trabajo
-									</div>
-									<div className="col-6 pl-2 pr-0">
 										<div className="input-group">
 											<div className="input-group-prepend">
 												<span className="input-group-text">
@@ -317,13 +327,35 @@ class Registro extends Component {
 											</div>
 											<select required className="form-control" name="tipo" value={usuario.tipo} onChange={this.handleInputChange}>
 											<option value="" disabled="disabled"> Selecciona una opcion... </option>
-											<option value="1"> General </option>
-											<option value="2"> Supervisor </option>
-											<option value="3"> Administrador </option>
+											<option value="3"> Gerente </option>
+											<option value="4"> Almacenista (General) </option>
+											<option value="5"> Almacenista (Licores) </option>
+											<option value="6"> Barra </option>
 											</select>
 										</div>
 										Selecciona el tipo de usuario
 									</div>
+
+									<div className="col-6 pl-2 pr-0">
+										<div className="input-group">
+											<div className="input-group-prepend">
+												<span className="input-group-text">
+													<i className="fa fa-building"></i>
+												</span>
+											</div>
+											<select required className="form-control" name="area" value={usuario.area} onChange={this.handleInputChange}>
+											<option value="" disabled="disabled"> Selecciona una opcion... </option>
+											<option value="-3"> - Todas - </option>
+											{
+												almacenes.map((item, i) =>
+													parseInt(item.activo,10) === 1 ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
+												)
+											}
+											</select>
+										</div>
+										Selecciona el area de trabajo
+									</div>
+
 								</div>
 									<div className="row ml-1 mr-1 form-group">
 										<div className="col-9 pl-0 pr-2">

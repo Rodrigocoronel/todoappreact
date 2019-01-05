@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Nav, NavItem, NavLink } from 'reactstrap';
+import {Nav } from 'reactstrap';
 import PropTypes from 'prop-types';
 
 import { AppHeaderDropdown, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
@@ -13,6 +13,7 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
+
 	render() 
 	{
 		return (
@@ -24,13 +25,9 @@ class DefaultHeader extends Component {
 				/>
 				<AppSidebarToggler className="d-md-down-none" display="lg" />
 				<Nav className="d-md-down-none" navbar>
-					<NavItem className="px-3">
-						<NavLink href="#">Inicio</NavLink>
-					</NavItem>
-					<NavItem className="px-3">
-						<NavLink href="#">Configuraciones</NavLink>
-					</NavItem>
+
 				</Nav>
+				<div className="azul"> <strong> { this.props.usuario.toUpperCase() } </strong> </div>
 				<Nav className="ml-auto" navbar>
 					<AppHeaderDropdown direction="down"> </AppHeaderDropdown>
 				</Nav>
