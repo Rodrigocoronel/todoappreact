@@ -195,9 +195,10 @@ class Almacenes extends Component {
                                                     <td> { item.descripcion } </td>
                                                     <td className="text-center">
                                                     {
-                                                        parseInt(item.activo,10) === 1 ? 
-                                                        <button className="btn btn-block btn-outline-danger active" type="button" aria-pressed="true" onClick={(e)=>this.activarDesactivar(e,i)} > <strong> Desactivar </strong> </button> :
-                                                        <button className="btn btn-block btn-outline-success active" type="button" aria-pressed="true" onClick={(e)=>this.activarDesactivar(e,i)} > <strong> Activar </strong> </button>
+                                                        parseInt(item.id,10) > 2 ?
+                                                            parseInt(item.activo,10) === 1 ? 
+                                                                <button className="btn btn-block btn-outline-danger active" type="button" aria-pressed="true" onClick={(e)=>this.activarDesactivar(e,i)} > <strong> Desactivar </strong> </button> :
+                                                                <button className="btn btn-block btn-outline-success active" type="button" aria-pressed="true" onClick={(e)=>this.activarDesactivar(e,i)} > <strong> Activar </strong> </button> : ""
                                                     }
                                                     </td>
                                                 </tr>
