@@ -56,8 +56,9 @@ class Traspasos extends Component {
                 user : ''
             },
             reportes : [],
-            clase : ['','','','','','',''],
-            boton : [0,0,0,0,0,0,0],
+            concentrado : [],
+            clase : ['','','','','','',''], // Clase para la vista de cada uno de los 6 botones
+            boton : [0,0,0,0,0,0,0],        // Si el boton esta activado o no
             unBoton : 'btn btn-lg btn-info active btn90 p-3 m-1',
             elBoton : 'btn btn-lg btn-primary active btn90 p-3 m-1',
             almacenes : [],
@@ -150,7 +151,6 @@ class Traspasos extends Component {
 
     justificarBaja()
     {
-        var {motivo} = this.state;
         swal({
             title: 'Selecciona un motivo',
             input: 'radio',
@@ -175,9 +175,9 @@ class Traspasos extends Component {
 
     pedirAutorizacion(motivo)
     {
-        var {movimiento, fin} = this.state;
-        var {error, tMov, almacen, insumo, tarjeta, reportes, motivo} = this.state;
+        var {movimiento, fin, error, insumo, tarjeta, motivo} = this.state;
         let temp = this;
+
         movimiento.motivo = motivo;
         swal({
             title: 'Clave De Autorización',
@@ -227,9 +227,10 @@ class Traspasos extends Component {
 
     guardarMovimiento(motivo,x)
     {
-        var { movimiento, error, fin, insumo, reportes } = this.state;
+        var { movimiento, error, fin, reportes, concentrado } = this.state;
         let temp = this;
         movimiento.motivo = motivo;
+        concentrado=[];
 
         api().post('/MovimientoNuevo',movimiento)
         .then(function(response)
@@ -243,11 +244,11 @@ class Traspasos extends Component {
                     {
                         error = 1;
                         reportes.push(response.data.movimiento);
+                        reportes.forEach( function(elemento) { concentrado.push(elemento); })
                         fin=1;
                     }
-                    temp.setState({ movimiento : movimiento, error : error, fin : fin, reportes : reportes });
-                }
-                 
+                    temp.setState({ movimiento : movimiento, error : error, fin : fin, reportes : reportes, concentrado : concentrado });
+                }  
             }
         })
         .catch(error =>
@@ -295,7 +296,7 @@ class Traspasos extends Component {
                 {
                     this.pedirAutorizacion('');
                 }
-                this.setState({ numFolio : numFolio });
+                this.setState({ numFolio : numFolio, insumo : insumo});
             }
             else
             {
@@ -329,10 +330,17 @@ class Traspasos extends Component {
         //this.folio.focus();
     }
 
+    imprimirReporte()
+    {
+        //let {movimientos} = this.state;
+        //console.log(movimientos)
+        swal({ title:'Presiona Ctrl-P para imprimir', showConfirmButton: false, timer: 2500 });
+    }
+    
     render() 
     {
         //var { tMov, almacenes, error, movimiento, insumo, boton, reportes, insumos } = this.state;
-        var { tMov, almacenes, error, numFolio, insumo, boton, reportes } = this.state;
+        var { tMov, almacenes, error, numFolio, insumo, boton, concentrado } = this.state;
         // console.log(reportes);
         return (
             <div className="container-fluid">
@@ -386,7 +394,6 @@ class Traspasos extends Component {
                                                 <label> Descripcion de insumo: </label>
                                                 <label className="form-control" type="text" value = {insumo} name="insumo" />
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -395,7 +402,10 @@ class Traspasos extends Component {
                         <div className="col-xl-5 col-lg-9 col-md-10 col-sm-12">
                             <div className="card">
                                 <div className="card-header">
-                                    <strong> Reporte de Movimientos </strong>
+                                    <i className="fa fa-align-justify"> </i> <strong> Reporte de Movimientos </strong>
+                                    <button className="btn btn-primary" type="button" onClick={this.imprimirReporte} > 
+                                        <i className="icons font-2xl d-block cui-print"></i>
+                                    </button>
                                 </div>
                                 <div className="card-body">
                                     <table className="table table-responsive-sm table-sm">
@@ -409,7 +419,7 @@ class Traspasos extends Component {
                                         </thead>
                                         <tbody>
                                         {
-                                            reportes.map((item, i) => 
+                                            concentrado.map((item, i) => 
                                                 <tr key = { i } >
                                                     <td width='10%'> <center> { i + 1 }             </center> </td>
                                                     <td width='20%'> <center> { item.folio }        </center> </td>

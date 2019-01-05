@@ -13,11 +13,12 @@ Pendientes = () =>
 	- Aviso en doble entrada
 	// - Salida de almacen general puede pasar a barra
 	- Opciones para bajas
-	- Reporte de salidas
+	// Reporte de salidas
+	- Imprimir reporte de salidas
 
 	REPORTES =>
 	- Imprimir reportes
-	Buqueda por nombre
+	- Buqueda por nombre
 	P Existencia
 	P Corte
 
@@ -37,7 +38,6 @@ Pendientes = () =>
 	- Validar si el usuario esta activo
 
 	GENERAL =>
-	- Refresh en el mismo modulo
 	P Ventana de inicio
 
 	SEGURIDAD
