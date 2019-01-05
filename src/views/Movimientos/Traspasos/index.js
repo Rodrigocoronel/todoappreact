@@ -56,6 +56,10 @@ class Traspasos extends Component {
                 user : ''
             },
             reportes : [],
+<<<<<<< HEAD
+=======
+            insumos : [],
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
             clase : ['','','','','','',''],
             boton : [0,0,0,0,0,0,0],
             unBoton : 'btn btn-lg btn-info active btn90 p-3 m-1',
@@ -258,22 +262,147 @@ class Traspasos extends Component {
         });
     }
 
+    justificarBaja()
+    {
+        var {motivo} = this.state;
+        swal({
+            title: 'Selecciona un motivo',
+            input: 'radio',
+            inputOptions: {1:'Quebrada', 2:'En mal estado', 3:'Otro'},
+            inputValidator: (value) => { return !value && 'Debes seleccionar una opción' }
+        }).then((result) =>
+        {
+            if(result.value === '3')
+            {
+                swal({ title: 'Cual es el motivo?', input: 'text', })
+                .then((result) => 
+                {
+                    this.pedirAutorizacion('3:'+result.value);
+                });
+            }
+            else
+            {
+                this.pedirAutorizacion(result.value);
+            }
+        });
+    }
+
+    pedirAutorizacion(motivo)
+    {
+        var {movimiento,fin} = this.state;
+        var {error, tMov, almacen, insumo, tarjeta, reportes, insumos, motivo} = this.state;
+        let temp = this;
+        movimiento.motivo = motivo;
+        swal({
+            title: 'Clave De Autorización',
+            input: 'password',
+            inputPlaceholder: 'Enter your password',
+        }).then((result) =>
+        {
+            if(result.value===tarjeta)
+            {
+                api().post('/MovimientoNuevo',movimiento)
+                .then(function(response)
+                {
+                    error=2;
+                    if(response.status === 200)
+                    {
+                        if(response.data)
+                        {
+                            error = 1;
+                            swal('Movimiento autorizado','','success');
+                        }
+                        else
+                        {
+                            error = 0;
+                            swal('Movimiento rechazado','','error');
+                        }
+                        fin=1;
+                        temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                    }
+                    //target.select();
+                })
+                .catch(error =>
+                {
+                    error=2;
+                    this.limpiarState();
+                    //target.select();
+                });
+            }
+            else
+            {
+                swal('Autorización inválida','','error');
+                temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+            }
+            this.limpiarState();
+            //target.select(); 
+        });
+    }
+
+    guardarMovimiento(motivo,x)
+    {
+        var { movimiento, error, fin, insumo, insumos, reportes } = this.state;
+        let temp = this;
+        movimiento.motivo = motivo;
+
+        let array=[];
+        for (var i = reportes.length - 1; i >= 0; i--) {
+           array.push(reportes[i]); 
+        }
+
+        api().post('/MovimientoNuevo',movimiento)
+        .then(function(response)
+        {
+            error=2;
+            if(response.status === 200)
+            {
+                if(response.data) 
+                {
+                    error = 1;
+                    console.log('antes del push--->',array);
+                    console.log('Movimiento--->',movimiento);
+                    array.push(movimiento);
+                    insumos.push(insumo);
+                    // console.log('despues del push--->',array);
+                }
+                fin=1;
+                temp.setState({ movimiento : movimiento, error : error, fin : fin, insumo : insumo, insumos : insumos, reportes : array });  
+            }
+        })
+        .catch(error =>
+        {
+            error=2;
+            this.limpiarState();
+            temp.setState({ error : error, fin : fin });
+        });
+    }
+
     handleKeyPress(event)
     {
         const target = event.target;
+<<<<<<< HEAD
         //var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
         var { numFolio, movimiento, fin, error, tMov, insumo, almacen } = this.state;
+=======
+        var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
         var datos = [];
         if (event.key === 'Enter') fin=1;
         if(almacen === '0')
         {
             swal({ position: 'top-end', toast: true, type: 'error', title: 'Debes seleccionar un almacen', showConfirmButton: false, timer: 2500});
         }
+<<<<<<< HEAD
         //if (event.key === 'Enter' && movimiento.folio && almacen !=='0')
         if (event.key === 'Enter' && numFolio && almacen !=='0')
         {
             //datos = movimiento.folio.toString().split("^");
             datos = numFolio.toString().split("^");
+=======
+        if (event.key === 'Enter' && movimiento.folio && almacen !=='0')
+        {
+            datos = movimiento.folio.toString().split("^");
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
             if (datos.length === 6 )
             {
                 movimiento.folio = datos[0];
@@ -289,6 +418,14 @@ class Traspasos extends Component {
                 if( tMov === 5 )
                 {
                     this.justificarBaja();
+<<<<<<< HEAD
+=======
+                }
+                
+                if( tMov === 3 || tMov === 6)
+                {
+                    this.pedirAutorizacion('');
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
                 }
                 
                 if( tMov === 3 || tMov === 6)
@@ -307,7 +444,11 @@ class Traspasos extends Component {
         else
         {
             movimiento.folio = '';
+<<<<<<< HEAD
             this.setState({ numFolio : numFolio, movimiento : movimiento });
+=======
+            this.setState({ movimiento : movimiento });
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
         }
         target.select();
     }
@@ -315,7 +456,11 @@ class Traspasos extends Component {
     limpiarState()
     {
         this.setState({
+<<<<<<< HEAD
             numFolio : '', movimiento : { folio : '', botella_id : '', movimiento_id : '', almacen_id : '', fecha : '', user : '' }
+=======
+            movimiento : { folio : '', botella_id : '', movimiento_id : '', almacen_id : '', fecha : '', user : '' }
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
         });
     }
 
@@ -326,13 +471,21 @@ class Traspasos extends Component {
         clase[btn] = this.state.elBoton;
         tMov = btn;
         this.setState({ clase : clase, tMov : tMov });
+<<<<<<< HEAD
         //this.folio.focus();
+=======
+        this.folio.focus();
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
     }
 
     render() 
     {
+<<<<<<< HEAD
         //var { tMov, almacenes, error, movimiento, insumo, boton, reportes, insumos } = this.state;
         var { tMov, almacenes, error, numFolio, insumo, boton, reportes } = this.state;
+=======
+        var { tMov, almacenes, error, movimiento, insumo, boton, reportes, insumos } = this.state;
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
         // console.log(reportes);
         return (
             <div className="container-fluid">
@@ -384,7 +537,11 @@ class Traspasos extends Component {
                                             </div>
                                             <div className="form-group">
                                                 <label> Descripcion de insumo: </label>
+<<<<<<< HEAD
                                                 <label className="form-control" type="text" value = {insumo} name="insumo" />
+=======
+                                                <label className="form-control" type="text" readOnly value = {insumo} name="insumo" />
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
                                             </div>
 
                                         </div>
@@ -401,20 +558,34 @@ class Traspasos extends Component {
                                     <table className="table table-responsive-sm table-sm">
                                         <thead>
                                             <tr>
+<<<<<<< HEAD
                                                 <th width='10%'> <center> No.         </center> </th>
                                                 <th width='20%'> <center> Folio       </center> </th>
                                                 <th width='15%'> <center> Movimiento  </center> </th>
                                                 <th width='55%'> <center> Descripcion </center> </th>
+=======
+                                                <th width='10%'> <center> No. </center> </th>
+                                                <th width='20%'> <center> Folio </center> </th>
+                                                <th width='15%'> <center> Movimiento </center> </th>
+                                                <th width='55%'>          Descripcion </th>
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {
                                             reportes.map((item, i) => 
                                                 <tr key = { i } >
+<<<<<<< HEAD
                                                     <td width='10%'> <center> { i + 1 }             </center> </td>
                                                     <td width='20%'> <center> { item.folio }        </center> </td>
                                                     <td width='15%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
                                                     <td width='55%'> <center> { item.desc_insumo }  </center> </td>
+=======
+                                                    <td width='10%'> <center> { i + 1 } </center> </td>
+                                                    <td width='20%'> <center> { item.folio } </center> </td>
+                                                    <td width='15%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
+                                                    <td width='55%'>          { insumos[i] } </td>
+>>>>>>> 6bfe33e2e050fdd6290b647c411fd68fb99149fb
                                                 </tr>
                                             )
                                         }
