@@ -150,9 +150,11 @@ class Reportes extends Component {
 			// Hacer consulta
 			var cadena = `/ReporteDeMovimientos?fechaInicial=${busqueda.fechaInicial}`;
 			if(busqueda.fechaFinal !== '')  cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
+			console.log(cadena);
 			if(busqueda.almacen !== '0')    cadena = cadena + `&almacen=${busqueda.almacen}`;
+						console.log(cadena);
 			if(busqueda.movimiento !== '0') cadena = cadena + `&movimiento=${busqueda.movimiento}`;
-		
+					console.log(cadena);
 			api().get(cadena)
 			.then(function(response)
 			{
@@ -223,7 +225,7 @@ class Reportes extends Component {
 											<div className="form-group">
                                             	<label> Almacén: </label>
                                                 <select value={busqueda.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleInputChange}>
-                                                    <option value={0}> Selecciona un almacen... </option>
+                                                    <option value='0'> Selecciona un almacen... </option>
                                                     {
                                                         almacenes.map((item, i) =>
                                                             parseInt(item.activo,10) === 1 ?

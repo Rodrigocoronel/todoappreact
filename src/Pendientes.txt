@@ -34,8 +34,7 @@ Pendientes = () =>
 	// - Reportes solo 1, 2, 3
 
 	LOGIN =>
-	- Opcion de login con tarjeta o pass
-	- Validar si el usuario esta activo
+	// Opcion de login con tarjeta o pass
 
 	GENERAL =>
 	P Ventana de inicio

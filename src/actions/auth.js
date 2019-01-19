@@ -91,6 +91,21 @@ export const login = (params) =>
     }
 }
 
+export const loginCard = (params) =>
+{   
+    return (dispatch) =>
+    {       
+       
+        localStorage.setItem('session_token_PAPAS', JSON.stringify(params));
+        dispatch(
+        {
+            type: 'CONECTADO',
+            payload: params
+        })
+            
+    }
+}
+
 export const whoiam = () =>
 {
     return (dispatch) => {

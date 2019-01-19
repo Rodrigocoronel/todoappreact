@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/auth.js';
 import swal from 'sweetalert2';
-import {api} from '../../actions/_request';
+import {api,request} from '../../actions/_request';
 
 class Login extends Component {
 
@@ -48,6 +48,7 @@ class Login extends Component {
 	accesoRFID = () =>
 	{
 		let {usuario} = this.state;
+		let _self = this;
 		swal({
 			input: 'password',
 			inputPlaceholder: 'Desliza tu tarjeta',
@@ -59,34 +60,38 @@ class Login extends Component {
 		}).then((result) =>
 		{
 			usuario.tarjeta = result.value;
-			console.log(usuario.tarjeta);
-			api().get('/Tarjeta',usuario)
+			var noTarjeta = {
+				password : usuario.tarjeta
+			}
+			request.post('/api/logincard',noTarjeta)
 			.then(function(response)
 			{
-			// 	if(response.status === 200)
-			// 	{
-			// 		if(response.data)
-			// 		{
+				console.log(response);
+				if(response.status === 200)
+				{
+					_self.props.loginCard(response.data);
+					if(response.data)
+					{
 
-			// 			swal({
-			// 				title:'Bienvenido',
-			// 				text: 'Cargando...',
-			// 				showConfirmButton: false,
-			// 				timer: 1500,
-			// 				onOpen: () => { swal.showLoading() }
-			// 			});
-			// 		}
-			// 	}
+						swal({
+							title:'Bienvenido',
+							text: 'Cargando...',
+							showConfirmButton: false,
+							timer: 1500,
+							onOpen: () => { swal.showLoading() }
+						});
+					}
+				}
 			})
 			.catch(error =>
 			{
 				console.log(error);
-			// 	swal({
-			// 		title: 'Acceso no autorizado',
-			// 		type: 'error',
-			// 		showConfirmButton: false,
-			// 		timer: 1500,
-			// 	});
+				swal({
+					title: 'Acceso no autorizado',
+					type: 'error',
+					showConfirmButton: false,
+					timer: 1500,
+				});
 			});
 		});
 	}
