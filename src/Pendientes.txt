@@ -1,8 +1,5 @@
 Pendientes = () =>
 {
-	REGISTRO =>
-	// Alta por gerente
-
 	BUSQUEDAS =>
 
 	ALMACENES =>
@@ -11,9 +8,7 @@ Pendientes = () =>
 	TRANSFERENCIAS =>
 	- Almacenar y avisar en reporte de doble venta
 	- Aviso en doble entrada
-	// - Salida de almacen general puede pasar a barra
 	- Opciones para bajas
-	// Reporte de salidas
 	- Imprimir reporte de salidas
 
 	REPORTES =>
@@ -23,23 +18,11 @@ Pendientes = () =>
 	P Corte
 
 	USUARIOS =>
-	// - 1) Administrador -> Todo
-	// - 2) Supervisor -> Todo?
 	- 3) Gerente -> [usuarios] Autorizaciones
-	// - 4) Almacen General -> Registro, Salida, Baja
-	// - 5) Almacen de licor -> Entrada, Salida, Baja
-	// - 6) Barra -> Entrada, Venta, Cancenlacion, Baja, Transfrencia
-	// - Al asignar area, asignar usuario
-	// - Consultas solo 1, 2, 3
-	// - Reportes solo 1, 2, 3
-
-	LOGIN =>
-	// Opcion de login con tarjeta o pass
 
 	GENERAL =>
 	P Ventana de inicio
 
 	SEGURIDAD
-	// Poner nombre de usuario en la interfaz
 	- Validar tarjeta RFID de gerente
 }

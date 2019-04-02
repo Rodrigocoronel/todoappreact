@@ -332,9 +332,8 @@ class Traspasos extends Component {
 
     imprimirReporte()
     {
-        //let {movimientos} = this.state;
-        //console.log(movimientos)
-        swal({ title:'Presiona Ctrl-P para imprimir', showConfirmButton: false, timer: 2500 });
+        //var { reportes, concentrado } = this.state;
+        window.open("http://localhost:8000/api/reporteDeTraspaso", '_blank');
     }
     
     render() 

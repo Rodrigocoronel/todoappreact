@@ -189,14 +189,13 @@ class Reportes extends Component {
 
 	imprimirReporte()
 	{
-		//let {movimientos} = this.state;
-		//console.log(movimientos)
-		swal({ title:'Presiona Ctrl-P para imprimir', showConfirmButton: false, timer: 2500 });
+		var { busqueda, movimientos } = this.state;
+		window.open("http://localhost:8000/api/reporteDeBusqueda", '_blank');
 	}
 
  	render() {
 	
-		let{almacenes, estado, busqueda, movimientos} = this.state;
+		let {almacenes, estado, busqueda, movimientos} = this.state;
 	
 	  	return (
 			<div className="container-fluid">
@@ -275,7 +274,7 @@ class Reportes extends Component {
 							estado === 1 ? 
 								<div className="card">
 									<div className="card-header">
-										<i className="fa fa-align-justify"> </i> <strong> Reporte de movimientos </strong>
+										<i className="fa fa-align-justify"> </i> <strong> Reporte de movimientos &emsp; </strong>
 										<button className="btn btn-primary" type="button" onClick={this.imprimirReporte} > 
 											<i className="icons font-2xl d-block cui-print"></i>
 										</button>
