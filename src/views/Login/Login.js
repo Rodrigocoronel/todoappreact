@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/auth.js';
 import swal from 'sweetalert2';
-import {api,request} from '../../actions/_request';
+import {request} from '../../actions/_request';
 
 class Login extends Component {
 

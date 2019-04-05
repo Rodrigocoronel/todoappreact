@@ -175,7 +175,7 @@ class Traspasos extends Component {
 
     pedirAutorizacion(motivo)
     {
-        var {movimiento, fin, error, insumo, tarjeta, motivo} = this.state;
+        var { movimiento, fin, error, insumo, tarjeta } = this.state;
         let temp = this;
 
         movimiento.motivo = motivo;

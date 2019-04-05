@@ -189,8 +189,30 @@ class Reportes extends Component {
 
 	imprimirReporte()
 	{
-		var { busqueda, movimientos } = this.state;
-		window.open("http://localhost:8000/api/reporteDeBusqueda", '_blank');
+		var {busqueda, estado, movimientos} = this.state;
+		let temp = this;
+
+		if(busqueda.fechaInicial) // Si hay fecha inicial
+			if(busqueda.fechaFinal) // Si hay fecha final
+				if( busqueda.fechaFinal > busqueda.fechaInicial ) // Si la fecha final es mas grande que la inicia;
+					busqueda.error=1; //Segunda fecha mas grande - OK
+				else
+					busqueda.error=3; // Si la segunda fecha es mas chica - ERROR 3
+			else
+				busqueda.error=1; // Si no hay fecha final - OK
+		else
+			busqueda.error=2; // Si no hay fecha inicial - ERROR 2
+
+		if(busqueda.error === 1) // Si todo salió bien
+		{
+			// Hacer consulta
+			var cadena = `/reporte_de_busqueda?fechaInicial=${busqueda.fechaInicial}`;
+			if(busqueda.fechaFinal !== '')  cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
+			if(busqueda.almacen !== '0')    cadena = cadena + `&almacen=${busqueda.almacen}`;
+			if(busqueda.movimiento !== '0') cadena = cadena + `&movimiento=${busqueda.movimiento}`;
+			console.log(cadena);
+			window.open("http://localhost:8000/api"+cadena, '_blank');
+		}
 	}
 
  	render() {
