@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
 import swal from 'sweetalert2';
+import {Input} from 'reactstrap'
 
 const VentanaDeError = () => 
 (
@@ -122,21 +123,15 @@ class Traspasos extends Component {
 
     handleInputChange(event)
     {
-        const value = event.target.value;
-        //const name = event.target.name;
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
 
-        //var {movimiento, fin, error} = this.state;
-        var {numFolio, fin, error} = this.state;
+        var {numFolio} = this.state;
 
-        //if(fin===1) { fin=0; movimiento[name]=''; }
-        if(fin===1) { fin=0; numFolio=''; }
-        error=0;
+        numFolio = value;
 
-        //movimiento[name] = movimiento[name] + value;
-        numFolio = numFolio + value;
-
-        //this.setState({ movimiento : movimiento, fin : fin, error : error });
-        this.setState({ numFolio : numFolio, fin : fin, error : error });
+        this.setState({ [name] : numFolio });
     }
 
     handleChange(event)
@@ -151,6 +146,7 @@ class Traspasos extends Component {
 
     justificarBaja()
     {
+
         swal({
             title: 'Selecciona un motivo',
             input: 'radio',
@@ -163,12 +159,12 @@ class Traspasos extends Component {
                 swal({ title: 'Cual es el motivo?', input: 'text', })
                 .then((result) => 
                 {
-                    this.pedirAutorizacion('3:'+result.value);
+                    this.pedirAutorizacion( '3:'+result.value);
                 });
             }
             else
             {
-                this.pedirAutorizacion(result.value);
+                this.pedirAutorizacion( result.value );
             }
         });
     }
@@ -205,30 +201,34 @@ class Traspasos extends Component {
                         }
                         fin=1;
                         temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                        
                     }
-                    //target.select();
+
                 })
-                .catch(error =>
+                .catch( error =>
                 {
                     error=2;
                     this.limpiarState();
-                    //target.select();
+                    
                 });
             }
             else
             {
                 swal('Autorización inválida','','error');
-                temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin }); 
+                 
             }
             this.limpiarState();
-            //target.select(); 
+            //
         });
     }
 
-    guardarMovimiento(motivo,x)
+    guardarMovimiento(motivo,x,event)
     {
         var { movimiento, error, fin, reportes, concentrado } = this.state;
         let temp = this;
+
+        let target = event.target;
         movimiento.motivo = motivo;
         concentrado=[];
 
@@ -248,6 +248,7 @@ class Traspasos extends Component {
                         fin=1;
                     }
                     temp.setState({ movimiento : movimiento, error : error, fin : fin, reportes : reportes, concentrado : concentrado });
+                    target.select();
                 }  
             }
         })
@@ -256,25 +257,29 @@ class Traspasos extends Component {
             error=2;
             this.limpiarState();
             temp.setState({ error : error, fin : fin });
+            target.select();
         });
     }
 
     handleKeyPress(event)
     {
+        event.stopPropagation();
+
         const target = event.target;
         //var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
         var { numFolio, movimiento, fin, error, tMov, insumo, almacen } = this.state;
         var datos = [];
-        if (event.key === 'Enter') fin=1;
+        //if (event.key === 'Enter') fin=1;
         if(almacen === '0')
         {
             swal({ position: 'top-end', toast: true, type: 'error', title: 'Debes seleccionar un almacen', showConfirmButton: false, timer: 2500});
         }
         //if (event.key === 'Enter' && movimiento.folio && almacen !=='0')
-        if (event.key === 'Enter' && numFolio && almacen !=='0')
+        if (event.key === 'Enter' &&  almacen !=='0')
         {
             //datos = movimiento.folio.toString().split("^");
             datos = numFolio.toString().split("^");
+
             if (datos.length === 6 )
             {
                 movimiento.folio = datos[0];
@@ -285,24 +290,26 @@ class Traspasos extends Component {
 
                 if( tMov === 1 || tMov === 2 || tMov === 4 )
                 {
-                    this.guardarMovimiento('','');
+                    this.guardarMovimiento('','',event);
                 }
                 if( tMov === 5 )
                 {
                     this.justificarBaja();
                 }
-                
                 if( tMov === 3 || tMov === 6)
                 {
-                    this.pedirAutorizacion('');
+                    this.pedirAutorizacion('');   
                 }
+
                 this.setState({ numFolio : numFolio, insumo : insumo});
+                //target.select();
             }
             else
             {
                 error=2;                        
                 this.limpiarState();
                 this.setState({ error : error, fin : fin });
+                
             }
         }
         else
@@ -310,7 +317,7 @@ class Traspasos extends Component {
             movimiento.folio = '';
             this.setState({ numFolio : numFolio, movimiento : movimiento });
         }
-        target.select();
+       //target.select();
     }
 
     limpiarState()
@@ -340,7 +347,7 @@ class Traspasos extends Component {
     {
         //var { tMov, almacenes, error, movimiento, insumo, boton, reportes, insumos } = this.state;
         var { tMov, almacenes, error, numFolio, insumo, boton, concentrado } = this.state;
-        // console.log(reportes);
+
         return (
             <div className="container-fluid">
                 <div className="animated fadeIn">
@@ -387,7 +394,14 @@ class Traspasos extends Component {
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label> Folio: </label>
-                                                <input className="form-control" type="text"  autoFocus value = {numFolio /*movimiento.folio*/} name="numFolio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
+                                                <input className="form-control" 
+                                                    type="text"   
+                                                    value={ numFolio } 
+                                                    name="numFolio"  
+                                                    onChange={this.handleInputChange} 
+                                                    onKeyPress={this.handleKeyPress}
+                                                    autoFocus
+                                                />
                                             </div>
                                             <div className="form-group">
                                                 <label> Descripcion de insumo: </label>

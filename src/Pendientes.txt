@@ -8,8 +8,8 @@ Pendientes = () =>
 	TRANSFERENCIAS =>
 	- Almacenar y avisar en reporte de doble venta
 	- Aviso en doble entrada
-	- Opciones para bajas
-	- Imprimir reporte de salidas
+	- Opciones para bajas //no se guarda la justificacion
+	- Imprimir reporte de salidas 
 
 	REPORTES =>
 	- Imprimir reportes
@@ -17,12 +17,14 @@ Pendientes = () =>
 	P Existencia
 	P Corte
 
-	USUARIOS =>
-	- 3) Gerente -> [usuarios] Autorizaciones
+	
 
 	GENERAL =>
 	P Ventana de inicio
 
 	SEGURIDAD
 	- Validar tarjeta RFID de gerente
+
+	USUARIOS =>
+	- 3) Gerente -> [usuarios] Autorizaciones
 }
