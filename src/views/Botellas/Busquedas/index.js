@@ -109,7 +109,7 @@ class Buscar extends Component
         {
             botella.error = 1;
             datos = botella.folio.toString().split("^");
-            if(datos.length===6)
+            if(datos.length===7)
             {
                 botella.folio = datos[0];
                 api().get(`/Botella/${botella.folio}`)

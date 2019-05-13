@@ -91,18 +91,32 @@ class Agregar extends Component
         var {botella} = this.state;
         let temp = this;
         var datos = [];
+        var fecha = '';
 
         if( (tecla === 'Enter') && (botella.folio) ) 
         { 
             datos = botella.folio.toString().split("^")
+            console.log(datos)
+            let newsd = botella.folio.toString().split("&")
+            console.log(newsd)
             botella.error = 2;
-            if(datos.length===6)
+
+            if(newsd.length === 7){
+                datos = newsd;
+            }
+
+            if(datos.length===7)
             {
                 botella.folio = datos[0];
                 botella.insumo = datos[3];
                 botella.desc_insumo = datos[4];
-                var fecha = datos[2].split("/");
-                botella.fecha_compra = new Date(fecha[2],fecha[1]-1,fecha[0]).toISOString().slice(0,10);
+                if(newsd.length === 7){
+                    fecha = datos[2].split("-");
+                    botella.fecha_compra = new Date(fecha[2],fecha[1]-1,fecha[0]).toISOString().slice(0,10);
+                }else{
+                    fecha = datos[2].split("/");
+                    botella.fecha_compra = new Date(fecha[2],fecha[1]-1,fecha[0]).toISOString().slice(0,10);
+                }
                 botella.almacen_id = 1;
                 botella.transito = 0;
 

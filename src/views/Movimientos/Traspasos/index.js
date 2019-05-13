@@ -280,7 +280,7 @@ class Traspasos extends Component {
             //datos = movimiento.folio.toString().split("^");
             datos = numFolio.toString().split("^");
 
-            if (datos.length === 6 )
+            if (datos.length === 7 )
             {
                 movimiento.folio = datos[0];
                 numFolio = datos[0];
