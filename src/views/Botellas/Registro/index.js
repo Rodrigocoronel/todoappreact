@@ -96,9 +96,8 @@ class Agregar extends Component
         if( (tecla === 'Enter') && (botella.folio) ) 
         { 
             datos = botella.folio.toString().split("^")
-            console.log(datos)
             let newsd = botella.folio.toString().split("&")
-            console.log(newsd)
+            
             botella.error = 2;
 
             if(newsd.length === 7){

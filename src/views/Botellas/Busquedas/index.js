@@ -109,6 +109,13 @@ class Buscar extends Component
         {
             botella.error = 1;
             datos = botella.folio.toString().split("^");
+            
+            let newsd = botella.folio.toString().split("&")
+            
+            if(newsd.length === 7){
+                datos = newsd;
+            }
+
             if(datos.length===7)
             {
                 botella.folio = datos[0];

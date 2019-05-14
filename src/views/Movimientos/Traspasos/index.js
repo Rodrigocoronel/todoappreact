@@ -69,6 +69,7 @@ class Traspasos extends Component {
             error : 0,     // 0-Vacio, 1-Ok, 2-No encontrado
             fin : 0, // 1-Fin: El ultimo caracter leido fue el final de la cadena Qr
             tarjeta : ";1370010000003023=991?", // Registro de tarjeta (TEMPORAL)
+            tarjeta_es : "ñ1370010000003023¿991_"
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -171,7 +172,7 @@ class Traspasos extends Component {
 
     pedirAutorizacion(motivo)
     {
-        var { movimiento, fin, error, insumo, tarjeta } = this.state;
+        var { movimiento, fin, error, insumo, tarjeta , tarjeta_es} = this.state;
         let temp = this;
 
         movimiento.motivo = motivo;
@@ -181,7 +182,7 @@ class Traspasos extends Component {
             inputPlaceholder: 'Enter your password',
         }).then((result) =>
         {
-            if(result.value===tarjeta)
+            if(result.value===tarjeta || result.value === tarjeta_es)
             {
                 api().post('/MovimientoNuevo',movimiento)
                 .then(function(response)
@@ -189,7 +190,7 @@ class Traspasos extends Component {
                     error=2;
                     if(response.status === 200)
                     {
-                        if(response.data)
+                        if(response.data.registrado)
                         {
                             error = 1;
                             swal('Movimiento autorizado','','success');
@@ -279,6 +280,12 @@ class Traspasos extends Component {
         {
             //datos = movimiento.folio.toString().split("^");
             datos = numFolio.toString().split("^");
+
+            let newsd = numFolio.toString().split("&")
+            
+            if(newsd.length === 7){
+                datos = newsd;
+            }
 
             if (datos.length === 7 )
             {
