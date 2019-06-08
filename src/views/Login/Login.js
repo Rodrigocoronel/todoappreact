@@ -59,7 +59,11 @@ class Login extends Component {
 			imageHeight: 200
 		}).then((result) =>
 		{
-			usuario.tarjeta = result.value;
+
+			let first = result.value.substring(1,17);
+			let second = result.value.substring(18,21);
+
+			usuario.tarjeta = first+second;
 			var noTarjeta = {
 				password : usuario.tarjeta
 			}

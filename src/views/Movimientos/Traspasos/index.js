@@ -182,8 +182,13 @@ class Traspasos extends Component {
             inputPlaceholder: 'Enter your password',
         }).then((result) =>
         {
-            if(result.value===tarjeta || result.value === tarjeta_es)
+            if(result.value.length > 0)
             {
+                let first = result.value.substring(1,17);
+                let second = result.value.substring(18,21);
+
+                movimiento.tarjeta = first+second;
+                
                 api().post('/MovimientoNuevo',movimiento)
                 .then(function(response)
                 {
@@ -423,9 +428,11 @@ class Traspasos extends Component {
                             <div className="card">
                                 <div className="card-header">
                                     <i className="fa fa-align-justify"> </i> <strong> Reporte de Movimientos </strong>
-                                    <button className="btn btn-primary" type="button" onClick={this.imprimirReporte} > 
-                                        <i className="icons font-2xl d-block cui-print"></i>
-                                    </button>
+                                   { 
+                                    // <button className="btn btn-primary" type="button" onClick={this.imprimirReporte} > 
+                                    //     <i className="icons font-2xl d-block cui-print"></i>
+                                    // </button>
+                                    }
                                 </div>
                                 <div className="card-body">
                                     <table className="table table-responsive-sm table-sm">
