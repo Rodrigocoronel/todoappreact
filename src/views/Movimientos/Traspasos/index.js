@@ -155,15 +155,21 @@ class Traspasos extends Component {
             inputValidator: (value) => { return !value && 'Debes seleccionar una opción' }
         }).then((result) =>
         {
-            if(result.value === '3')
+            console.log(result.value)
+            if(result.value === '3' && result.value != undefined)
             {
-                swal({ title: 'Cual es el motivo?', input: 'text', })
+                swal({ 
+                    title: 'Cual es el motivo?', 
+                    input: 'text', 
+                    inputValidator: (value) => { return !value && 'Debes escribir una motivo' }
+                })
                 .then((result) => 
                 {
+                   if(result.value != undefined)
                     this.pedirAutorizacion( '3:'+result.value);
                 });
             }
-            else
+            else if(result.value != undefined)
             {
                 this.pedirAutorizacion( result.value );
             }
@@ -346,7 +352,7 @@ class Traspasos extends Component {
         clase[btn] = this.state.elBoton;
         tMov = btn;
         this.setState({ clase : clase, tMov : tMov });
-        //this.folio.focus();
+        document.getElementById("folio").focus();
     }
 
     imprimirReporte()
@@ -413,6 +419,7 @@ class Traspasos extends Component {
                                                     onChange={this.handleInputChange} 
                                                     onKeyPress={this.handleKeyPress}
                                                     autoFocus
+                                                    id="folio"
                                                 />
                                             </div>
                                             <div className="form-group">

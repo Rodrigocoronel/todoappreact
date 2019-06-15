@@ -1,10 +1,10 @@
 import axios from 'axios';
 
- export const API_URL = 'http://api.botellas.com/api';
- export const API_UR = 'http://api.botellas.com';
+ // export const API_URL = 'http://api.botellas.com/api';
+ // export const API_UR = 'http://api.botellas.com';
 
- // export const API_URL = 'http://localhost:8000/api';
- // export const API_UR = 'http://localhost:8000';
+ export const API_URL = 'http://localhost:8000/api';
+ export const API_UR = 'http://localhost:8000';
  
 export const request = axios.create({
 	baseURL 		: API_UR,
