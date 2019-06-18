@@ -17,7 +17,7 @@ const VentanaDeError = () =>
     </div>
 )
 
-const TipoDeMovimiento = ({mov}) =>
+const TipoDeMovimiento = ({mov,motivo}) =>
 (
     <div>
     {
@@ -25,7 +25,7 @@ const TipoDeMovimiento = ({mov}) =>
         mov === 2 ? <div className="badge badge-warning">   Salida    </div> :
         mov === 3 ? <div className="badge badge-danger"> Cancenlación </div> :
         mov === 4 ? <div className="badge badge-secondary"> Venta     </div> :
-        mov === 5 ? <div className="badge badge-danger">    Baja      </div> :
+        mov === 5 ? <div className="">   <span className="badge badge-danger"> Baja </span><br/> <span>{motivo}</span>   </div> :
                     <div className="badge badge-warning">   Traspaso  </div>
      } 
     </div>
@@ -53,7 +53,7 @@ const VentanaDeMovimientos = ({botella}) =>
                         <tr key = { i } >
                             <td width='10%'> <center> { i+1 } </center>  </td>
                             <td width='30%'> <center> { item.fecha } </center> </td>
-                            <td width='20%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
+                            <td width='20%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} motivo={botella.motivo} /> } </center> </td>
                             <td width='40%'> <center> { item.almacen_nombre } </center> </td>
                         </tr>
                     )

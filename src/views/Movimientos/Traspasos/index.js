@@ -166,7 +166,7 @@ class Traspasos extends Component {
                 .then((result) => 
                 {
                    if(result.value != undefined)
-                    this.pedirAutorizacion( '3:'+result.value);
+                    this.pedirAutorizacion( result.value);
                 });
             }
             else if(result.value != undefined)
@@ -178,7 +178,7 @@ class Traspasos extends Component {
 
     pedirAutorizacion(motivo)
     {
-        var { movimiento, fin, error, insumo, tarjeta , tarjeta_es} = this.state;
+        var { movimiento, fin, error, tarjeta , tarjeta_es} = this.state;
         let temp = this;
 
         movimiento.motivo = motivo;
@@ -212,7 +212,7 @@ class Traspasos extends Component {
                             swal('Movimiento rechazado','','error');
                         }
                         fin=1;
-                        temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin });  
+                        temp.setState({ movimiento : movimiento, error : error, fin : fin });  
                         
                     }
 
@@ -227,7 +227,7 @@ class Traspasos extends Component {
             else
             {
                 swal('Autorización inválida','','error');
-                temp.setState({ movimiento : movimiento, error : error, insumo : insumo, fin : fin }); 
+                temp.setState({ movimiento : movimiento, error : error, fin : fin }); 
                  
             }
             this.limpiarState();
@@ -275,7 +275,7 @@ class Traspasos extends Component {
 
     handleKeyPress(event)
     {
-        event.stopPropagation();
+        //event.stopPropagation();
 
         const target = event.target;
         //var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
@@ -320,7 +320,7 @@ class Traspasos extends Component {
                 }
 
                 this.setState({ numFolio : numFolio, insumo : insumo});
-                //target.select();
+                console.log('Insumo--->',insumo)
             }
             else
             {
@@ -353,6 +353,7 @@ class Traspasos extends Component {
         tMov = btn;
         this.setState({ clase : clase, tMov : tMov });
         document.getElementById("folio").focus();
+        document.getElementById("folio").select();
     }
 
     imprimirReporte()
@@ -424,7 +425,7 @@ class Traspasos extends Component {
                                             </div>
                                             <div className="form-group">
                                                 <label> Descripcion de insumo: </label>
-                                                <label className="form-control" type="text" value = {insumo} name="insumo" />
+                                                <label className="form-control" type="text" name="insumo" >{insumo}</label>
                                             </div>
                                         </div>
                                     </div>
