@@ -114,7 +114,7 @@ class Traspasos extends Component {
 
         boton[1]=1; boton[2]=1; boton[3]=1; boton[4]=1; boton[5]=1; boton[6]=1; clase[1]=this.state.elBoton;
         if(tipo > 3) 
-        {                    //     Entrada      Salida Cancelacion       Venta        Baja   Traspaso    Movimiento y boton Actuales
+        {                //     Entrada      Salida    Cancelacion    Venta       Baja        Traspaso              Movimiento y boton Actuales
             if(almacen === 1) { boton[1]=0; boton[2]=1; boton[3]=0; boton[4]=0; boton[5]=1; boton[6]=0; tMov=2; clase[2]=this.state.elBoton; }
             if(almacen === 2) { boton[1]=1; boton[2]=1; boton[3]=0; boton[4]=0; boton[5]=1; boton[6]=0; tMov=1; }
             if(almacen >= 3)  { boton[1]=1; boton[2]=0; boton[3]=1; boton[4]=1; boton[5]=1; boton[6]=1; tMov=1; }
