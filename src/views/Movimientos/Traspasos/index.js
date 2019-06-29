@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
 import swal from 'sweetalert2';
-import {Input} from 'reactstrap'
+import {Input} from 'reactstrap';
+import TraspasosReporte from './TraspasosReporte';
 
 const VentanaDeError = () => 
 (
@@ -68,8 +69,7 @@ class Traspasos extends Component {
             insumo : '',
             error : 0,     // 0-Vacio, 1-Ok, 2-No encontrado
             fin : 0, // 1-Fin: El ultimo caracter leido fue el final de la cadena Qr
-            tarjeta : ";1370010000003023=991?", // Registro de tarjeta (TEMPORAL)
-            tarjeta_es : "ñ1370010000003023¿991_"
+            Traspaso_valid : 0,
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -100,6 +100,8 @@ class Traspasos extends Component {
             }
         });
 
+
+
         for(var a=1; a<=6; a++) clase[a]=this.state.unBoton;
         this.activarBotones();
         this.props.auth.user.area === -3 ? almacen = '0' : almacen = this.props.auth.user.area;
@@ -122,27 +124,14 @@ class Traspasos extends Component {
         this.setState({boton : boton, tMov : tMov, clase : clase});
     }
 
-    handleInputChange(event)
-    {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        var {numFolio} = this.state;
-
-        numFolio = value;
-
-        this.setState({ [name] : numFolio });
-    }
-
     handleChange(event)
     {
         event.preventDefault();
         const value = event.target.value;
         const name = event.target.name;
-        this.setState({ [name]:value });
-        //this.folio.focus();
-        //this.numFolio.focus();
+
+       this.setState({ [name]:value }); 
+        
     }
 
     justificarBaja()
@@ -235,14 +224,112 @@ class Traspasos extends Component {
         });
     }
 
+    
+
+
+    //Scanner
+    handleInputChange(event)
+    {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        var {numFolio,almacen} = this.state;
+
+        if(almacen != 0){
+            numFolio = value;
+            this.setState({ [name] : numFolio });
+        }
+    }
+
+    //Cuando se detecta un enter
+    handleKeyPress(event)
+    {
+        //event.stopPropagation();
+
+        const target = event.target;
+        //var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
+        var { numFolio, movimiento, error, tMov, insumo, almacen, Traspaso_valid } = this.state;
+        var datos = [];
+
+        if(almacen === '0')
+        {
+            swal({ position: 'top-end', toast: true, type: 'error', title: 'Debes seleccionar un almacen', showConfirmButton: false, timer: 2500});
+        }
+        else
+        {
+            //if (event.key === 'Enter' && movimiento.folio && almacen !=='0')
+            if (event.key === 'Enter' &&  almacen !=='0')
+            {
+                //datos = movimiento.folio.toString().split("^");
+                datos = numFolio.toString().split("^");
+
+                let newsd = numFolio.toString().split("&")
+                
+                if(newsd.length === 7){
+                    datos = newsd;
+                }
+
+                if (datos.length === 7 )
+                {
+                    movimiento.folio = datos[0];
+                    numFolio = datos[0];
+                    insumo = datos[4];
+                    movimiento.movimiento_id = tMov;
+                    movimiento.almacen_id = almacen;
+
+                    if( tMov === 1 || tMov === 4 )
+                    {
+                        this.guardarMovimiento('','',event);
+                    }
+                    if( tMov === 2 )
+                    {
+                        if(Traspaso_valid.edit){
+                            movimiento.trasp_id = Traspaso_valid.id;
+                            this.guardarMovimiento('','',event);
+                        }else{
+                            swal({title : 'Crea un nuevo traspado', type : 'info'})
+                        }
+                    }
+                    if( tMov === 5 )
+                    {
+                        this.justificarBaja();
+                    }
+                    if( tMov === 3 || tMov === 6)
+                    {
+                        this.pedirAutorizacion('');   
+                    }
+
+                    this.setState({ numFolio : numFolio, insumo : insumo});
+                    console.log('Insumo--->',insumo)
+                }
+                else
+                {
+                    error=2;                        
+                    this.limpiarState();
+                    this.setState({ error : error});
+                    
+                }
+            }
+            else
+            {
+                movimiento.folio = '';
+                this.setState({ numFolio : numFolio, movimiento : movimiento });
+            }
+        }
+    }
+
+
+    //guardar el movimiento
     guardarMovimiento(motivo,x,event)
     {
-        var { movimiento, error, fin, reportes, concentrado } = this.state;
+        var { movimiento, error} = this.state;
         let temp = this;
 
         let target = event.target;
         movimiento.motivo = motivo;
-        concentrado=[];
+
+        console.log(movimiento)
 
         api().post('/MovimientoNuevo',movimiento)
         .then(function(response)
@@ -255,11 +342,12 @@ class Traspasos extends Component {
                     if(response.data.registrado)
                     {
                         error = 1;
-                        reportes.push(response.data.movimiento);
-                        reportes.forEach( function(elemento) { concentrado.push(elemento); })
-                        fin=1;
+                        //guardar los movimientos solo si el movimiento es de salida
+                        if(movimiento.movimiento_id == 2){
+                            temp.setState({Traspaso_valid : response.data.movimiento})
+                        }
                     }
-                    temp.setState({ movimiento : movimiento, error : error, fin : fin, reportes : reportes, concentrado : concentrado });
+                    temp.setState({ movimiento : movimiento, error : error, });
                     target.select();
                 }  
             }
@@ -268,74 +356,9 @@ class Traspasos extends Component {
         {
             error=2;
             this.limpiarState();
-            temp.setState({ error : error, fin : fin });
+            temp.setState({ error : error});
             target.select();
         });
-    }
-
-    handleKeyPress(event)
-    {
-        //event.stopPropagation();
-
-        const target = event.target;
-        //var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
-        var { numFolio, movimiento, fin, error, tMov, insumo, almacen } = this.state;
-        var datos = [];
-        //if (event.key === 'Enter') fin=1;
-        if(almacen === '0')
-        {
-            swal({ position: 'top-end', toast: true, type: 'error', title: 'Debes seleccionar un almacen', showConfirmButton: false, timer: 2500});
-        }
-        //if (event.key === 'Enter' && movimiento.folio && almacen !=='0')
-        if (event.key === 'Enter' &&  almacen !=='0')
-        {
-            //datos = movimiento.folio.toString().split("^");
-            datos = numFolio.toString().split("^");
-
-            let newsd = numFolio.toString().split("&")
-            
-            if(newsd.length === 7){
-                datos = newsd;
-            }
-
-            if (datos.length === 7 )
-            {
-                movimiento.folio = datos[0];
-                numFolio = datos[0];
-                insumo = datos[4];
-                movimiento.movimiento_id = tMov;
-                movimiento.almacen_id = almacen;
-
-                if( tMov === 1 || tMov === 2 || tMov === 4 )
-                {
-                    this.guardarMovimiento('','',event);
-                }
-                if( tMov === 5 )
-                {
-                    this.justificarBaja();
-                }
-                if( tMov === 3 || tMov === 6)
-                {
-                    this.pedirAutorizacion('');   
-                }
-
-                this.setState({ numFolio : numFolio, insumo : insumo});
-                console.log('Insumo--->',insumo)
-            }
-            else
-            {
-                error=2;                        
-                this.limpiarState();
-                this.setState({ error : error, fin : fin });
-                
-            }
-        }
-        else
-        {
-            movimiento.folio = '';
-            this.setState({ numFolio : numFolio, movimiento : movimiento });
-        }
-       //target.select();
     }
 
     limpiarState()
@@ -351,16 +374,49 @@ class Traspasos extends Component {
         for(var i=1;i<=6;i++) { clase[i] = this.state.unBoton; }
         clase[btn] = this.state.elBoton;
         tMov = btn;
-        this.setState({ clase : clase, tMov : tMov });
+
+        if(btn == 2){
+            api().get('/last_traspaso')
+            .then((res)=>{
+                console.log(res);
+                this.setState({ clase : clase, tMov : tMov, Traspaso_valid : res.data });
+            })
+            .catch((err)=>{console.log(err)})
+        }else{
+            this.setState({ clase : clase, tMov : tMov });
+        }
+        
         document.getElementById("folio").focus();
         document.getElementById("folio").select();
     }
 
-    imprimirReporte()
-    {
-        //var { reportes, concentrado } = this.state;
-        window.open("http://localhost:8000/api/reporteDeTraspaso", '_blank');
+    nuevoTraspaso=(e)=>{
+
+        let _self = this;
+
+        swal({ 
+            title: '¿Quien Recibe?', 
+            input: 'text', 
+            inputValidator: (value) => { return !value && 'Debes escribir quien recibe' }
+        })
+        .then((result) => 
+        {
+           if(result.value != undefined){
+                let data = { recibe : result.value };
+
+                api().post('/nuevo_traspaso', data)
+                .then((res)=>{
+                    _self.setState({Traspaso_valid : res.data})
+                })
+           }
+        })
+        .catch((err)=>{
+
+        }); 
+    
     }
+
+    
     
     render() 
     {
@@ -432,42 +488,10 @@ class Traspasos extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-xl-5 col-lg-9 col-md-10 col-sm-12">
-                            <div className="card">
-                                <div className="card-header">
-                                    <i className="fa fa-align-justify"> </i> <strong> Reporte de Movimientos </strong>
-                                   { 
-                                    // <button className="btn btn-primary" type="button" onClick={this.imprimirReporte} > 
-                                    //     <i className="icons font-2xl d-block cui-print"></i>
-                                    // </button>
-                                    }
-                                </div>
-                                <div className="card-body">
-                                    <table className="table table-responsive-sm table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th width='10%'> <center> No.         </center> </th>
-                                                <th width='20%'> <center> Folio       </center> </th>
-                                                <th width='15%'> <center> Movimiento  </center> </th>
-                                                <th width='55%'> <center> Descripcion </center> </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        {
-                                            concentrado.map((item, i) => 
-                                                <tr key = { i } >
-                                                    <td width='10%'> <center> { i + 1 }             </center> </td>
-                                                    <td width='20%'> <center> { item.folio }        </center> </td>
-                                                    <td width='15%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} /> } </center> </td>
-                                                    <td width='55%'> <center> { item.desc_insumo }  </center> </td>
-                                                </tr>
-                                            )
-                                        }
-                                        </tbody>
-                                    </table>  
-                                </div>
-                            </div>
-                        </div>
+                        {
+                            tMov == 2 &&
+                            <TraspasosReporte nuevoTraspaso={this.nuevoTraspaso} datosTraspaso={this.state.Traspaso_valid}/>
+                        }
                         <div className="col-xl-7 col-lg-9 col-md-10 col-sm-12">
                         {
                             error === 0 ? "" : 

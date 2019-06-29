@@ -271,6 +271,7 @@ export default class FormUser extends React.Component{
 										</div>
 										<select required className="form-control" name="tipo" value={usuario.tipo} onChange={this.handleInputChange}>
 										<option value="" disabled="disabled"> Selecciona una opcion... </option>
+										<option value="1"> Administrador </option>
 										<option value="3"> Gerente </option>
 										<option value="4"> Almacenista (General) </option>
 										<option value="5"> Almacenista (Licores) </option>
