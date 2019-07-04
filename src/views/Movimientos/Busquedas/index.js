@@ -15,7 +15,7 @@ const TipoDeMovimiento = ({mov}) =>
     {
         mov === 1 ? <div className="badge badge-success">   Entrada   </div> :
         mov === 2 ? <div className="badge badge-warning">   Salida    </div> :
-        mov === 3 ? <div className="badge badge-danger"> Cancenlación </div> :
+        mov === 3 ? <div className="badge badge-danger"> Cancelación </div> :
         mov === 4 ? <div className="badge badge-secondary"> Venta     </div> :
         mov === 5 ? <div className="badge badge-danger">    Baja      </div> :
                     <div className="badge badge-warning">   Traspaso  </div>

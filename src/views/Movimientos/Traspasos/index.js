@@ -69,7 +69,13 @@ class Traspasos extends Component {
             insumo : '',
             error : 0,     // 0-Vacio, 1-Ok, 2-No encontrado
             fin : 0, // 1-Fin: El ultimo caracter leido fue el final de la cadena Qr
-            Traspaso_valid : 0,
+            Traspaso_valid : {
+                id : 0,
+                recibe : '',
+                movimientos : [],
+                movimientos_detallados : [],
+                edit : 0
+            },
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -144,7 +150,7 @@ class Traspasos extends Component {
             inputValidator: (value) => { return !value && 'Debes seleccionar una opción' }
         }).then((result) =>
         {
-            console.log(result.value)
+            
             if(result.value === '3' && result.value != undefined)
             {
                 swal({ 
@@ -278,7 +284,7 @@ class Traspasos extends Component {
                     movimiento.movimiento_id = tMov;
                     movimiento.almacen_id = almacen;
 
-                    if( tMov === 1 || tMov === 4 )
+                    if( tMov === 1 || tMov === 4 || tMov === 6)
                     {
                         this.guardarMovimiento('','',event);
                     }
@@ -288,14 +294,14 @@ class Traspasos extends Component {
                             movimiento.trasp_id = Traspaso_valid.id;
                             this.guardarMovimiento('','',event);
                         }else{
-                            swal({title : 'Crea un nuevo traspado', type : 'info'})
+                            swal({title : 'Crea un nuevo traspaso', type : 'info'})
                         }
                     }
                     if( tMov === 5 )
                     {
                         this.justificarBaja();
                     }
-                    if( tMov === 3 || tMov === 6)
+                    if( tMov === 3 )
                     {
                         this.pedirAutorizacion('');   
                     }
@@ -328,8 +334,6 @@ class Traspasos extends Component {
 
         let target = event.target;
         movimiento.motivo = motivo;
-
-        console.log(movimiento)
 
         api().post('/MovimientoNuevo',movimiento)
         .then(function(response)
@@ -375,11 +379,18 @@ class Traspasos extends Component {
         clase[btn] = this.state.elBoton;
         tMov = btn;
 
+        let _self = this;
+
         if(btn == 2){
             api().get('/last_traspaso')
             .then((res)=>{
-                console.log(res);
-                this.setState({ clase : clase, tMov : tMov, Traspaso_valid : res.data });
+                
+                if(res.data.error){
+                    _self.setState({ clase : clase, tMov : tMov });
+                }
+                else{
+                    _self.setState({ clase : clase, tMov : tMov, Traspaso_valid : res.data.trasp });
+                }
             })
             .catch((err)=>{console.log(err)})
         }else{
@@ -406,7 +417,13 @@ class Traspasos extends Component {
 
                 api().post('/nuevo_traspaso', data)
                 .then((res)=>{
-                    _self.setState({Traspaso_valid : res.data})
+                    if(res.data.error){
+                        swal({title : 'No disponible', type : 'error'})
+                    }
+                    else{
+                        _self.setState({Traspaso_valid : res.data.trasp})
+                        
+                    }
                 })
            }
         })

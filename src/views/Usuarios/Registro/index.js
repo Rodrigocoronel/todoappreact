@@ -29,14 +29,11 @@ class Registro extends Component {
         api().get(`/Usuarios`)
         .then(function(response)
         {
-            if(response.status === 200)
-            {
-                if(response.data[0] != null)
-                {
-                    temp.setState({ usuarios : response.data })
-                }
-            }
-        });	
+
+            temp.setState({ usuarios : response.data })
+
+        })
+        .catch((err)=>console.log(err))	
     }
 
 
@@ -97,14 +94,8 @@ class Registro extends Component {
 											</td>
 											<td className="text-center"> { item.name } </td>
 											<td className="text-center"> { item.email } </td>
-											<td className="text-center"> { item.almacen?item.almacen.nombre:'' } </td>
-											<td className="text-center">
-											{
-												parseInt(item.tipo,10) === 1 ? 'General' :
-												parseInt(item.tipo,10) === 2 ? 'Supervisor' :
-												parseInt(item.tipo,10) === 3 ? 'Administrador' : ''
-											} 
-											</td>
+											<td className="text-center"> { item.area } </td>
+											<td className="text-center"> { item.tipo } </td>
 											<td className="text-center"> 
 												<button className="btn btn-block btn-info active" type="button" aria-pressed="true" onClick={(e)=>this.modificar(e,item.id)}> 
 													<strong> Modificar </strong> 

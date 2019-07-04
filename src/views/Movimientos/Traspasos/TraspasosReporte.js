@@ -2,6 +2,8 @@ import React from 'react';
 
 import {Row, Col} from 'reactstrap'
 
+import swal from 'sweetalert2';
+
 const TipoDeMovimiento = ({mov}) =>
 (
     <div>
@@ -31,8 +33,22 @@ export default class TraspasosReporte extends React.Component{
 	imprimirReporte=()=>
     {
         let {datosTraspaso} = this.props;
-        console.log(datosTraspaso);
-        window.open("http://localhost:8000/api/reporteDeTraspaso/"+datosTraspaso.id, '_blank');
+
+        swal({
+          title: '¿Estas Seguro?',
+          text: "Al imprimir el reporte se cerrara el traspaso "+ datosTraspaso.id,
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si, Imprimir!'
+        }).then((result) => {
+          if (result.value) {
+             window.open("http://localhost:8000/api/reporteDeTraspaso/"+datosTraspaso.id, '_blank');
+          }
+        })
+        
+       
     }
 
     verTodos = (evt) =>{
@@ -52,6 +68,8 @@ export default class TraspasosReporte extends React.Component{
 	render(){
         let {datosTraspaso} = this.props;
         let {edit_items} = this.state;
+
+        
 		return(
 			<div className="col-xl-5 col-lg-9 col-md-10 col-sm-12">
                 <div className="card">
@@ -95,7 +113,7 @@ export default class TraspasosReporte extends React.Component{
                                     </thead>
                                     <tbody>
                                     {
-                                        datosTraspaso &&
+                                        datosTraspaso.id != 0 &&
                                         datosTraspaso.movimientos.map((item, i) => 
                                             <tr key = { i } >
                                                 <td width='20%'> <center> { item.qty}             </center> </td>
@@ -128,7 +146,7 @@ export default class TraspasosReporte extends React.Component{
                                             </thead>
                                             <tbody>
                                             {
-                                                datosTraspaso &&
+                                                datosTraspaso.id != 0 &&
                                                 datosTraspaso.movimientos_detallados.map((item, i) => 
                                                     <tr key = { i } >
                                                         <td width='20%'> <center> { item.folio}             </center> </td>
