@@ -2,6 +2,8 @@ import React from 'react';
 
 import {Row, Col} from 'reactstrap'
 
+import {API_URL} from '../../../actions/_request.js';
+
 import swal from 'sweetalert2';
 
 const TipoDeMovimiento = ({mov}) =>
@@ -44,7 +46,7 @@ export default class TraspasosReporte extends React.Component{
           confirmButtonText: 'Si, Imprimir!'
         }).then((result) => {
           if (result.value) {
-             window.open("http://localhost:8000/api/reporteDeTraspaso/"+datosTraspaso.id, '_blank');
+             window.open(API_URL+"/reporteDeTraspaso/"+datosTraspaso.id, '_blank');
           }
         })
         
