@@ -6,20 +6,6 @@ import swal from 'sweetalert2';
 import {Input} from 'reactstrap';
 import TraspasosReporte from './TraspasosReporte';
 
-const VentanaDeError = () => 
-(
-    <div className="card">
-        <div className="card-header">
-            <strong> "Error!!!" </strong>
-        </div>
-        <div className="card-body">
-            <div className="alert alert-warning" role="alert">
-                <strong> "Codigo De Botella No Encontrado" </strong>
-            </div>
-        </div>
-    </div>
-)
-
 const TipoDeMovimiento = ({mov}) =>
 (
     <div>
@@ -151,7 +137,7 @@ class Traspasos extends Component {
         }).then((result) =>
         {
             
-            if(result.value === '3' && result.value != undefined)
+            if(result.value === '3' && result.value !== undefined)
             {
                 swal({ 
                     title: 'Cual es el motivo?', 
@@ -160,11 +146,11 @@ class Traspasos extends Component {
                 })
                 .then((result) => 
                 {
-                   if(result.value != undefined)
+                   if(result.value !== undefined)
                     this.pedirAutorizacion( result.value);
                 });
             }
-            else if(result.value != undefined)
+            else if(result.value !== undefined)
             {
                 this.pedirAutorizacion( result.value );
             }
@@ -223,15 +209,10 @@ class Traspasos extends Component {
             {
                 swal('Autorización inválida','','error');
                 temp.setState({ movimiento : movimiento, error : error, fin : fin }); 
-                 
             }
             this.limpiarState();
-            //
         });
     }
-
-    
-
 
     //Scanner
     handleInputChange(event)
@@ -242,7 +223,7 @@ class Traspasos extends Component {
 
         var {numFolio,almacen} = this.state;
 
-        if(almacen != 0){
+        if(almacen !== 0){
             numFolio = value;
             this.setState({ [name] : numFolio });
         }
@@ -347,9 +328,19 @@ class Traspasos extends Component {
                     {
                         error = 1;
                         //guardar los movimientos solo si el movimiento es de salida
-                        if(movimiento.movimiento_id == 2){
+                        if(movimiento.movimiento_id === 2){
                             temp.setState({Traspaso_valid : response.data.movimiento})
                         }
+                    }
+                    else
+                    {
+                        swal.fire({
+                            position: 'top-end',
+                            type: 'error',
+                            title: 'La botella no esta disponible',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                     temp.setState({ movimiento : movimiento, error : error, });
                     target.select();
@@ -381,7 +372,7 @@ class Traspasos extends Component {
 
         let _self = this;
 
-        if(btn == 2){
+        if(btn === 2){
             api().get('/last_traspaso')
             .then((res)=>{
                 
@@ -412,7 +403,7 @@ class Traspasos extends Component {
         })
         .then((result) => 
         {
-           if(result.value != undefined){
+           if(result.value !== undefined){
                 let data = { recibe : result.value };
 
                 api().post('/nuevo_traspaso', data)
@@ -432,8 +423,6 @@ class Traspasos extends Component {
         }); 
     
     }
-
-    
     
     render() 
     {
@@ -506,15 +495,10 @@ class Traspasos extends Component {
                             </div>
                         </div>
                         {
-                            tMov == 2 &&
+                            tMov === 2 &&
                             <TraspasosReporte nuevoTraspaso={this.nuevoTraspaso} datosTraspaso={this.state.Traspaso_valid}/>
                         }
-                        <div className="col-xl-7 col-lg-9 col-md-10 col-sm-12">
-                        {
-                            error === 0 ? "" : 
-                            error === 2 ? <VentanaDeError/> : ''
-                        }
-                        </div>
+
                     </div>
                 </div>
             </div>

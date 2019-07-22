@@ -115,7 +115,7 @@ export default class TraspasosReporte extends React.Component{
                                     </thead>
                                     <tbody>
                                     {
-                                        datosTraspaso.id != 0 &&
+                                        datosTraspaso.id !== 0 &&
                                         datosTraspaso.movimientos.map((item, i) => 
                                             <tr key = { i } >
                                                 <td width='20%'> <center> { item.qty}             </center> </td>
@@ -148,7 +148,7 @@ export default class TraspasosReporte extends React.Component{
                                             </thead>
                                             <tbody>
                                             {
-                                                datosTraspaso.id != 0 &&
+                                                datosTraspaso.id !== 0 &&
                                                 datosTraspaso.movimientos_detallados.map((item, i) => 
                                                     <tr key = { i } >
                                                         <td width='20%'> <center> { item.folio}             </center> </td>

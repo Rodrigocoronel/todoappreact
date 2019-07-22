@@ -3,48 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
-
-const VentanaCargaExitosa = () => // CODIGO 1
-(
-    <div className="card">
-        <div className="card-header">
-            <strong> Confirmación </strong>
-        </div>
-        <div className="card-body">
-            <div className="alert alert-success" role="alert">
-                <strong> El producto se registro correctamente</strong>
-            </div>
-        </div>
-    </div>
-)
-
-const VentanaErrorDeCodigo = () => // CODIGO 2
-(
-    <div className="card">
-        <div className="card-header">
-            <strong> Error!!! </strong>
-        </div>
-        <div className="card-body">
-            <div className="alert alert-warning" role="alert">
-                <strong> Código Inválido </strong>
-            </div>
-        </div>
-    </div>
-)
-
-const VentanaErrorDeServidor = () => // CODIGO 3
-(
-    <div className="card">
-        <div className="card-header">
-            <strong> Error!!! </strong>
-        </div>
-        <div className="card-body">
-            <div className="alert alert-warning" role="alert">
-                <strong> La botella ya se encuentra registrada </strong>
-            </div>
-        </div>
-    </div>
-)
+import swal from 'sweetalert2';
 
 class Agregar extends Component
 {
@@ -124,7 +83,26 @@ class Agregar extends Component
                 {
                     if(response.status === 200)
                     {
-                        response.data ? botella.error = 1 : botella.error = 3;
+                        if(response.data)
+                        {
+                        	swal.fire({
+								position: 'top-end',
+								type: 'success',
+								title: 'Registrado',
+								showConfirmButton: false,
+								timer: 1000
+							});
+                        }
+                        else
+                        {
+                        	swal.fire({
+								position: 'top-end',
+								type: 'error',
+								title: 'La botella ya esta registrada',
+								showConfirmButton: false,
+								timer: 1500
+							});
+                        } 
                     }
                     temp.setState({ botella: botella });
                     target.select(); 
@@ -132,11 +110,25 @@ class Agregar extends Component
                 .catch(error =>
                 {
                     botella.error=3;
+                    swal.fire({
+						position: 'top-end',
+						type: 'error',
+						title: 'La botella ya esta registrada',
+						showConfirmButton: false,
+						timer: 1500
+					});
                     temp.setState({ botella: botella });
                 });
             }
             else
             {
+				swal.fire({
+					position: 'top-end',
+					type: 'error',
+					title: 'Codigo Invalido!!!',
+					showConfirmButton: false,
+					timer: 1500
+				});
                 this.limpiarState();
                 target.select();
             }   
@@ -198,14 +190,6 @@ class Agregar extends Component
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-sm-12 col-lg-6">
-                            {
-                                botella.error === 0 ? "" :
-                                botella.error === 1 ? <VentanaCargaExitosa /> :
-                                botella.error === 2 ? <VentanaErrorDeCodigo /> :
-                                <VentanaErrorDeServidor />
-                            }
                         </div>
                     </div>
                 </div>

@@ -2,20 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
-
-const VentanaDeError = () => 
-(
-    <div className="card">
-        <div className="card-header">
-            <strong> Error!!! </strong>
-        </div>
-        <div className="card-body">
-            <div className="alert alert-warning" role="alert">
-                <strong> El producto no se encuentra registrado </strong>
-            </div>
-        </div>
-    </div>
-)
+import swal from 'sweetalert2';
 
 const TipoDeMovimiento = ({mov,motivo}) =>
 (
@@ -126,6 +113,13 @@ class Buscar extends Component
                     {
                         if(response.data[0] == null)
                         {
+                            swal.fire({
+                                position: 'top-end',
+                                type: 'error',
+                                title: 'La botella no esta registrada',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                             botella.folio = datos[0];
                             temp.limpiarState();
                         }
@@ -213,7 +207,7 @@ class Buscar extends Component
                             </div>
                         </div>
                         <div className="col-sm-12 col-lg-6">
-                            { botella.error === 0 ? <VentanaDeMovimientos botella = {botella} /> : <VentanaDeError /> }
+                            { botella.error === 0 ? <VentanaDeMovimientos botella = {botella} /> : "" }
                         </div>
                     </div>
                 </div>

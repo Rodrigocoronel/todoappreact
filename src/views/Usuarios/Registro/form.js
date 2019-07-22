@@ -38,7 +38,7 @@ export default class FormUser extends React.Component{
 		if(params.id) {
 			api().get("/user_by_id/"+params.id)
 			.then(function(response){
-				if(response.status == 200){
+				if(response.status === 200){
 					usuario = response.data;
 					_self.setState({
 						usuario : usuario,

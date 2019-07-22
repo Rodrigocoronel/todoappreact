@@ -55,6 +55,7 @@ export const almacenGeneral =
 			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
 			{ name: 'Entradas / Salidas', url: '/app/traspasos', icon: 'icon-pencil', },
+			{ name: 'Reportes', url: '/app/reportes', icon: 'icon-magnifier', },
 		{ divider: true, },
 		{ name: 'SALIR', url: '/app/logout', icon: 'icon-logout', },
 	],
@@ -66,6 +67,7 @@ export const almacenLicor =
 	[
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
 			{ name: 'Entradas / Salidas', url: '/app/traspasos', icon: 'icon-pencil', },
+			{ name: 'Reportes', url: '/app/reportes', icon: 'icon-magnifier', },
 		{ divider: true, },
 		{ name: 'SALIR', url: '/app/logout', icon: 'icon-logout', },
 	],
