@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactTable from 'react-table'
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
@@ -9,19 +10,20 @@ class Inventario extends Component
     constructor(props){
         super(props)
 
-        this.state=
-        {
+        this.state={
             busqueda : {
                 almacen : "0",
             },
+            registros : [],
             almacenes : [],
         }
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount()
     {
-        var {almacenes, busqueda} = this.state;
+        var { almacenes, busqueda } = this.state;
         let temp = this;
 
         api().get(`/Almacenes`)
@@ -44,11 +46,45 @@ class Inventario extends Component
     {
         const value = event.target.value;
         const name = event.target.name;
-        var {botella} = this.state;
 
-        botella[name] = value;
-        botella.error=0;
-        this.setState({ botella: botella});
+        var {busqueda} = this.state;
+        busqueda[name] = value;
+        this.setState({ busqueda: busqueda });
+    }
+
+    handleSubmit(event)
+    {
+        event.preventDefault();
+        var {busqueda, registros} = this.state;
+        let temp = this;
+
+        if(busqueda.almacen!=='0')
+        {
+            console.log(busqueda.almacen);
+            api().get(`/Inventario/${busqueda.almacen}`)
+            .then(function(response)
+            {
+                if(response.status === 200)
+                {
+                    registros = response.data;
+                    if(response.data[0] === null)
+                    {
+                        swal.fire({
+                            position: 'top-end',
+                            type: 'error',
+                            title: 'No existen botellas en esa area',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    } 
+                    temp.setState({ registros : registros })
+                }
+            })
+            .catch(error =>
+            {
+                
+            });
+        }
     }
                 
     render()
@@ -62,35 +98,38 @@ class Inventario extends Component
                         <div className="col-sm-12">
                             <div className="card">
                                 <div className="card-header">
-                                    <strong>Reporte De Inventario</strong>
+                                    <form>
+                                        <div className="form-inline">
+                                            <div className="form-group mt-2 mb-1 mr-3">
+                                                <strong>Reporte De Inventario</strong>
+                                            </div>
+                                            <div className="form-group mt-2 mb-1 mr-3">
+                                                {
+                                                    <select value={busqueda.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleInputChange}>
+                                                        <option value='0'> Selecciona un almacen... </option>
+                                                        {
+                                                            almacenes.map((item, i) =>
+                                                                parseInt(item.activo,10) === 1 ?
+                                                                    this.props.auth.user.area === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
+                                                                    this.props.auth.user.area === item.id ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
+                                                                : ""
+                                                            )
+                                                        }
+                                                        <option value='9999'> Todas las areas </option>
+                                                    </select>
+                                                }
+                                            </div>
+                                            <div className="form-group mt-2 mb-1">
+                                                <button className="btn btn-block btn-primary pl-3 pr-3" type="button" onClick={this.handleSubmit} > Buscar </button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                                 <div className="card-body">
                                     <div className="row">
-                                        <div className="col-sm-12 col-lg-3">
-
-                                            <div className="form-group">
-                                                <label> Almacén: </label>
-                                                <select value={busqueda.almacen} className="form-control" id="almacen" name="almacen" onChange={this.handleInputChange}>
-                                                    <option value='0'> Selecciona un almacen... </option>
-                                                    {
-                                                        almacenes.map((item, i) =>
-                                                            parseInt(item.activo,10) === 1 ?
-                                                                this.props.auth.user.area === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
-                                                                this.props.auth.user.area === item.id ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
-                                                            : ""
-                                                        )
-                                                    }
-                                                </select>
-
-                                            </div>
-
-
-                                            <div className="form-group">
-                                                <button className="btn btn-block btn-primary" type="button" onClick={this.handleSubmit} > Buscar </button>
-                                            </div>
-
-
-                                        </div>
+                                        {
+                                            // AQUI VAN LOS DATOS  EN UNA REACT TABLE
+                                        }
                                     </div>
                                 </div>
                             </div>
