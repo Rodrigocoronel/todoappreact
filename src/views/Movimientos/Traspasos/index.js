@@ -331,6 +331,13 @@ class Traspasos extends Component {
                         if(movimiento.movimiento_id === 2){
                             temp.setState({Traspaso_valid : response.data.movimiento})
                         }
+                         swal.fire({
+                            position: 'top-end',
+                            type: 'success',
+                            title: 'Registrado',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                     else
                     {

@@ -5,6 +5,7 @@ export const administrador =
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
 			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Busquedas', url: '/app/buscarBotellas', icon: 'icon-magnifier', },
+			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Almacenes', wrapper: { element: '', attributes: {}, },},
 			{ name: 'Registro', url: '/app/almacenes', icon: 'icon-pencil', },
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
@@ -21,6 +22,8 @@ export const supervisor =
 {
 	items:
 	[
+		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
+			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
 			{ name: 'Entradas / Salidas', url: '/app/traspasos', icon: 'icon-pencil', },	
 		{ divider: true, },		
@@ -35,6 +38,7 @@ export const gerente =
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
 			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Busquedas', url: '/app/buscarBotellas', icon: 'icon-magnifier', },
+			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Almacenes', wrapper: { element: '', attributes: {}, },},
 			{ name: 'Registro', url: '/app/almacenes', icon: 'icon-pencil', },
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
@@ -53,6 +57,7 @@ export const almacenGeneral =
 	[
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
 			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
+			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
 			{ name: 'Entradas / Salidas', url: '/app/traspasos', icon: 'icon-pencil', },
 			{ name: 'Reportes', url: '/app/reportes', icon: 'icon-magnifier', },
@@ -65,6 +70,8 @@ export const almacenLicor =
 {
 	items:
 	[
+		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
+			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
 			{ name: 'Entradas / Salidas', url: '/app/traspasos', icon: 'icon-pencil', },
 			{ name: 'Reportes', url: '/app/reportes', icon: 'icon-magnifier', },
