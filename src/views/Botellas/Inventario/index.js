@@ -1,9 +1,55 @@
 import React, { Component } from 'react';
-import ReactTable from 'react-table'
+import ReactTable from 'react-table';
+import TableStyle from 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
 import swal from 'sweetalert2';
+
+const camposDeLaTabla = [
+    {
+        Header: 'No.',
+        accessor: 'insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 50,
+        maxWidth: 100,
+    },
+    {
+        Header: 'Cantidad',
+        accessor: 'insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 80,
+        maxWidth: 100,
+    },
+    {
+        Header: 'Código',
+        accessor: 'insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 80,
+        maxWidth: 100,
+    },
+    {
+        Header: 'Descripción',
+        accessor: 'desc_insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+    },
+];
+
+const MostrarTabla = ({Registros}) =>
+(
+    <div style = {{ 'text-align': 'center'}}>
+        <ReactTable  
+            pageSize={20}
+            data={Registros}
+            columns={camposDeLaTabla}
+            showPagination={true}
+        />
+    </div>
+)
 
 class Inventario extends Component 
 {
@@ -16,6 +62,7 @@ class Inventario extends Component
             },
             registros : [],
             almacenes : [],
+            mostrar : 0,
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -55,7 +102,7 @@ class Inventario extends Component
     handleSubmit(event)
     {
         event.preventDefault();
-        var {busqueda, registros} = this.state;
+        var {busqueda, registros, mostrar} = this.state;
         let temp = this;
 
         if(busqueda.almacen!=='0')
@@ -66,6 +113,7 @@ class Inventario extends Component
             {
                 if(response.status === 200)
                 {
+                    mostrar = 1;
                     registros = response.data;
                     if(response.data[0] === null)
                     {
@@ -76,8 +124,9 @@ class Inventario extends Component
                             showConfirmButton: false,
                             timer: 1500
                         })
+                        mostrar = 0;
                     } 
-                    temp.setState({ registros : registros })
+                    temp.setState({ registros : registros, mostrar : mostrar })
                 }
             })
             .catch(error =>
@@ -89,7 +138,7 @@ class Inventario extends Component
                 
     render()
     {
-        let { almacenes, busqueda } = this.state;
+        let { almacenes, busqueda, registros, mostrar } = this.state;
 
         return(
             <div className="container-fluid">
@@ -126,11 +175,9 @@ class Inventario extends Component
                                     </form>
                                 </div>
                                 <div className="card-body">
-                                    <div className="row">
-                                        {
-                                            // AQUI VAN LOS DATOS  EN UNA REACT TABLE
-                                        }
-                                    </div>
+                                {
+                                    mostrar === 1 ? <MostrarTabla Registros = {registros} /> : ""
+                                }
                                 </div>
                             </div>
                         </div>
