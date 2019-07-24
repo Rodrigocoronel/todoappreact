@@ -92,6 +92,15 @@ class Traspasos extends Component {
             }
         });
 
+        api().get('/last_traspaso')
+        .then((res)=>{
+            
+            if(!res.data.error){
+                temp.setState({ Traspaso_valid: res.data.trasp });
+            }
+        })
+        .catch((err)=>{console.log(err)})
+
 
 
         for(var a=1; a<=6; a++) clase[a]=this.state.unBoton;
@@ -379,21 +388,8 @@ class Traspasos extends Component {
 
         let _self = this;
 
-        if(btn === 2){
-            api().get('/last_traspaso')
-            .then((res)=>{
-                
-                if(res.data.error){
-                    _self.setState({ clase : clase, tMov : tMov });
-                }
-                else{
-                    _self.setState({ clase : clase, tMov : tMov, Traspaso_valid : res.data.trasp });
-                }
-            })
-            .catch((err)=>{console.log(err)})
-        }else{
-            this.setState({ clase : clase, tMov : tMov });
-        }
+        this.setState({ clase : clase, tMov : tMov });
+        
         
         document.getElementById("folio").focus();
         document.getElementById("folio").select();
@@ -407,6 +403,8 @@ class Traspasos extends Component {
 
         Traspaso_valid.edit = 0;
 
+        let _self = this;
+
         swal({
           title: '¿Estas Seguro?',
           text: "Al imprimir el reporte se cerrara el traspaso "+ Traspaso_valid.id,
@@ -418,10 +416,11 @@ class Traspasos extends Component {
         }).then((result) => {
           if (result.value) {
              window.open(API_URL+"/reporteDeTraspaso/"+Traspaso_valid.id, '_blank');
+             _self.setState({Traspaso_valid : Traspaso_valid})
           }
         })
         
-        this.setState({Traspaso_valid : Traspaso_valid})
+        
        
     }
 
