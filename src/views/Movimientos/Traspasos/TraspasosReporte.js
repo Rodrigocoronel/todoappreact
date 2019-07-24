@@ -32,27 +32,6 @@ export default class TraspasosReporte extends React.Component{
 		}
 	}
 
-	imprimirReporte=()=>
-    {
-        let {datosTraspaso} = this.props;
-
-        swal({
-          title: '¿Estas Seguro?',
-          text: "Al imprimir el reporte se cerrara el traspaso "+ datosTraspaso.id,
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si, Imprimir!'
-        }).then((result) => {
-          if (result.value) {
-             window.open(API_URL+"/reporteDeTraspaso/"+datosTraspaso.id, '_blank');
-          }
-        })
-        
-       
-    }
-
     verTodos = (evt) =>{
 
         let {edit_items} = this.state;
@@ -91,7 +70,7 @@ export default class TraspasosReporte extends React.Component{
                         </Row>
                         <Row className="mt-5">
                         	<Col xs="6">
-                        		<button className="btn btn-primary" type="button" onClick={this.imprimirReporte} > 
+                        		<button className="btn btn-primary" type="button" onClick={this.props.imprimirReporte} > 
 		                            <i className="icons font-2xl d-block cui-print"></i>
 		                        </button> 
                         	</Col>

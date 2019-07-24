@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
-import {api} from '../../../actions/_request';
+import {api,API_URL} from '../../../actions/_request';
 import swal from 'sweetalert2';
 import {Input} from 'reactstrap';
 import TraspasosReporte from './TraspasosReporte';
@@ -399,6 +399,32 @@ class Traspasos extends Component {
         document.getElementById("folio").select();
     }
 
+    imprimirReporte=()=>
+    {
+        let {datosTraspaso} = this.props;
+
+        let {Traspaso_valid} = this.state;
+
+        Traspaso_valid.edit = 0;
+
+        swal({
+          title: '¿Estas Seguro?',
+          text: "Al imprimir el reporte se cerrara el traspaso "+ Traspaso_valid.id,
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si, Imprimir!'
+        }).then((result) => {
+          if (result.value) {
+             window.open(API_URL+"/reporteDeTraspaso/"+Traspaso_valid.id, '_blank');
+          }
+        })
+        
+        this.setState({Traspaso_valid : Traspaso_valid})
+       
+    }
+
     nuevoTraspaso=(e)=>{
 
         let _self = this;
@@ -435,7 +461,7 @@ class Traspasos extends Component {
     {
         //var { tMov, almacenes, error, movimiento, insumo, boton, reportes, insumos } = this.state;
         var { tMov, almacenes, error, numFolio, insumo, boton, concentrado } = this.state;
-
+        console.log(this.state.Traspaso_valid)
         return (
             <div className="container-fluid">
                 <div className="animated fadeIn">
@@ -503,7 +529,7 @@ class Traspasos extends Component {
                         </div>
                         {
                             tMov === 2 &&
-                            <TraspasosReporte nuevoTraspaso={this.nuevoTraspaso} datosTraspaso={this.state.Traspaso_valid}/>
+                            <TraspasosReporte nuevoTraspaso={this.nuevoTraspaso} datosTraspaso={this.state.Traspaso_valid} imprimirReporte={this.imprimirReporte}/>
                         }
 
                     </div>
