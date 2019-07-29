@@ -9,7 +9,7 @@ import swal from 'sweetalert2';
 const camposDeLaTabla = [
     {
         Header: 'No.',
-        accessor: 'insumo',
+        accessor: 'id',
         headerStyle: { whiteSpace: 'unset' },
         style: {whiteSpace: 'unset'},
         minWidth: 50,
@@ -17,14 +17,21 @@ const camposDeLaTabla = [
     },
     {
         Header: 'Cantidad',
-        accessor: 'insumo',
         headerStyle: { whiteSpace: 'unset' },
         style: {whiteSpace: 'unset'},
         minWidth: 80,
         maxWidth: 100,
+        Cell: (row) =>
+        {
+            return(
+                <div className="text-center">                                     
+                     1
+                </div>
+            )
+        }
     },
     {
-        Header: 'Código',
+        Header: 'Código Insumo',
         accessor: 'insumo',
         headerStyle: { whiteSpace: 'unset' },
         style: {whiteSpace: 'unset'},
