@@ -6,7 +6,7 @@ import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
 import swal from 'sweetalert2';
 
-const camposDeLaTabla = [
+const camposTablaPorArea = [
     {
         Header: 'No.',
         accessor: 'id',
@@ -46,13 +46,61 @@ const camposDeLaTabla = [
     },
 ];
 
-const MostrarTabla = ({Registros}) =>
+const camposTablaGeneral = [
+    {
+        Header: 'No.',
+        accessor: 'id',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 50,
+        maxWidth: 100,
+    },
+    {
+        Header: 'Cantidad',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 80,
+        maxWidth: 100,
+        Cell: (row) =>
+        {
+            return(
+                <div className="text-center">                                     
+                     1
+                </div>
+            )
+        }
+    },
+    {
+        Header: 'Código Insumo',
+        accessor: 'insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 80,
+        maxWidth: 100,
+    },
+    {
+        Header: 'Descripción',
+        accessor: 'desc_insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+    },
+    {
+        Header: 'Area',
+        accessor: 'almacen_id',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 200,
+        maxWidth: 250,
+    },
+];
+
+const MostrarTabla = ({Registros,cols}) =>
 (
-    <div style = {{ 'text-align': 'center'}}>
+    <div style = {{ 'textAlign': 'center'}}>
         <ReactTable  
             pageSize={20}
             data={Registros}
-            columns={camposDeLaTabla}
+            columns={cols}
             showPagination={true}
         />
     </div>
@@ -68,11 +116,16 @@ class Inventario extends Component
                 almacen : "0",
             },
             registros : [],
+            agrupados : [],
+            desagrupados : [],
             almacenes : [],
-            mostrar : 0,
+            mostrar : '0',
+            desglosar : true,
+            cols : '',
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.mostrarRegistrosDesglosados = this.mostrarRegistrosDesglosados.bind(this);
     }
 
     componentDidMount()
@@ -109,19 +162,22 @@ class Inventario extends Component
     handleSubmit(event)
     {
         event.preventDefault();
-        var {busqueda, registros, mostrar} = this.state;
+        var {busqueda, registros, agrupados, desagrupados, desglosar, cols, mostrar} = this.state;
         let temp = this;
 
         if(busqueda.almacen!=='0')
         {
-            console.log(busqueda.almacen);
             api().get(`/Inventario/${busqueda.almacen}`)
             .then(function(response)
             {
                 if(response.status === 200)
                 {
-                    mostrar = 1;
+                    mostrar = busqueda.almacen;
                     registros = response.data;
+                    if(busqueda.almacen === '9999')
+                        cols=camposTablaGeneral;
+                    else 
+                        cols=camposTablaPorArea;
                     if(response.data[0] === null)
                     {
                         swal.fire({
@@ -131,9 +187,22 @@ class Inventario extends Component
                             showConfirmButton: false,
                             timer: 1500
                         })
-                        mostrar = 0;
-                    } 
-                    temp.setState({ registros : registros, mostrar : mostrar })
+                        mostrar = '0';
+                    }
+                    else
+                    {
+                        desagrupados = registros;
+                        // agrupados = registros;
+                        
+                        agrupados = registros.filter(registro => registro.insumo === '100111');
+                        console.log(agrupados);
+
+                        if (desglosar === true) 
+                            registros = desagrupados;
+                        else
+                            registros = agrupados;
+                    }
+                    temp.setState({ registros : registros, agrupados : agrupados, desagrupados : desagrupados, cols : cols, mostrar : mostrar })
                 }
             })
             .catch(error =>
@@ -142,11 +211,26 @@ class Inventario extends Component
             });
         }
     }
+
+    mostrarRegistrosDesglosados()
+    {
+        var { desglosar, registros, agrupados, desagrupados } = this.state;
+        if(desglosar ===  true)     // Si ya estan desglosados los registros
+        {
+            desglosar = false;      // mostrarlos agrupados
+            registros = agrupados;
+        }
+        else
+        {
+            desglosar = true;       // sino mostrarlos desglosados
+            registros = desagrupados;
+        }
+        this.setState({ desglosar: desglosar, registros : registros });
+    }
                 
     render()
     {
-        let { almacenes, busqueda, registros, mostrar } = this.state;
-
+        let { almacenes, busqueda, registros, mostrar, cols, desglosar } = this.state;
         return(
             <div className="container-fluid">
                 <div className="animated fadeIn">
@@ -175,15 +259,22 @@ class Inventario extends Component
                                                     </select>
                                                 }
                                             </div>
-                                            <div className="form-group mt-2 mb-1">
+                                            <div className="form-group mt-2 mb-1 mr-5">
                                                 <button className="btn btn-block btn-primary pl-3 pr-3" type="button" onClick={this.handleSubmit} > Buscar </button>
                                             </div>
                                         </div>
                                     </form>
+                                    <div className="d-inline-flex mt-2">
+                                    <label>  <i>Desglosar Inventario</i> </label>
+                                        <label className="ml-2 switch switch-label switch-pill switch-primary">
+                                        <input type="checkbox" className="switch-input" checked={desglosar} onChange={this.mostrarRegistrosDesglosados}/>
+                                        <span className="switch-slider" data-checked="&#x2713;" data-unchecked="&#x2715;"></span>
+                                    </label>
+                                    </div>
                                 </div>
                                 <div className="card-body">
                                 {
-                                    mostrar === 1 ? <MostrarTabla Registros = {registros} /> : ""
+                                    mostrar === '0' ? "" : <MostrarTabla Registros = {registros} cols={cols} />
                                 }
                                 </div>
                             </div>
