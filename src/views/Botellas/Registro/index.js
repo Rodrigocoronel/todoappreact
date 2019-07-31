@@ -182,10 +182,14 @@ class Agregar extends Component
                                                 <label>Fecha de compra:</label>
                                                 <label className="form-control" type="date" name="fecha_compra"> {botella.fecha_compra} </label>
                                             </div>
-                                            <div className="form-group">
-                                                <label>Almacen actual:</label>
-                                                <label className="form-control" type="text" name="almacen_actual"> {botella.almacen_id} </label>
-                                            </div>
+                                            {
+                                            /*
+                                                <div className="form-group">
+                                                    <label>Almacen actual:</label>
+                                                    <label className="form-control" type="text" name="almacen_actual"> {botella.almacen_id} </label>
+                                                </div>
+                                            */
+                                            }
                                         </div>
                                     </div>
                                 </div>

@@ -111,7 +111,7 @@ class Buscar extends Component
                 { 
                     if(response.status === 200)
                     {
-                        if(response.data[0] == null)
+                        if(response.data == null)
                         {
                             swal.fire({
                                 position: 'top-end',
@@ -120,12 +120,12 @@ class Buscar extends Component
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                            botella.folio = datos[0];
+                            botella.folio = datos;
                             temp.limpiarState();
                         }
                         else
                         { 
-                            botella = response.data[0];
+                            botella = response.data;
                             botella.error = 0;
                             temp.setState({ botella: botella });               
                         }
@@ -199,7 +199,26 @@ class Buscar extends Component
                                             </div>
                                             <div className="form-group">
                                                 <label>Ubicación actual:</label>
-                                                <label className="form-control" type="text" name="almacen_actual"> {botella.almacen?botella.almacen.nombre:''} </label>
+                                                <label className="form-control" type="text" name="almacen_actual">
+                                                    {
+                                                        parseInt(botella.transito) === 1? "< En tránsito > salio de " : ""
+                                                    }
+                                                    {
+                                                        parseInt(botella.transito) === 4? "< Vendido > en " : ""
+                                                    }
+                                                    {
+                                                        parseInt(botella.transito) === 5? "< Dado de baja > en " : ""
+                                                    }
+                                                    {
+                                                        parseInt(botella.transito) === 6? "< Traspasado > salio de " : ""
+                                                    }
+                                                    {
+                                                        !botella.almacen?
+                                                            ''
+                                                        :
+                                                            "< " + botella.almacen.nombre + " >"
+                                                    }
+                                                </label>
                                             </div>
                                         </div>
                                     </div>

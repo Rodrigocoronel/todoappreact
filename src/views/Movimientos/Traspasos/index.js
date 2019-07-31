@@ -320,6 +320,9 @@ class Traspasos extends Component {
     guardarMovimiento(motivo,x,event)
     {
         var { movimiento, error} = this.state;
+        var warehouse = '';
+        var transit = '';
+        var mensaje = '';
         let temp = this;
 
         let target = event.target;
@@ -350,12 +353,31 @@ class Traspasos extends Component {
                     }
                     else
                     {
+                        warehouse = response.data.ubicacion.almacen;
+                        console.log(warehouse);
+                        transit = parseInt(response.data.ubicacion.transito);
+                        if(transit > 0)
+                        {
+                            switch(transit)
+                            {
+                                case 1: mensaje='se encuentra EN TRÁNSITO salio de ' + warehouse + "."; break;
+                                case 4: mensaje='fue VENDIDA en ' + warehouse + "."; break;
+                                case 5: mensaje='fue DADA DE BAJA en ' + warehouse + "."; break;
+                                case 6: mensaje='salio como TRASPASO de ' + warehouse + "."; break;
+                                default:
+                            }
+
+                        }
+                        else
+                        {
+                            mensaje = 'se encuentra en ' + warehouse + ".";
+                            console.log(mensaje);
+                        }
                         swal.fire({
                             position: 'top-end',
                             type: 'error',
-                            title: 'La botella no esta disponible',
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: 'Error con código de botella',
+                            html: `La botella ${mensaje}`,
                         });
                     }
                     temp.setState({ movimiento : movimiento, error : error, });
