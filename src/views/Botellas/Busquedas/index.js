@@ -111,7 +111,7 @@ class Buscar extends Component
                 { 
                     if(response.status === 200)
                     {
-                        if(response.data == null)
+                        if(response.data === false)
                         {
                             swal.fire({
                                 position: 'top-end',

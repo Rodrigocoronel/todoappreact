@@ -101,8 +101,6 @@ class Traspasos extends Component {
         })
         .catch((err)=>{console.log(err)})
 
-
-
         for(var a=1; a<=6; a++) clase[a]=this.state.unBoton;
         this.activarBotones();
         this.props.auth.user.area === -3 ? almacen = '0' : almacen = this.props.auth.user.area;
@@ -131,13 +129,11 @@ class Traspasos extends Component {
         const value = event.target.value;
         const name = event.target.name;
 
-       this.setState({ [name]:value }); 
-        
+        this.setState({ [name]:value }); 
     }
 
     justificarBaja()
     {
-
         swal({
             title: 'Selecciona un motivo',
             input: 'radio',
@@ -203,9 +199,7 @@ class Traspasos extends Component {
                         }
                         fin=1;
                         temp.setState({ movimiento : movimiento, error : error, fin : fin });  
-                        
                     }
-
                 })
                 .catch( error =>
                 {
@@ -244,7 +238,6 @@ class Traspasos extends Component {
         //event.stopPropagation();
 
         const target = event.target;
-        //var { movimiento, fin, error, tMov, insumo, almacen } = this.state;
         var { numFolio, movimiento, error, tMov, insumo, almacen, Traspaso_valid } = this.state;
         var datos = [];
 
@@ -295,16 +288,12 @@ class Traspasos extends Component {
                     {
                         this.pedirAutorizacion('');   
                     }
-
-                    this.setState({ numFolio : numFolio, insumo : insumo});
-                    console.log('Insumo--->',insumo)
                 }
                 else
                 {
                     error=2;                        
                     this.limpiarState();
                     this.setState({ error : error});
-                    
                 }
             }
             else
@@ -319,7 +308,7 @@ class Traspasos extends Component {
     //guardar el movimiento
     guardarMovimiento(motivo,x,event)
     {
-        var { movimiento, error} = this.state;
+        var { movimiento, error, numFolio, insumo} = this.state;
         var warehouse = '';
         var transit = '';
         var mensaje = '';
@@ -328,6 +317,8 @@ class Traspasos extends Component {
         let target = event.target;
         movimiento.motivo = motivo;
 
+        numFolio='';
+        insumo='';
         api().post('/MovimientoNuevo',movimiento)
         .then(function(response)
         {
@@ -349,11 +340,12 @@ class Traspasos extends Component {
                         showConfirmButton: false,
                         timer: 1500
                     });
+                     numFolio=response.data.movimiento.folio;
+                     insumo=response.data.movimiento.desc_insumo;
                 }
                 else
                 {
                     warehouse = response.data.ubicacion.almacen;
-                    console.log(warehouse);
                     transit = parseInt(response.data.ubicacion.transito);
                     if(transit > 0)
                     {
@@ -365,12 +357,10 @@ class Traspasos extends Component {
                             case 6: mensaje='salio como TRASPASO de ' + warehouse + "."; break;
                             default:
                         }
-
                     }
                     else
                     {
                         mensaje = 'se encuentra en ' + warehouse + ".";
-                        console.log(mensaje);
                     }
                     swal.fire({
                         position: 'top-end',
@@ -379,10 +369,9 @@ class Traspasos extends Component {
                         html: `La botella ${mensaje}`,
                     });
                 }
-                temp.setState({ movimiento : movimiento, error : error, });
+                temp.setState({ movimiento : movimiento, error : error, numFolio : numFolio, insumo : insumo });
                 target.select();
             }  
-            
         })
         .catch(error =>
         {
@@ -410,7 +399,6 @@ class Traspasos extends Component {
         let _self = this;
 
         this.setState({ clase : clase, tMov : tMov });
-        
         
         document.getElementById("folio").focus();
         document.getElementById("folio").select();
@@ -440,9 +428,6 @@ class Traspasos extends Component {
              _self.setState({Traspaso_valid : Traspaso_valid})
           }
         })
-        
-        
-       
     }
 
     nuevoTraspaso=(e)=>{
@@ -464,9 +449,9 @@ class Traspasos extends Component {
                     if(res.data.error){
                         swal({title : 'No disponible', type : 'error'})
                     }
-                    else{
-                        _self.setState({Traspaso_valid : res.data.trasp})
-                        
+                    else
+                    {
+                        _self.setState({Traspaso_valid : res.data.trasp})    
                     }
                 })
            }
@@ -479,7 +464,6 @@ class Traspasos extends Component {
     
     render() 
     {
-        //var { tMov, almacenes, error, movimiento, insumo, boton, reportes, insumos } = this.state;
         var { tMov, almacenes, error, numFolio, insumo, boton, concentrado } = this.state;
         console.log(this.state.Traspaso_valid)
         return (
