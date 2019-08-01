@@ -3,72 +3,19 @@ import ReactTable from 'react-table';
 import TableStyle from 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
-import {api} from '../../../actions/_request';
+import {api,API_URL} from '../../../actions/_request';
 import swal from 'sweetalert2';
+import _ from "lodash";
 
-const camposTablaPorArea = [
-    {
-        Header: 'No.',
-        accessor: 'id',
-        headerStyle: { whiteSpace: 'unset' },
-        style: {whiteSpace: 'unset'},
-        minWidth: 50,
-        maxWidth: 100,
-    },
+const camposTablaNoDesglosado = [
+    
     {
         Header: 'Cantidad',
         headerStyle: { whiteSpace: 'unset' },
         style: {whiteSpace: 'unset'},
         minWidth: 80,
         maxWidth: 100,
-        Cell: (row) =>
-        {
-            return(
-                <div className="text-center">                                     
-                     1
-                </div>
-            )
-        }
-    },
-    {
-        Header: 'Código Insumo',
-        accessor: 'insumo',
-        headerStyle: { whiteSpace: 'unset' },
-        style: {whiteSpace: 'unset'},
-        minWidth: 80,
-        maxWidth: 100,
-    },
-    {
-        Header: 'Descripción',
-        accessor: 'desc_insumo',
-        headerStyle: { whiteSpace: 'unset' },
-        style: {whiteSpace: 'unset'},
-    },
-];
-
-const camposTablaGeneral = [
-    {
-        Header: 'No.',
-        accessor: 'id',
-        headerStyle: { whiteSpace: 'unset' },
-        style: {whiteSpace: 'unset'},
-        minWidth: 50,
-        maxWidth: 100,
-    },
-    {
-        Header: 'Cantidad',
-        headerStyle: { whiteSpace: 'unset' },
-        style: {whiteSpace: 'unset'},
-        minWidth: 80,
-        maxWidth: 100,
-        Cell: (row) =>
-        {
-            return(
-                <div className="text-center">                                     
-                     1
-                </div>
-            )
-        }
+        accessor: 'cantidad',
     },
     {
         Header: 'Código Insumo',
@@ -94,6 +41,91 @@ const camposTablaGeneral = [
     },
 ];
 
+const camposTablaDesglosado = [
+    {
+        Header: 'No.',
+        accessor: 'id',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 50,
+        maxWidth: 100,
+    },
+   
+    {
+        Header: 'Código Insumo',
+        accessor: 'insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 80,
+        maxWidth: 100,
+    },
+    {
+        Header: 'Descripción',
+        accessor: 'desc_insumo',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+    },
+    {
+        Header: 'Area',
+        accessor: 'almacen_id',
+        headerStyle: { whiteSpace: 'unset' },
+        style: {whiteSpace: 'unset'},
+        minWidth: 200,
+        maxWidth: 250,
+    },
+];
+
+
+const requestData = (pageSize, page, sorted, filtered,almacen,desglosar) => {    
+    return new Promise((resolve, reject) => {
+        // You can retrieve your data however you want, in this case, we will just use some local data.
+        let filteredData ;
+        var take= pageSize;
+        var skip=pageSize * page;
+        var total=1;  
+        console.log('entro a la busqueda')
+
+        api().get(`/Inventario/${almacen}?take=${take}&skip=${skip}&desglosar=${desglosar}`)
+        .then(function(response)
+        {
+           
+              
+             
+                if(response.status === 200)
+                {
+                  filteredData= response.data.botellas;
+                  total= response.data.total;  
+                  console.log('data----->',response.data)
+                  // You can also use the sorting in your request, but again, you are responsible for applying it.
+                  const sortedData = _.orderBy(
+                    filteredData,
+                    sorted.map(sort => {
+                      return row => {
+                        if (row[sort.id] === null || row[sort.id] === undefined) {
+                          return -Infinity;
+                        }
+                        return typeof row[sort.id] === "string"
+                        ? row[sort.id].toLowerCase()
+                        : row[sort.id];
+                      };
+                    }),
+                    sorted.map(d => (d.desc ? "desc" : "asc"))
+                  );
+                  const res = {
+                    rows: sortedData,
+                    pages: Math.ceil(total / pageSize)
+                  };
+                  // Here we'll simulate a server response with 500ms of delay.
+                  //setTimeout(() => resolve(res), 1000);
+                  //console.log(res);
+                  resolve(res)
+                }
+               
+            
+        });
+    });
+};
+
 const MostrarTabla = ({Registros,cols}) =>
 (
     <div style = {{ 'textAlign': 'center'}}>
@@ -101,7 +133,7 @@ const MostrarTabla = ({Registros,cols}) =>
             pageSize={20}
             data={Registros}
             columns={cols}
-            showPagination={true}
+           
         />
     </div>
 )
@@ -121,11 +153,48 @@ class Inventario extends Component
             almacenes : [],
             mostrar : '0',
             desglosar : true,
-            cols : '',
+            cols : camposTablaNoDesglosado,
+            data: [],
+            pages: null,
+            loading: true
         }
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.mostrarRegistrosDesglosados = this.mostrarRegistrosDesglosados.bind(this);
+        this.fetchData = this.fetchData.bind(this);
+        this.pdf = this.pdf.bind(this);
+    }
+    pdf(event){
+        var {busqueda, desglosar} = this.state;
+        if(busqueda.almacen!=='0')
+        {
+            var x=desglosar==true?1:0;
+           window.open(API_URL+"/PdfInventario/"+busqueda.almacen+'/'+x, '_blank');
+            
+        }
+    }
+
+    fetchData(state, instance) {
+        // Whenever the table model changes, or the user sorts or changes pages, this method gets called and passed the current table model.
+        // You can set the `loading` prop of the table to true to use the built-in one or show you're own loading bar if you want.
+        this.setState({ loading: true });
+        // Request the data however you want.  Here, we'll use our mocked service we created earlier
+        requestData(
+          state.pageSize,
+          state.page,
+          state.sorted,
+          state.filtered,
+          this.state.busqueda.almacen,
+          this.state.desglosar==true?1:0,
+        ).then(res => {
+          // Now just get the rows of data to your React Table (and update anything else like total pages or loading)
+          console.log('res-----',res)
+          this.setState({
+            registros: res.rows,
+            pages: res.pages,
+            loading: false
+          });
+        });
     }
 
     componentDidMount()
@@ -156,7 +225,7 @@ class Inventario extends Component
 
         var {busqueda} = this.state;
         busqueda[name] = value;
-        this.setState({ busqueda: busqueda });
+        this.setState({ busqueda: busqueda, mostrar:'0' });
     }
 
     handleSubmit(event)
@@ -167,48 +236,15 @@ class Inventario extends Component
 
         if(busqueda.almacen!=='0')
         {
-            api().get(`/Inventario/${busqueda.almacen}`)
-            .then(function(response)
-            {
-                if(response.status === 200)
-                {
-                    mostrar = busqueda.almacen;
-                    registros = response.data;
-                    if(busqueda.almacen === '9999')
-                        cols=camposTablaGeneral;
-                    else 
-                        cols=camposTablaPorArea;
-                    if(response.data[0] === null)
-                    {
-                        swal.fire({
-                            position: 'top-end',
-                            type: 'error',
-                            title: 'No existen botellas en esa area',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        mostrar = '0';
-                    }
-                    else
-                    {
-                        desagrupados = registros;
-                        // agrupados = registros;
-                        
-                        agrupados = registros.filter(registro => registro.insumo === '100111');
-                        console.log(agrupados);
 
-                        if (desglosar === true) 
-                            registros = desagrupados;
-                        else
-                            registros = agrupados;
-                    }
-                    temp.setState({ registros : registros, agrupados : agrupados, desagrupados : desagrupados, cols : cols, mostrar : mostrar })
-                }
-            })
-            .catch(error =>
-            {
-                
-            });
+            mostrar = busqueda.almacen;
+           if(desglosar ===  true)
+                cols=camposTablaDesglosado;
+            else 
+                cols=camposTablaNoDesglosado;
+
+            temp.setState({  cols : cols, mostrar : mostrar });
+            
         }
     }
 
@@ -218,19 +254,20 @@ class Inventario extends Component
         if(desglosar ===  true)     // Si ya estan desglosados los registros
         {
             desglosar = false;      // mostrarlos agrupados
-            registros = agrupados;
+            // registros = agrupados;
         }
         else
         {
             desglosar = true;       // sino mostrarlos desglosados
-            registros = desagrupados;
+            // registros = desagrupados;
         }
-        this.setState({ desglosar: desglosar, registros : registros });
+        this.setState({ desglosar: desglosar, mostrar : '0' });
     }
                 
     render()
     {
-        let { almacenes, busqueda, registros, mostrar, cols, desglosar } = this.state;
+        let { almacenes, busqueda, registros, mostrar, cols, desglosar,pages,loading } = this.state;
+        console.log('state-->',this.state)
         return(
             <div className="container-fluid">
                 <div className="animated fadeIn">
@@ -262,6 +299,9 @@ class Inventario extends Component
                                             <div className="form-group mt-2 mb-1 mr-5">
                                                 <button className="btn btn-block btn-primary pl-3 pr-3" type="button" onClick={this.handleSubmit} > Buscar </button>
                                             </div>
+                                            <div className="form-group mt-2 mb-1 mr-5">
+                                                <button className="btn btn-block btn-secondary pl-3 pr-3" type="button" onClick={this.pdf} > PDF </button>
+                                            </div>
                                         </div>
                                     </form>
                                     <div className="d-inline-flex mt-2">
@@ -273,9 +313,24 @@ class Inventario extends Component
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                {
-                                    mostrar === '0' ? "" : <MostrarTabla Registros = {registros} cols={cols} />
-                                }
+                                  {
+                                    mostrar === '0' ? "" :
+                                    <div style = {{ 'textAlign': 'center'}}>
+                                        <ReactTable  
+                                            defaultPageSize={20} 
+                                            
+                                            data={registros}
+                                            columns={cols}
+                                            
+                                            manual // Forces table not to paginate or sort automatically, so we can handle it server-side
+                                            pages={pages} // Display the total number of pages
+                                            loading={loading} // Display the loading overlay when we need it
+                                            onFetchData={_.debounce(this.fetchData, 500)} // Request new data when things change
+                                        />
+                                    </div>
+                                  }
+                                    
+                                
                                 </div>
                             </div>
                         </div>
