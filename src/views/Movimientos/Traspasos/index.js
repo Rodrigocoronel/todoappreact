@@ -332,58 +332,57 @@ class Traspasos extends Component {
         .then(function(response)
         {
             error=2;
-            if(response.status === 200)
+
+            if(response.data) 
             {
-                if(response.data) 
+                if(response.data.registrado)
                 {
-                    if(response.data.registrado)
+                    error = 1;
+                    //guardar los movimientos solo si el movimiento es de salida
+                    if(movimiento.movimiento_id === 2){
+                        temp.setState({Traspaso_valid : response.data.movimiento})
+                    }
+                     swal.fire({
+                        position: 'top-end',
+                        type: 'success',
+                        title: 'Registrado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+                else
+                {
+                    warehouse = response.data.ubicacion.almacen;
+                    console.log(warehouse);
+                    transit = parseInt(response.data.ubicacion.transito);
+                    if(transit > 0)
                     {
-                        error = 1;
-                        //guardar los movimientos solo si el movimiento es de salida
-                        if(movimiento.movimiento_id === 2){
-                            temp.setState({Traspaso_valid : response.data.movimiento})
+                        switch(transit)
+                        {
+                            case 1: mensaje='se encuentra EN TRÁNSITO salio de ' + warehouse + "."; break;
+                            case 4: mensaje='fue VENDIDA en ' + warehouse + "."; break;
+                            case 5: mensaje='fue DADA DE BAJA en ' + warehouse + "."; break;
+                            case 6: mensaje='salio como TRASPASO de ' + warehouse + "."; break;
+                            default:
                         }
-                         swal.fire({
-                            position: 'top-end',
-                            type: 'success',
-                            title: 'Registrado',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
+
                     }
                     else
                     {
-                        warehouse = response.data.ubicacion.almacen;
-                        console.log(warehouse);
-                        transit = parseInt(response.data.ubicacion.transito);
-                        if(transit > 0)
-                        {
-                            switch(transit)
-                            {
-                                case 1: mensaje='se encuentra EN TRÁNSITO salio de ' + warehouse + "."; break;
-                                case 4: mensaje='fue VENDIDA en ' + warehouse + "."; break;
-                                case 5: mensaje='fue DADA DE BAJA en ' + warehouse + "."; break;
-                                case 6: mensaje='salio como TRASPASO de ' + warehouse + "."; break;
-                                default:
-                            }
-
-                        }
-                        else
-                        {
-                            mensaje = 'se encuentra en ' + warehouse + ".";
-                            console.log(mensaje);
-                        }
-                        swal.fire({
-                            position: 'top-end',
-                            type: 'error',
-                            title: 'Error con código de botella',
-                            html: `La botella ${mensaje}`,
-                        });
+                        mensaje = 'se encuentra en ' + warehouse + ".";
+                        console.log(mensaje);
                     }
-                    temp.setState({ movimiento : movimiento, error : error, });
-                    target.select();
-                }  
-            }
+                    swal.fire({
+                        position: 'top-end',
+                        type: 'error',
+                        title: 'Error con código de botella',
+                        html: `La botella ${mensaje}`,
+                    });
+                }
+                temp.setState({ movimiento : movimiento, error : error, });
+                target.select();
+            }  
+            
         })
         .catch(error =>
         {
@@ -491,20 +490,33 @@ class Traspasos extends Component {
                             <div className="card">
                                 <div className="card-header">
                                     <strong> Registro De Movimientos </strong>
-                                    { tMov === 1 ? <Entrada /> : tMov === 2 ? <Salida /> : tMov === 3 ? <Cancelacion /> : tMov === 4 ? <Venta /> : tMov === 5 ? <Baja /> : <Traspaso /> }
+                                    {   
+                                        tMov === 1 ? <Entrada /> 
+                                        : tMov === 2 ? <Salida /> 
+                                        : tMov === 3 ? <Cancelacion /> 
+                                        : tMov === 4 ? <Venta /> 
+                                        : tMov === 5 ? <Baja /> 
+                                        : <Traspaso /> 
+                                    }
                                 </div>
                                 <div className="card-body">
                                     <div className="row">
                                         <div className="col-lg-12">
                                             <div className="form-group">
                                                 <label> Almacen: </label>
-                                                <select value={this.state.almacen} className="form-control" name="almacen" onChange={this.handleChange}>
+                                                <select 
+                                                    value={this.state.almacen} 
+                                                    className="form-control" 
+                                                    name="almacen" 
+                                                    onChange={this.handleChange}>
                                                     <option value="0"> Selecciona un almacen... </option>
                                                     {
                                                         almacenes.map((item, i) =>
                                                             parseInt(item.activo,10) === 1 ?
-                                                                this.props.auth.user.area === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
-                                                                this.props.auth.user.area === item.id ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
+                                                                this.props.auth.user.area === -3 ? 
+                                                                    <option key={i} value={item.id} > {item.nombre} </option>  
+                                                                : this.props.auth.user.area === item.id ? 
+                                                                    <option key={i} value={item.id} > {item.nombre} </option>  : ""
                                                             : ""
                                                         )
                                                     }
@@ -513,12 +525,65 @@ class Traspasos extends Component {
                                         </div>
                                         <div className="col-lg-12 text-center">
                                             <div className="row ">
-                                                { boton[1] === 1 ? <div className="col-md-6"> <button className={this.state.clase[1]} onClick={(e)=>this.seleccionarMovimiento(e,1)} type="button"> <strong> ENTRADA     </strong> </button> </div> : "" }
-                                                { boton[2] === 1 ? <div className="col-md-6"> <button className={this.state.clase[2]} onClick={(e)=>this.seleccionarMovimiento(e,2)} type="button"> <strong> SALIDA      </strong> </button> </div> : "" }
-                                                { boton[3] === 1 ? <div className="col-md-6"> <button className={this.state.clase[3]} onClick={(e)=>this.seleccionarMovimiento(e,3)} type="button"> <strong> CANCELACIÓN </strong> </button> </div> : "" }
-                                                { boton[4] === 1 ? <div className="col-md-6"> <button className={this.state.clase[4]} onClick={(e)=>this.seleccionarMovimiento(e,4)} type="button"> <strong> VENTA       </strong> </button> </div> : "" }
-                                                { boton[5] === 1 ? <div className="col-md-6"> <button className={this.state.clase[5]} onClick={(e)=>this.seleccionarMovimiento(e,5)} type="button"> <strong> BAJA        </strong> </button> </div> : "" }
-                                                { boton[6] === 1 ? <div className="col-md-6"> <button className={this.state.clase[6]} onClick={(e)=>this.seleccionarMovimiento(e,6)} type="button"> <strong> TRASPASO    </strong> </button> </div> : "" }
+                                                { boton[1] === 1 ? 
+                                                    <div className="col-md-6"> 
+                                                        <button 
+                                                            className={this.state.clase[1]} 
+                                                            onClick={(e)=>this.seleccionarMovimiento(e,1)} 
+                                                            type="button"> 
+                                                            <strong> ENTRADA     </strong> 
+                                                        </button> 
+                                                    </div> : "" 
+                                                }
+                                                { boton[2] === 1 ? 
+                                                    <div className="col-md-6"> 
+                                                        <button 
+                                                            className={this.state.clase[2]} 
+                                                            onClick={(e)=>this.seleccionarMovimiento(e,2)} 
+                                                            type="button"> 
+                                                            <strong> SALIDA      </strong> </button> 
+                                                        </div> : "" 
+                                                }
+                                                { boton[3] === 1 ? 
+                                                    <div className="col-md-6"> 
+                                                        <button 
+                                                            className={this.state.clase[3]} 
+                                                            onClick={(e)=>this.seleccionarMovimiento(e,3)} 
+                                                            type="button"> 
+                                                            <strong> CANCELACIÓN </strong> 
+                                                        </button> 
+                                                    </div> : "" 
+                                                }
+                                                { boton[4] === 1 ? 
+                                                    <div className="col-md-6"> 
+                                                        <button 
+                                                            className={this.state.clase[4]} 
+                                                            onClick={(e)=>this.seleccionarMovimiento(e,4)} 
+                                                            type="button"> 
+                                                            <strong> VENTA       </strong> 
+                                                        </button> 
+                                                    </div> : ""
+                                                }
+                                                { boton[5] === 1 ? 
+                                                    <div className="col-md-6"> 
+                                                        <button 
+                                                            className={this.state.clase[5]} 
+                                                            onClick={(e)=>this.seleccionarMovimiento(e,5)} 
+                                                            type="button"> 
+                                                            <strong> BAJA        </strong> 
+                                                        </button> 
+                                                    </div> : "" 
+                                                }
+                                                { boton[6] === 1 ? 
+                                                    <div className="col-md-6"> 
+                                                        <button 
+                                                            className={this.state.clase[6]} 
+                                                            onClick={(e)=>this.seleccionarMovimiento(e,6)} 
+                                                            type="button"> 
+                                                            <strong> TRASPASO    </strong> 
+                                                        </button> 
+                                                    </div> : "" 
+                                                }
                                             </div>
                                         </div>
 
@@ -550,7 +615,11 @@ class Traspasos extends Component {
                         </div>
                         {
                             tMov === 2 &&
-                            <TraspasosReporte nuevoTraspaso={this.nuevoTraspaso} datosTraspaso={this.state.Traspaso_valid} imprimirReporte={this.imprimirReporte}/>
+                            <TraspasosReporte 
+                                nuevoTraspaso={this.nuevoTraspaso} 
+                                datosTraspaso={this.state.Traspaso_valid} 
+                                imprimirReporte={this.imprimirReporte}
+                            />
                         }
 
                     </div>
