@@ -58,6 +58,8 @@ class Traspasos extends Component {
             Traspaso_valid : {
                 id : 0,
                 recibe : '',
+                origen : 0,
+                destino : 0,
                 movimientos : [],
                 movimientos_detallados : [],
                 edit : 0
@@ -278,6 +280,7 @@ class Traspasos extends Component {
                             this.guardarMovimiento('','',event);
                         }else{
                             swal({title : 'Crea un nuevo traspaso', type : 'info'})
+                            this.setState({numFolio:''})
                         }
                     }
                     if( tMov === 5 )
@@ -330,6 +333,8 @@ class Traspasos extends Component {
                 {
                     error = 1;
                     //guardar los movimientos solo si el movimiento es de salida
+
+
                     if(movimiento.movimiento_id === 2){
                         temp.setState({Traspaso_valid : response.data.movimiento})
                     }
@@ -341,7 +346,10 @@ class Traspasos extends Component {
                         timer: 1500
                     });
                      numFolio=response.data.movimiento.folio;
+                     console.log(numFolio);
+
                      insumo=response.data.movimiento.desc_insumo;
+                     console.log(insumo);
                 }
                 else
                 {
@@ -432,34 +440,72 @@ class Traspasos extends Component {
 
     nuevoTraspaso=(e)=>{
 
+        var { almacen, almacenes } = this.state;
         let _self = this;
-
-        swal({ 
-            title: '¿Quien Recibe?', 
-            input: 'text', 
-            inputValidator: (value) => { return !value && 'Debes escribir quien recibe' }
-        })
-        .then((result) => 
+        var opciones=[];
+        var recibe='';
+        if(almacen==0)
         {
-           if(result.value !== undefined){
-                let data = { recibe : result.value };
+            swal.fire('Debes seleccionar un almacen de salida');
+        }
+        else
+        {
+            var inputOptionsPromise = new Promise( function (resolve)
+            {
+                almacenes.forEach((val)=>{ opciones.push( val.nombre ) });
+                resolve(opciones);
+            })
 
-                api().post('/nuevo_traspaso', data)
-                .then((res)=>{
-                    if(res.data.error){
-                        swal({title : 'No disponible', type : 'error'})
-                    }
-                    else
-                    {
-                        _self.setState({Traspaso_valid : res.data.trasp})    
-                    }
-                })
-           }
-        })
-        .catch((err)=>{
+            swal({ 
+                title: '¿Quien Recibe?', 
+                input: 'text', 
+                inputValidator: (value) => { return !value && 'Debes escribir quien recibe' }
+            })
+            .then((result) => 
+            {
+                if(result.value !== undefined)
+                {
+                    recibe=result.value;
+                    swal.fire({
+                        title: '¿A que area se envia?',
+                        input: 'select',
+                        inputOptions: inputOptionsPromise,
+                        inputPlaceholder: 'Seleciona una opcion...',
+                        showCancelButton: true,
+                        inputValidator: (value) => {
+                            return new Promise((resolve) => {
+                                if (value === '1') 
+                                {
+                                    resolve('No puede enviarse al area de salida')
+                                }
+                                else 
+                                {
+                                    console.log(result.value);
+                                    console.log(almacen);
+                                    console.log(opciones[value]);
+                                    let data = { recibe : result.value, origen : almacen, destino : opciones[value] };
 
-        }); 
-    
+                                    api().post('/nuevo_traspaso', data)
+                                    .then((res)=>{
+                                        if(res.data.error){
+                                            swal({title : 'No disponible', type : 'error'})
+                                        }
+                                        else
+                                        {
+                                            _self.setState({Traspaso_valid : res.data.trasp})    
+                                        }
+                                    })
+                                    resolve()
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+            .catch((err)=>
+            {
+            });     
+        }
     }
     
     render() 

@@ -201,16 +201,16 @@ class Buscar extends Component
                                                 <label>Ubicación actual:</label>
                                                 <label className="form-control" type="text" name="almacen_actual">
                                                     {
-                                                        parseInt(botella.transito) === 1? "< En tránsito > salio de " : ""
+                                                        parseInt(botella.transito,10) === 1? "< En tránsito > salio de " : ""
                                                     }
                                                     {
-                                                        parseInt(botella.transito) === 4? "< Vendido > en " : ""
+                                                        parseInt(botella.transito,10) === 4? "< Vendido > en " : ""
                                                     }
                                                     {
-                                                        parseInt(botella.transito) === 5? "< Dado de baja > en " : ""
+                                                        parseInt(botella.transito,10) === 5? "< Dado de baja > en " : ""
                                                     }
                                                     {
-                                                        parseInt(botella.transito) === 6? "< Traspasado > salio de " : ""
+                                                        parseInt(botella.transito,10) === 6? "< Traspasado > salio de " : ""
                                                     }
                                                     {
                                                         !botella.almacen?

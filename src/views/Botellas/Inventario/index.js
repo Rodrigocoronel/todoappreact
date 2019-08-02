@@ -4,7 +4,6 @@ import TableStyle from 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api,API_URL} from '../../../actions/_request';
-import swal from 'sweetalert2';
 import _ from "lodash";
 
 const camposTablaNoDesglosado = [
@@ -126,17 +125,6 @@ const requestData = (pageSize, page, sorted, filtered,almacen,desglosar) => {
     });
 };
 
-const MostrarTabla = ({Registros,cols}) =>
-(
-    <div style = {{ 'textAlign': 'center'}}>
-        <ReactTable  
-            pageSize={20}
-            data={Registros}
-            columns={cols}
-           
-        />
-    </div>
-)
 
 class Inventario extends Component 
 {
@@ -296,11 +284,11 @@ class Inventario extends Component
                                                     </select>
                                                 }
                                             </div>
-                                            <div className="form-group mt-2 mb-1 mr-5">
+                                            <div className="form-group mt-2 mb-1 mr-4">
                                                 <button className="btn btn-block btn-primary pl-3 pr-3" type="button" onClick={this.handleSubmit} > Buscar </button>
                                             </div>
-                                            <div className="form-group mt-2 mb-1 mr-5">
-                                                <button className="btn btn-block btn-secondary pl-3 pr-3" type="button" onClick={this.pdf} > PDF </button>
+                                            <div className="form-group mt-2 mb-1">
+                                                <button className="btn btn-block btn-primary pl-3 pr-3" type="button" onClick={this.pdf} > <i className="icons font-2xl d-block cui-print"></i> </button>
                                             </div>
                                         </div>
                                     </form>
