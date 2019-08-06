@@ -334,7 +334,6 @@ class Traspasos extends Component {
                     error = 1;
                     //guardar los movimientos solo si el movimiento es de salida
 
-
                     if(movimiento.movimiento_id === 2){
                         temp.setState({Traspaso_valid : response.data.movimiento})
                     }
@@ -346,10 +345,7 @@ class Traspasos extends Component {
                         timer: 1500
                     });
                      numFolio=response.data.movimiento.folio;
-                     console.log(numFolio);
-
                      insumo=response.data.movimiento.desc_insumo;
-                     console.log(insumo);
                 }
                 else
                 {
@@ -474,15 +470,12 @@ class Traspasos extends Component {
                         showCancelButton: true,
                         inputValidator: (value) => {
                             return new Promise((resolve) => {
-                                if (value === '1') 
+                                if (opciones[value] === this.state.almacen) 
                                 {
                                     resolve('No puede enviarse al area de salida')
                                 }
                                 else 
                                 {
-                                    console.log(result.value);
-                                    console.log(almacen);
-                                    console.log(opciones[value]);
                                     let data = { recibe : result.value, origen : almacen, destino : opciones[value] };
 
                                     api().post('/nuevo_traspaso', data)
