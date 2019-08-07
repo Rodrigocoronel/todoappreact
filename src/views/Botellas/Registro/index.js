@@ -92,6 +92,8 @@ class Agregar extends Component
 								showConfirmButton: false,
 								timer: 1000
 							});
+                            temp.setState({ botella: botella });
+                            target.select(); 
                         }
                         else
                         {
@@ -102,10 +104,11 @@ class Agregar extends Component
 								showConfirmButton: false,
 								timer: 1500
 							});
+                            this.limpiarState();
+                            target.select(); 
                         } 
                     }
-                    temp.setState({ botella: botella });
-                    target.select(); 
+                    target.select();
                 })
                 .catch(error =>
                 {
@@ -118,6 +121,7 @@ class Agregar extends Component
 						timer: 1500
 					});
                     temp.setState({ botella: botella });
+                    target.select();
                 });
             }
             else
@@ -131,8 +135,8 @@ class Agregar extends Component
 				});
                 this.limpiarState();
                 target.select();
-            }   
-        }
+            } 
+        }      
     }
 
     limpiarState()

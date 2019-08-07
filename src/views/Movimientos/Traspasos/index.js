@@ -131,7 +131,9 @@ class Traspasos extends Component {
         const value = event.target.value;
         const name = event.target.name;
 
-        this.setState({ [name]:value }); 
+        this.setState({ [name]:value });
+        document.getElementById("folio").focus();
+        document.getElementById("folio").select();
     }
 
     justificarBaja()
@@ -403,7 +405,7 @@ class Traspasos extends Component {
         let _self = this;
 
         this.setState({ clase : clase, tMov : tMov });
-        
+
         document.getElementById("folio").focus();
         document.getElementById("folio").select();
     }
@@ -411,27 +413,27 @@ class Traspasos extends Component {
     imprimirReporte=()=>
     {
         let {datosTraspaso} = this.props;
-
         let {Traspaso_valid} = this.state;
+        let _self = this;
 
         Traspaso_valid.edit = 0;
 
-        let _self = this;
-
         swal({
-          title: '¿Estas Seguro?',
-          text: "Al imprimir el reporte se cerrara el traspaso "+ Traspaso_valid.id,
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si, Imprimir!'
+            title: '¿Estas Seguro?',
+            text: "Al imprimir el reporte se cerrara el traspaso "+ Traspaso_valid.id,
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, Imprimir!'
         }).then((result) => {
-          if (result.value) {
-             window.open(API_URL+"/reporteDeTraspaso/"+Traspaso_valid.id, '_blank');
-             _self.setState({Traspaso_valid : Traspaso_valid})
-          }
-        })
+            if (result.value) {
+                window.open(API_URL+"/reporteDeTraspaso/"+Traspaso_valid.id, '_blank');
+                _self.setState({Traspaso_valid : Traspaso_valid})
+            }
+            document.getElementById("folio").focus();
+            document.getElementById("folio").select();
+        });
     }
 
     nuevoTraspaso=(e)=>{
@@ -481,11 +483,13 @@ class Traspasos extends Component {
                                     api().post('/nuevo_traspaso', data)
                                     .then((res)=>{
                                         if(res.data.error){
-                                            swal({title : 'No disponible', type : 'error'})
+                                            swal({title : 'No disponible', type : 'error'});
                                         }
                                         else
                                         {
-                                            _self.setState({Traspaso_valid : res.data.trasp})    
+                                            _self.setState({Traspaso_valid : res.data.trasp});
+                                            document.getElementById("folio").focus();
+                                            document.getElementById("folio").select();
                                         }
                                     })
                                     resolve()
@@ -499,6 +503,7 @@ class Traspasos extends Component {
             {
             });     
         }
+
     }
     
     render() 

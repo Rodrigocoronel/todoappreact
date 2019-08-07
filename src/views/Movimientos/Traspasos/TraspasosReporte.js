@@ -43,6 +43,8 @@ export default class TraspasosReporte extends React.Component{
         edit_items = value;
 
         this.setState({edit_items : edit_items})
+        document.getElementById("folio").focus();
+        document.getElementById("folio").select();
 
     }
 
