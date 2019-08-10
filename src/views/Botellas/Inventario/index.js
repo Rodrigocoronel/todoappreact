@@ -156,7 +156,7 @@ class Inventario extends Component
         var {busqueda, desglosar} = this.state;
         if(busqueda.almacen!=='0')
         {
-            var x=desglosar==true?1:0;
+            var x=desglosar===true?1:0;
            window.open(API_URL+"/PdfInventario/"+busqueda.almacen+'/'+x, '_blank');
             
         }
@@ -173,7 +173,7 @@ class Inventario extends Component
           state.sorted,
           state.filtered,
           this.state.busqueda.almacen,
-          this.state.desglosar==true?1:0,
+          this.state.desglosar===true?1:0,
         ).then(res => {
           // Now just get the rows of data to your React Table (and update anything else like total pages or loading)
           console.log('res-----',res)
@@ -219,35 +219,31 @@ class Inventario extends Component
     handleSubmit(event)
     {
         event.preventDefault();
-        var {busqueda, registros, agrupados, desagrupados, desglosar, cols, mostrar} = this.state;
+        var {busqueda, desglosar, cols, mostrar} = this.state;
         let temp = this;
 
         if(busqueda.almacen!=='0')
         {
-
             mostrar = busqueda.almacen;
-           if(desglosar ===  true)
+            if(desglosar ===  true)
                 cols=camposTablaDesglosado;
             else 
                 cols=camposTablaNoDesglosado;
 
             temp.setState({  cols : cols, mostrar : mostrar });
-            
         }
     }
 
     mostrarRegistrosDesglosados()
     {
-        var { desglosar, registros, agrupados, desagrupados } = this.state;
+        var { desglosar } = this.state;
         if(desglosar ===  true)     // Si ya estan desglosados los registros
         {
             desglosar = false;      // mostrarlos agrupados
-            // registros = agrupados;
         }
         else
         {
             desglosar = true;       // sino mostrarlos desglosados
-            // registros = desagrupados;
         }
         this.setState({ desglosar: desglosar, mostrar : '0' });
     }

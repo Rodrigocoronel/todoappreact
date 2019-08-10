@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api,API_URL} from '../../../actions/_request';
 import swal from 'sweetalert2';
-import {Input} from 'reactstrap';
 import TraspasosReporte from './TraspasosReporte';
 
 const TipoDeMovimiento = ({mov}) =>
@@ -352,7 +351,7 @@ class Traspasos extends Component {
                 else
                 {
                     warehouse = response.data.ubicacion.almacen;
-                    transit = parseInt(response.data.ubicacion.transito);
+                    transit = parseInt(response.data.ubicacion.transito,10);
                     if(transit > 0)
                     {
                         switch(transit)

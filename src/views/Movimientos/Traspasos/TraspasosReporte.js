@@ -2,9 +2,7 @@ import React from 'react';
 
 import {Row, Col} from 'reactstrap'
 
-import {API_URL} from '../../../actions/_request.js';
-
-import swal from 'sweetalert2';
+//import {API_URL} from '../../../actions/_request.js';
 
 const TipoDeMovimiento = ({mov}) =>
 (
@@ -38,7 +36,6 @@ export default class TraspasosReporte extends React.Component{
 
         const target = evt.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
 
         edit_items = value;
 

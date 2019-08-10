@@ -36,7 +36,6 @@ class Registro extends Component {
         .catch((err)=>console.log(err))	
     }
 
-
 	modificar(event,id)
 	{
 		event.preventDefault();
@@ -49,11 +48,9 @@ class Registro extends Component {
 		this.props.history.push('/app/registro/agregar');
 	}
 	
-
 	render() {
 
-		var {botonGuardar, almacenes} = this.state;
-		let {usuario, usuarios} = this.state;
+		let { usuarios } = this.state;
 
 		return (
 			<div>

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
-import swal from 'sweetalert2';
 
 const MensajeDeError = (props) => 
 ( 
@@ -189,8 +188,7 @@ class Reportes extends Component {
 
 	imprimirReporte()
 	{
-		var {busqueda, estado, movimientos} = this.state;
-		let temp = this;
+		var { busqueda } = this.state;
 
 		if(busqueda.fechaInicial) // Si hay fecha inicial
 			if(busqueda.fechaFinal) // Si hay fecha final

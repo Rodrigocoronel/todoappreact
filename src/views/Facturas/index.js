@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/dash.js';
-import {api} from '../../actions/_request';
-import swal from 'sweetalert2';
+import { api } from '../../actions/_request';
 
 class Almacenes extends Component {
 
@@ -21,81 +20,100 @@ class Almacenes extends Component {
                 folio : '',
                 insumo : '',
                 desc_insumo : '',
+                cantidad : '',
             },
-            almacen : {
-                id : '',
-                nombre : '',
-                activo : '',
-                descripcion : '',
-            },
-            error : 0,
+            error : 1,
             botellas : [],
-            almacenes : [],
+            archivo : null,
+            impreso : 0,
         }
-        this.activarDesactivar = this.activarDesactivar.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.limpiarState = this.limpiarState.bind(this);
+        this.handleFileInputChange = this.handleFileInputChange.bind(this);
+        this.imprimir = this.imprimir.bind(this);
+        this.menos = this.menos.bind(this);
+        this.mas = this.mas.bind(this);
     }
 
-    componentWillMount()
+    imprimir()
+    {
+        console.log("printing");
+    }
+
+    menos(event,i)
     {
 
     }
 
-    activarDesactivar(event,btn)
+    mas(event,i)
+    {
+
+    }
+
+    handleFileInputChange(event) 
     {
         event.preventDefault();
-        var {almacenes, almacen} = this.state;
+        const target = event.target;
+        var { error, archivo, factura, botellas, impreso } = this.state;
         let temp = this;
-        almacen = almacenes[btn];
-        api().post('/CambiarEstado',almacen)
+        var formData = new FormData();
+
+        archivo = target.files[0];        
+        formData.append('archivo',archivo);
+        
+        api().post('/CargarXml',formData)
         .then(function(response)
         {
             if(response.status === 200)
             {
-                if(response.data)
+                if(parseInt(response.data.error,10) === 0)
                 {
-                    if( parseInt(almacenes[btn].activo,10) === 0 )
-                    {
-                        almacenes[btn].activo = 1;
-                        swal('Almacen activado','','success')
-                    }
-                    else
-                    {
-                        almacenes[btn].activo = 0;
-                        swal('Almacen desactivado','','error')
-                    }
-                    temp.setState({ almacenes : almacenes });
-                } 
+                    error = response.data.error;
+                    factura = response.data.factura;
+                    botellas = response.data.articulos;
+                    temp.setState({ error : error, archivo : archivo, factura : factura, botellas : botellas, impreso : impreso });
+                }
+                else
+                {
+                    this.limpiarState();
+                    error = response.data.error;
+                    temp.setState({ error : error });
+                }
+
             }
         })
         .catch(error =>
         {
-
+            this.limpiarState();
+            error='1';
+            temp.setState({ error : error });
         });
-
-        this.setState({ almacenes : almacenes });
     }
 
-    handleSubmit(evt)
+    limpiarState()
     {
-
-    }
-
-    handleInputChange(event) 
-    {
-        // const value = event.target.value;
-        // const name = event.target.name;
-        // var {almacen} = this.state;
-
-        // almacen[name] = value;
-        // this.setState({ almacen : almacen });
+        this.setState({
+            factura : {
+                id : '',
+                folio_factura : '',
+                fecha_compra : '',
+                comprador : '',
+            },
+             botella : {
+                folio : '',
+                insumo : '',
+                desc_insumo : '',
+                cantidad : '',
+            },
+            botellas : [],
+            archivo : null,
+            impreso : '',
+        })
     }
 
     render() {
 
-        var { error } = this.state;
-        let factura = this.state;
+        var { error, factura, impreso } = this.state;
+        let datos = this.state;
 
         return (
             <div className="container-fluid">
@@ -107,29 +125,31 @@ class Almacenes extends Component {
                                     <strong>Factura</strong>
                                 </div>
                                 <div className="card-body">
-                                    <div className="row">
+                                    <div className="row">   
                                         <div className="col-sm-12">
-                                            <div class="form-group">
-                                                <label for="controlDeArchivos">Archivo XML:</label>
-                                                <input type="file" class="form-control-file" id="controlDeArchivos" />
-                                            </div>
+                                            <form id='elForm'>
+                                                <div className="form-group">
+                                                    <input type="file" required className="form-control-file" id="archivo" name="archivo[]" accept="text/xml" onChange={this.handleFileInputChange} />
+                                                </div>
+                                            </form>
                                             <div className="form-group">
                                                 <label>Código:</label>
-                                                <input className="form-control" type="text" readOnly value={factura.folio} name="folio" />
+                                                <label className="form-control" type="text" name="folio_factura"> {factura.folio_factura} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Fecha:</label>
-                                                <input className="form-control" type="text" readOnly value={factura.fecha} name="fecha" />
+                                                <label className="form-control" type="text" name="fecha_compra"> {factura.fecha_compra} </label>
                                             </div>
                                             <div className="form-group">
                                                 <label>Comprador:</label>
-                                                <input className="form-control" type="text" readOnly value={factura.comprador} name="comprador" />
+                                                <label className="form-control" type="text" name="comprador"> {factura.comprador} </label>
                                             </div>
                                             <div className="form-group">
                                             {
-                                                error === 0 ? "" :
-                                                error === 1 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> No se guardaron los datos </strong> </button> :
-                                                <button className="btn btn-block btn-outline-success" type="button" disabled> <strong> La información fue guardada correctamente </strong> </button>
+                                                error === 0 ? <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las etiquetas </button> : ""
+                                            }
+                                            {
+                                                error === 2 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> Archivo Incorrecto </strong> </button> : ""
                                             }
                                             </div>
                                         </div>
@@ -148,33 +168,41 @@ class Almacenes extends Component {
                                             <tr>
                                                 <th className="text-center" width="15%"> Cantidad </th>
                                                 <th className="text-center" width="15%"> Código </th>
-                                                <th className="text-center" width="60%"> Descripción </th>
-                                                <th className="text-center" width="10%"> Imprimir </th>
+                                                <th className="text-center" width="50%"> Descripción </th>
+                                                <th className="text-center" width="20%"> Imprimir </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {
-                                        //     almacen.almacenes.map((item, i) => 
-                                        //         <tr key = { i } >
-                                        //             <td className="text-center"> { item.id } </td>
-                                        //             <td className="text-center"> {
-                                        //                                             parseInt(item.activo,10) === 1 ?
-                                        //                                             <div className="badge badge-success"> Activo </div> : 
-                                        //                                             <div className="badge badge-secondary"> Inactivo </div>
-                                        //                                           }
-                                        //             </td>
-                                        //             <td className="text-center"> { item.nombre } </td>
-                                        //             <td> { item.descripcion } </td>
-                                        //             <td className="text-center">
-                                        //             {
-                                        //                 parseInt(item.id,10) > 2 ?
-                                        //                     parseInt(item.activo,10) === 1 ? 
-                                        //                         <button className="btn btn-block btn-outline-danger active" type="button" aria-pressed="true" onClick={(e)=>this.activarDesactivar(e,i)} > <strong> Desactivar </strong> </button> :
-                                        //                         <button className="btn btn-block btn-outline-success active" type="button" aria-pressed="true" onClick={(e)=>this.activarDesactivar(e,i)} > <strong> Activar </strong> </button> : ""
-                                        //             }
-                                        //             </td>
-                                        //         </tr>
-                                        //     )
+                                            datos.botellas.map((item, i) => 
+                                                <tr key = { i } >
+                                                    <td className="text-center"> { item.cantidad } </td>
+                                                    <td className="text-center"> { item.insumo } </td>
+                                                    <td className="text-center"> { item.desc_insumo } </td>
+                                                    <td className="text-center">
+                                                    <div className="btn-group" role="group" aria-label="Botones Cantidad">
+                                                        {
+                                                            (impreso === 0) ?
+                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
+                                                            :
+                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.menos(e,i)} > <strong> - </strong> </button>
+                                                        }
+                                                        {
+                                                            (impreso === 0) ?
+                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
+                                                            :
+                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
+                                                        }
+                                                        {
+                                                            (impreso === 0) ?
+                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
+                                                            :
+                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.mas(e,i)} > <strong> + </strong> </button>
+                                                        }
+                                                    </div>
+                                                    </td>
+                                                </tr>
+                                            )
                                         }
                                         </tbody>
                                     </table>  

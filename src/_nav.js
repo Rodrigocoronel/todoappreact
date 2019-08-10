@@ -3,7 +3,7 @@ export const administrador =
 	items:
 	[
 		{ title: true, name: 'Etiquetas', wrapper: { element: '', attributes: {} }, class: '' },
-			{ name: 'Imprimir', url: '/app/cargarFacturas', icon: 'icon-pencil', },
+			{ name: 'Imprimir', url: '/app/cargarFacturas', icon: 'icon-printer', },
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
 			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Busquedas', url: '/app/buscarBotellas', icon: 'icon-magnifier', },
@@ -38,7 +38,7 @@ export const gerente =
 	items:
 	[
 			{ title: true, name: 'Etiquetas', wrapper: { element: '', attributes: {} }, class: '' },
-			{ name: 'Imprimir', url: '/app/cargarFacturas', icon: 'icon-pencil', },
+			{ name: 'Imprimir', url: '/app/cargarFacturas', icon: 'icon-printer', },
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
 			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Busquedas', url: '/app/buscarBotellas', icon: 'icon-magnifier', },
