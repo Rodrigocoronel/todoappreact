@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../../actions/dash.js';
-import { api } from '../../actions/_request';
+import * as actions from '../../../actions/dash.js';
+import { api } from '../../../actions/_request';
 
 class Almacenes extends Component {
 
@@ -21,9 +21,11 @@ class Almacenes extends Component {
                 insumo : '',
                 desc_insumo : '',
                 cantidad : '',
+                max : '',
             },
             error : 1,
             botellas : [],
+            noArticulos : '',
             archivo : null,
             impreso : 0,
         }
@@ -36,7 +38,20 @@ class Almacenes extends Component {
 
     imprimir()
     {
-        console.log("printing");
+        var { factura, noArticulos, botellas } = this.state;
+
+        api().post('/GenerarEtiquetas',botellas)
+        .then(function(response)
+        {
+            if(response.status === 200)
+            {
+                console.log(response.data);
+            }
+        })
+        .catch(error =>
+        {
+
+        });
     }
 
     menos(event,i)
@@ -53,7 +68,7 @@ class Almacenes extends Component {
     {
         event.preventDefault();
         const target = event.target;
-        var { error, archivo, factura, botellas, impreso } = this.state;
+        var { error, archivo, factura, noArticulos, botellas, impreso } = this.state;
         let temp = this;
         var formData = new FormData();
 
@@ -70,7 +85,15 @@ class Almacenes extends Component {
                     error = response.data.error;
                     factura = response.data.factura;
                     botellas = response.data.articulos;
-                    temp.setState({ error : error, archivo : archivo, factura : factura, botellas : botellas, impreso : impreso });
+                    noArticulos = response.data.noArticulos;
+                    impreso = response.data.impreso;
+                    temp.setState({ error : error,
+                                    archivo : archivo,
+                                    factura : factura,
+                                    noArticulos : noArticulos,
+                                    botellas : botellas,
+                                    impreso : impreso 
+                                });
                 }
                 else
                 {
@@ -105,6 +128,7 @@ class Almacenes extends Component {
                 cantidad : '',
             },
             botellas : [],
+            noArticulos : '',
             archivo : null,
             impreso : '',
         })
@@ -112,7 +136,7 @@ class Almacenes extends Component {
 
     render() {
 
-        var { error, factura, impreso } = this.state;
+        var { error, factura, noArticulos, impreso } = this.state;
         let datos = this.state;
 
         return (
@@ -146,7 +170,7 @@ class Almacenes extends Component {
                                             </div>
                                             <div className="form-group">
                                             {
-                                                error === 0 ? <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las etiquetas </button> : ""
+                                                error === 0 ? <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las <strong> &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button> : ""
                                             }
                                             {
                                                 error === 2 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> Archivo Incorrecto </strong> </button> : ""
@@ -189,9 +213,9 @@ class Almacenes extends Component {
                                                         }
                                                         {
                                                             (impreso === 0) ?
-                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
+                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong> { item.max } </strong> </button>
                                                             :
-                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
+                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true"> <strong> { item.max } </strong> </button>
                                                         }
                                                         {
                                                             (impreso === 0) ?

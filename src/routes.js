@@ -13,7 +13,12 @@ const Dashboard = Loadable({
 });
 
 const CargarFactura = Loadable({
-	loader: () => import('./views/Facturas'),
+	loader: () => import('./views/Etiquetas/Facturas'),
+	loading: Loading,
+});
+
+const DestruirEtiqueta = Loadable({
+	loader: () => import('./views/Etiquetas/BajaSinLector'),
 	loading: Loading,
 });
 
@@ -65,7 +70,8 @@ const Logout = Loadable({
 const routes = [
 	{ path: '/app/', 					exact:true, name: 'Ingresar', 		component: DefaultLayout },         // Login
 	{ path: '/app/dashboard',       				name: 'Inicio',			component: Dashboard },             // Ventana principal
-	{ path: '/app/cargarFacturas',					name: 'Imprimir',		component: CargarFactura},			// Modulo para cargar facturas e imprimir etiquetas
+	{ path: '/app/cargarFacturas',					name: 'Imprimir',		component: CargarFactura },			// Modulo para cargar facturas e imprimir etiquetas
+	{ path: '/app/destruirEtiqueta',				name: 'Destruir',		component: DestruirEtiqueta },		// Dar de baja etiqueta sin lector
 	{ path: '/app/agregarBotellas', 				name: 'Agregar', 		component: NuevaBotella },          // Modulo para agregar botellas en secuencia
 	{ path: '/app/buscarBotellas',  				name: 'Buscar', 		component: BusquedaDeBotellas },    // Busqueda de botellas registradas
 	{ path: '/app/inventarioBotellas', 				name: 'Inventario', 	component: InventarioDeBotellas },  // Inventario de botellas por areas
