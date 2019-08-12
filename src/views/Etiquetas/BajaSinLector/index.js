@@ -72,6 +72,7 @@ class Buscar extends Component
         this.limpiarState = this.limpiarState.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.buscarFolio = this.buscarFolio.bind(this);
+        this.eliminarEtiqueta = this.eliminarEtiqueta.bind(this);
     }
 
     handleInputChange(event) 
@@ -120,6 +121,44 @@ class Buscar extends Component
 
             });
         }
+    }
+
+    eliminarEtiqueta()
+    {
+        swal({ 
+            title: 'Cual es el motivo?', 
+            input: 'text', 
+            inputValidator: (value) => { return !value && 'Debes escribir una motivo' }
+        })
+        .then((result) => 
+        {
+            // api().post('/MovimientoNuevo',movimiento)
+            // .then(function(response)
+            // {
+            //     error=2;
+            //     if(response.status === 200)
+            //     {
+            //         if(response.data.registrado)
+            //         {
+            //             error = 1;
+                         swal('La etiqueta se dio de baja','','success');
+            //         }
+            //         else
+            //         {
+            //             error = 0;
+            //             swal('Movimiento rechazado','','error');
+            //         }
+            //         fin=1;
+            //         temp.setState({ movimiento : movimiento, error : error, fin : fin });  
+            //     }
+            // })
+            // .catch( error =>
+            // {
+            //     error=2;
+            //     this.limpiarState();
+                
+            // });
+        });
     }
             
     limpiarState()
@@ -201,7 +240,7 @@ class Buscar extends Component
                                             <div className="form-group">
                                                 {
                                                     (botella.error === 0) ?
-                                                        <button className="btn btn-danger" type="button" id="botonEliminar"> La etiqueta se encuentra dañada. quiero destruirla </button>
+                                                        <button className="btn btn-block btn-danger" type="button" id="botonEliminar" onClick={this.eliminarEtiqueta} > La etiqueta se encuentra dañada. <strong> QUIERO DESTRUIRLA. </strong> </button>
                                                     : ""
                                                 }
                                             </div>

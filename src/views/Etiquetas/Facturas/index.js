@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import { api } from '../../../actions/_request';
+import swal from 'sweetalert2';
 
 class Almacenes extends Component {
 
@@ -28,6 +29,7 @@ class Almacenes extends Component {
             noArticulos : '',
             archivo : null,
             impreso : 0,
+            datos : {},
         }
         this.limpiarState = this.limpiarState.bind(this);
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
@@ -38,14 +40,17 @@ class Almacenes extends Component {
 
     imprimir()
     {
-        var { factura, noArticulos, botellas } = this.state;
+        var { factura, botellas, datos } = this.state;
 
-        api().post('/GenerarEtiquetas',botellas)
+        datos.factura = factura;
+        datos.botellas = botellas;
+
+        api().post('/GenerarEtiquetas',datos)
         .then(function(response)
         {
             if(response.status === 200)
             {
-                console.log(response.data);
+                swal('Imprimiendo','','success');
             }
         })
         .catch(error =>
