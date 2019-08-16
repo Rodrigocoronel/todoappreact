@@ -68,6 +68,10 @@ class Buscar extends Component
                 error : 1,
                 fin : 0,
             },
+            datos : {
+                botella : '',
+                motivo : '',
+            },
         }
         this.limpiarState = this.limpiarState.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -125,6 +129,9 @@ class Buscar extends Component
 
     eliminarEtiqueta()
     {
+        var { botella, datos } = this.state;
+        let temp = this;
+        datos.botella = botella.folio;
         swal({ 
             title: 'Cual es el motivo?', 
             input: 'text', 
@@ -132,32 +139,24 @@ class Buscar extends Component
         })
         .then((result) => 
         {
-            // api().post('/MovimientoNuevo',movimiento)
-            // .then(function(response)
-            // {
-            //     error=2;
-            //     if(response.status === 200)
-            //     {
-            //         if(response.data.registrado)
-            //         {
-            //             error = 1;
-                         swal('La etiqueta se dio de baja','','success');
-            //         }
-            //         else
-            //         {
-            //             error = 0;
-            //             swal('Movimiento rechazado','','error');
-            //         }
-            //         fin=1;
-            //         temp.setState({ movimiento : movimiento, error : error, fin : fin });  
-            //     }
-            // })
-            // .catch( error =>
-            // {
-            //     error=2;
-            //     this.limpiarState();
-                
-            // });
+            datos.motivo = result.value;
+
+            api().post('/Eliminar',datos)
+            .then(function(response)
+            {
+                if(response.status === 200)
+                {
+                    if(response.data.registrado)
+                    {
+                        swal('La etiqueta se dio de baja','','success');
+                        temp.setState({datos : datos}); 
+                    }
+                }
+            })
+            .catch( error =>
+            {
+ 
+            });
         });
     }
             
@@ -198,7 +197,7 @@ class Buscar extends Component
                                                 <div className="input-group mb-3">
                                                     <input className="form-control" type="text" autoFocus placeholder="#" value = {botella.folio} name="folio" onChange = {this.handleInputChange} />
                                                     <div className="input-group-append">
-                                                        <button class="btn btn-primary" type="button" id="botonBuscar" onClick={this.buscarFolio}> Buscar Folio </button>
+                                                        <button className="btn btn-primary" type="button" id="botonBuscar" onClick={this.buscarFolio}> Buscar Folio </button>
                                                     </div>
                                                 </div>
                                             </div>

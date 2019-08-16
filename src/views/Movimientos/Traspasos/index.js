@@ -365,7 +365,10 @@ class Traspasos extends Component {
                     }
                     else
                     {
-                        mensaje = 'se encuentra en ' + warehouse + ".";
+                        if(warehouse===undefined)
+                            mensaje = 'no esta registrada';
+                        else
+                            mensaje = 'se encuentra en ' + warehouse + ".";
                     }
                     swal.fire({
                         position: 'top-end',
@@ -553,7 +556,7 @@ class Traspasos extends Component {
                                         <div className="col-lg-12 text-center">
                                             <div className="row ">
                                                 { boton[1] === 1 ? 
-                                                    <div className="col-md-6"> 
+                                                    <div className="col-6"> 
                                                         <button 
                                                             className={this.state.clase[1]} 
                                                             onClick={(e)=>this.seleccionarMovimiento(e,1)} 
@@ -563,7 +566,7 @@ class Traspasos extends Component {
                                                     </div> : "" 
                                                 }
                                                 { boton[2] === 1 ? 
-                                                    <div className="col-md-6"> 
+                                                    <div className="col-6"> 
                                                         <button 
                                                             className={this.state.clase[2]} 
                                                             onClick={(e)=>this.seleccionarMovimiento(e,2)} 
@@ -572,7 +575,7 @@ class Traspasos extends Component {
                                                         </div> : "" 
                                                 }
                                                 { boton[3] === 1 ? 
-                                                    <div className="col-md-6"> 
+                                                    <div className="col-6"> 
                                                         <button 
                                                             className={this.state.clase[3]} 
                                                             onClick={(e)=>this.seleccionarMovimiento(e,3)} 
@@ -582,7 +585,7 @@ class Traspasos extends Component {
                                                     </div> : "" 
                                                 }
                                                 { boton[4] === 1 ? 
-                                                    <div className="col-md-6"> 
+                                                    <div className="col-6"> 
                                                         <button 
                                                             className={this.state.clase[4]} 
                                                             onClick={(e)=>this.seleccionarMovimiento(e,4)} 
@@ -592,7 +595,7 @@ class Traspasos extends Component {
                                                     </div> : ""
                                                 }
                                                 { boton[5] === 1 ? 
-                                                    <div className="col-md-6"> 
+                                                    <div className="col-6"> 
                                                         <button 
                                                             className={this.state.clase[5]} 
                                                             onClick={(e)=>this.seleccionarMovimiento(e,5)} 
@@ -602,7 +605,7 @@ class Traspasos extends Component {
                                                     </div> : "" 
                                                 }
                                                 { boton[6] === 1 ? 
-                                                    <div className="col-md-6"> 
+                                                    <div className="col-6"> 
                                                         <button 
                                                             className={this.state.clase[6]} 
                                                             onClick={(e)=>this.seleccionarMovimiento(e,6)} 
