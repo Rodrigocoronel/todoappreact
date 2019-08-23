@@ -22,7 +22,7 @@ export default class FormUser extends React.Component{
 			usuarios : [],
 			almacenes : [],
 			almacenActual : 0,
-			botonGuardar : 1, // 1 - Registrar, 2 - Guardar Cambios,
+			//botonGuardar : 1, // 1 - Registrar, 2 - Guardar Cambios,
 			botonTarjeta : 0,
 			estiloPass: '',
 			action : 'save',
@@ -54,7 +54,8 @@ export default class FormUser extends React.Component{
 	handleSubmit=(evt)=>
 	{
 		evt.preventDefault();
-		var {usuario, estiloPass} = this.state;
+		//var {usuario, estiloPass} = this.state;
+		var {usuario} = this.state;
 		var ruta='';
         let self = this;
 
@@ -201,7 +202,8 @@ export default class FormUser extends React.Component{
 
 	render(){
 
-		let {usuario , almacenes, botonTarjeta, botonGuardar} = this.state;
+		let {usuario , almacenes} = this.state;
+		//let {usuario , almacenes, botonTarjeta, botonGuardar} = this.state;
 
 		return(
 			<div className="col-12">

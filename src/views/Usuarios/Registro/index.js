@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import {api} from '../../../actions/_request';
-import swal from 'sweetalert2';
-
+//import swal from 'sweetalert2';
 import {Button} from 'reactstrap'
 
 class Registro extends Component {

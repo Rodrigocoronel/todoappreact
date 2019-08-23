@@ -30,43 +30,86 @@ class Almacenes extends Component {
             archivo : null,
             impreso : 0,
             datos : {},
+            productos : [],
         }
         this.limpiarState = this.limpiarState.bind(this);
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSelectChange = this.handleSelectChange.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
         this.imprimir = this.imprimir.bind(this);
         this.menos = this.menos.bind(this);
         this.mas = this.mas.bind(this);
     }
 
-    imprimir()
+    componentWillMount()
     {
-        var { factura, botellas, datos } = this.state;
+        var { productos } = this.state;
+        let temp = this;
 
-        datos.factura = factura;
-        datos.botellas = botellas;
-
-        api().post('/GenerarEtiquetas',datos)
+        api().get(`/Productos`)
         .then(function(response)
         {
             if(response.status === 200)
             {
-                swal('Imprimiendo','','success');
+                if(response.data[0] != null)
+                {
+                    productos = response.data;
+                    temp.setState({ productos : productos })
+                }
             }
-        })
-        .catch(error =>
-        {
-
         });
+        console.log(productos);
+    }
+
+    imprimir()
+    {
+        var { factura, botellas, datos, noArticulos } = this.state;
+
+        datos.factura = factura;
+        datos.botellas = botellas;
+
+        if(noArticulos === 0)
+        {
+            swal('Debes imprimir al menos una etiqueta','','error');
+        }
+        else
+        {
+            api().post('/GenerarEtiquetas',datos)
+            .then(function(response)
+            {
+                if(response.status === 200)
+                {
+                    swal('Imprimiendo','','success');
+                }
+            })
+            .catch(error =>
+            {
+
+            });
+        }
     }
 
     menos(event,i)
     {
-
+        var { botellas, noArticulos } = this.state;
+        if( botellas[i].max > 0 ) 
+        {
+            botellas[i].max--;
+            noArticulos--;
+        }
+        this.setState({ botellas : botellas, noArticulos : noArticulos });
     }
 
     mas(event,i)
     {
-
+        var { botellas, noArticulos } = this.state;
+        if( botellas[i].max < botellas[i].cantidad )
+        {
+            botellas[i].max++;
+            noArticulos++;
+        }
+        this.setState({ botellas : botellas, noArticulos : noArticulos });
     }
 
     handleFileInputChange(event) 
@@ -99,6 +142,7 @@ class Almacenes extends Component {
                                     botellas : botellas,
                                     impreso : impreso 
                                 });
+                    if(parseInt(impreso,10) === 1) swal('Ya se habian impreso las etiquetas de esta factura','');
                 }
                 else
                 {
@@ -115,6 +159,68 @@ class Almacenes extends Component {
             error='1';
             temp.setState({ error : error });
         });
+    }
+
+    handleInputChange(event,i)
+    {
+        const value = event.target.value;
+        const name = event.target.name;
+        var { botellas } = this.state;
+
+        botellas[i][name] = value;
+        this.setState({ botellas: botellas });
+    }
+    
+    handleSelectChange(event,i)
+    {
+        const value = event.target.value;
+        const name = event.target.name;
+        var { productos, datos } = this.state;
+
+
+        // AQUI ESTA EL PEDO
+        productos[i][name] = value;
+        datos[i].insumo = value;
+        this.setState({ productos : productos, datos : datos });
+
+
+
+    }
+
+    handleKeyPress(event,i)
+    {
+        const target = event.target;
+        var { botellas } = this.state;
+        var datos = [];
+        let temp = this;
+
+        if (event.key === 'Enter' )
+        {
+            api().get(`/Producto/${botellas[i].insumo}`)
+            .then(function(response)
+            { 
+                if(response.status === 200)
+                {
+                    if(response.data === false)
+                    {
+                        botellas[i].insumo = '';
+                        botellas[i].desc_insumo = '';
+                        temp.setState({ botellas : botellas }); 
+                    }
+                    else
+                    { 
+                        botellas[i].insumo = response.data.insumo;
+                        botellas[i].desc_insumo = response.data.desc_insumo;
+                        temp.setState({ botellas : botellas });               
+                    }
+                }
+            })
+            .catch(error =>
+            {   
+
+            });
+        }
+
     }
 
     limpiarState()
@@ -141,7 +247,7 @@ class Almacenes extends Component {
 
     render() {
 
-        var { error, factura, noArticulos, impreso } = this.state;
+        var { error, factura, noArticulos, impreso, producto, productos } = this.state;
         let datos = this.state;
 
         return (
@@ -162,7 +268,7 @@ class Almacenes extends Component {
                                                 </div>
                                             </form>
                                             <div className="form-group">
-                                                <label>Código:</label>
+                                                <label>Folio de factura:</label>
                                                 <label className="form-control" type="text" name="folio_factura"> {factura.folio_factura} </label>
                                             </div>
                                             <div className="form-group">
@@ -175,7 +281,12 @@ class Almacenes extends Component {
                                             </div>
                                             <div className="form-group">
                                             {
-                                                error === 0 ? <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las <strong> &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button> : ""
+                                                error === 0 ? 
+                                                    impreso === 0 ?
+                                                        <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las <strong> &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
+                                                    :
+                                                        <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero <strong> &nbsp; REIMPRIMIR &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
+                                                : ""
                                             }
                                             {
                                                 error === 2 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> Archivo Incorrecto </strong> </button> : ""
@@ -206,8 +317,26 @@ class Almacenes extends Component {
                                             datos.botellas.map((item, i) => 
                                                 <tr key = { i } >
                                                     <td className="text-center"> { item.cantidad } </td>
-                                                    <td className="text-center"> { item.insumo } </td>
-                                                    <td className="text-center"> { item.desc_insumo } </td>
+                                                    <td className="text-center">
+                                                        {
+                                                            item.insumo === null ? item.insumo = "" : ""
+                                                        }
+                                                        <input className="form-control" type="text" placeholder="#" value = {item.insumo} name="insumo" onKeyPress = {(e)=>this.handleKeyPress(e,i)} onChange = {(e)=>this.handleInputChange(e,i)} />
+                                                    </td>
+                                                    <td className="text-center">
+                                                    {
+                                                        <select 
+                                                            value = {item.insumo} 
+                                                            className="form-control" 
+                                                            name="desc_insumo" 
+                                                            onChange = {(e)=>this.handleSelectChange(e,i)} >
+                                                            <option value="0">  </option>
+                                                            {
+                                                                productos.map((item2, j) => <option key={j} value={item2.insumo} > {item2.desc_insumo} </option> )
+                                                            }
+                                                        </select>
+                                                    }
+                                                    </td>
                                                     <td className="text-center">
                                                     <div className="btn-group" role="group" aria-label="Botones Cantidad">
                                                         {

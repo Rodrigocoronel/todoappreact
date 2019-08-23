@@ -308,7 +308,6 @@ class Traspasos extends Component {
         }
     }
 
-
     //guardar el movimiento
     guardarMovimiento(motivo,x,event)
     {
@@ -334,7 +333,6 @@ class Traspasos extends Component {
                 {
                     error = 1;
                     //guardar los movimientos solo si el movimiento es de salida
-
                     if(movimiento.movimiento_id === 2){
                         temp.setState({Traspaso_valid : response.data.movimiento})
                     }
@@ -393,7 +391,15 @@ class Traspasos extends Component {
     limpiarState()
     {
         this.setState({
-            numFolio : '', movimiento : { folio : '', botella_id : '', movimiento_id : '', almacen_id : '', fecha : '', user : '' }
+            numFolio : '',
+            movimiento : {
+                folio : '',
+                botella_id : '',
+                movimiento_id : '',
+                almacen_id : '',
+                fecha : '',
+                user : ''
+            }
         });
     }
 
