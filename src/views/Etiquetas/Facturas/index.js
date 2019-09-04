@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
-import { api } from '../../../actions/_request';
+import { api, request_file } from '../../../actions/_request';
 import swal from 'sweetalert2';
 
 class Almacenes extends Component {
@@ -21,8 +21,10 @@ class Almacenes extends Component {
                 folio : '',
                 insumo : '',
                 desc_insumo : '',
+                referencia : '',
                 cantidad : '',
                 max : '',
+                producto_id : 0,
             },
             error : 1,
             botellas : [],
@@ -59,43 +61,59 @@ class Almacenes extends Component {
                 }
             }
         });
-        console.log(productos);
     }
 
     imprimir()
     {
         var { factura, botellas, datos, noArticulos } = this.state;
-
+        var estanTodosLlenos = true;
         datos.factura = factura;
         datos.botellas = botellas;
-
+        console.log(botellas)
         if(noArticulos === 0)
         {
             swal('Debes imprimir al menos una etiqueta','','error');
         }
         else
         {
-            api().post('/GenerarEtiquetas',datos)
-            .then(function(response)
+            botellas.forEach((value) => { 
+                if(value.insumo === '') estanTodosLlenos = false; 
+            });
+
+            if(estanTodosLlenos)
             {
-                if(response.status === 200)
+                api().post('/GenerarEtiquetas',datos)
+                .then(function(response)
                 {
                     swal('Imprimiendo','','success');
-                }
-            })
-            .catch(error =>
-            {
 
-            });
+                    // Hacer algo para desactivar boton
+					return request_file()
+					.post(`/DescargarEtiquetas/${response.data}`);
+						
+                }).then(response => 
+                {
+                    const file = new Blob([response.data], {type: 'application/pdf'});
+                    const fileURL = URL.createObjectURL(file);
+                    window.open(fileURL);
+                }).catch(error =>
+                {
+                    swal('Algo Esta mal','','error');
+                });
+            }
+            else
+            {
+                swal('Debes ingresar todos los codigos de insumo','','error');
+            }
         }
     }
 
     menos(event,i)
     {
         var { botellas, noArticulos } = this.state;
-        if( botellas[i].max > 0 ) 
+        if( botellas[i].cantidad > 0 ) 
         {
-            botellas[i].max--;
+            botellas[i].cantidad--;
             noArticulos--;
         }
         this.setState({ botellas : botellas, noArticulos : noArticulos });
@@ -104,9 +122,9 @@ class Almacenes extends Component {
     mas(event,i)
     {
         var { botellas, noArticulos } = this.state;
-        if( botellas[i].max < botellas[i].cantidad )
+        if( botellas[i].cantidad < botellas[i].max )
         {
-            botellas[i].max++;
+            botellas[i].cantidad++;
             noArticulos++;
         }
         this.setState({ botellas : botellas, noArticulos : noArticulos });
@@ -158,6 +176,7 @@ class Almacenes extends Component {
             this.limpiarState();
             error='1';
             temp.setState({ error : error });
+            swal('Archivo Invalido','','error');
         });
     }
 
@@ -173,25 +192,21 @@ class Almacenes extends Component {
     
     handleSelectChange(event,i)
     {
+        let {productos} = this.state;
         const value = event.target.value;
-        const name = event.target.name;
-        var { productos, datos } = this.state;
+        const index = event.target.selectedIndex;
+        const texto = event.target.options[index].text;
+        var { botellas } = this.state;
 
-
-        // AQUI ESTA EL PEDO
-        productos[i][name] = value;
-        datos[i].insumo = value;
-        this.setState({ productos : productos, datos : datos });
-
-
-
+        botellas[i]['insumo'] = value;
+        botellas[i]['desc_insumo'] = texto;
+        botellas[i]['producto_id'] = productos[i]['id'];
+        this.setState({ botellas : botellas });
     }
 
     handleKeyPress(event,i)
     {
-        const target = event.target;
         var { botellas } = this.state;
-        var datos = [];
         let temp = this;
 
         if (event.key === 'Enter' )
@@ -236,6 +251,7 @@ class Almacenes extends Component {
                 folio : '',
                 insumo : '',
                 desc_insumo : '',
+                referencia : '',
                 cantidad : '',
             },
             botellas : [],
@@ -247,7 +263,7 @@ class Almacenes extends Component {
 
     render() {
 
-        var { error, factura, noArticulos, impreso, producto, productos } = this.state;
+        var { error, factura, noArticulos, impreso, productos } = this.state;
         let datos = this.state;
 
         return (
@@ -312,58 +328,69 @@ class Almacenes extends Component {
                                                 <th className="text-center" width="20%"> Imprimir </th>
                                             </tr>
                                         </thead>
-                                        <tbody>
                                         {
                                             datos.botellas.map((item, i) => 
-                                                <tr key = { i } >
-                                                    <td className="text-center"> { item.cantidad } </td>
-                                                    <td className="text-center">
-                                                        {
-                                                            item.insumo === null ? item.insumo = "" : ""
-                                                        }
-                                                        <input className="form-control" type="text" placeholder="#" value = {item.insumo} name="insumo" onKeyPress = {(e)=>this.handleKeyPress(e,i)} onChange = {(e)=>this.handleInputChange(e,i)} />
-                                                    </td>
-                                                    <td className="text-center">
-                                                    {
-                                                        <select 
-                                                            value = {item.insumo} 
-                                                            className="form-control" 
-                                                            name="desc_insumo" 
-                                                            onChange = {(e)=>this.handleSelectChange(e,i)} >
-                                                            <option value="0">  </option>
+                                               
+                                                <tbody>
+                                                    <tr key = { i } >
+                                                        <td className="text-center" width="15%"> { item.max } </td>
+                                                        <td className="text-center" width="15%">
                                                             {
-                                                                productos.map((item2, j) => <option key={j} value={item2.insumo} > {item2.desc_insumo} </option> )
+                                                                item.insumo === null ? item.insumo = "" : ""
                                                             }
-                                                        </select>
-                                                    }
-                                                    </td>
-                                                    <td className="text-center">
-                                                    <div className="btn-group" role="group" aria-label="Botones Cantidad">
+                                                            <input className="form-control" type="text" placeholder="#" value = {item.insumo} name="insumo" onKeyPress = {(e)=>this.handleKeyPress(e,i)} onChange = {(e)=>this.handleInputChange(e,i)} />
+                                                        </td>
+                                                        <td className="text-center" width="50%">
                                                         {
-                                                            (impreso === 0) ?
-                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
-                                                            :
-                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.menos(e,i)} > <strong> - </strong> </button>
+                                                            <select 
+                                                                value = {item.insumo} 
+                                                                className="form-control" 
+                                                                name="desc_insumo" 
+                                                                onChange = {(e)=>this.handleSelectChange(e,i)} >
+                                                                <option value="0">  </option>
+                                                                {
+                                                                    productos.map((item2, j) => <option key={j} value={item2.insumo}> {item2.desc_insumo} </option> )
+                                                                }
+                                                            </select>
                                                         }
-                                                        {
-                                                            (impreso === 0) ?
-                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong> { item.max } </strong> </button>
-                                                            :
-                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true"> <strong> { item.max } </strong> </button>
-                                                        }
-                                                        {
-                                                            (impreso === 0) ?
-                                                                <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
-                                                            :
-                                                                <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.mas(e,i)} > <strong> + </strong> </button>
-                                                        }
-                                                    </div>
-                                                    </td>
-                                                </tr>
+                                                        </td>
+                                                        <td className="text-center" width="20%">
+                                                            <div className="btn-group" role="group" aria-label="Botones Cantidad">
+                                                                {
+                                                                    (impreso === 0) ?
+                                                                        <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
+                                                                    :
+                                                                        <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.menos(e,i)} > <strong> - </strong> </button>
+                                                                }
+                                                                {
+                                                                    (impreso === 0) ?
+                                                                        <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
+                                                                    :
+                                                                        <button className="btn btn-secondary active" type="button" aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
+                                                                }
+                                                                {
+                                                                    (impreso === 0) ?
+                                                                        <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
+                                                                    :
+                                                                        <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.mas(e,i)} > <strong> + </strong> </button>
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {
+                                                        (impreso === 0) ?
+                                                            <tr>
+                                                                <td className="text-center">  </td>
+                                                                <td className="text-center"> <i> REFERENCIA: </i> </td>
+                                                                <td> <label className="form-control" type="text" name="referencia"> { item.referencia } </label> </td>
+                                                                <td> </td>
+                                                            </tr>
+                                                        : ""
+                                                    } 
+                                                </tbody>                            
                                             )
                                         }
-                                        </tbody>
-                                    </table>  
+                                    </table>
                                 </div>
                             </div>
                         </div>

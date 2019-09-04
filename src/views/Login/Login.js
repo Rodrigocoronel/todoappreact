@@ -60,10 +60,9 @@ class Login extends Component {
 		}).then((result) =>
 		{
 
-			let first = result.value.substring(1,17);
-			let second = result.value.substring(18,21);
+			let first = result.value.substring(1,5);
 
-			usuario.tarjeta = first+second;
+			usuario.tarjeta = first;
 			var noTarjeta = {
 				password : usuario.tarjeta
 			}

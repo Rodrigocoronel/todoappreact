@@ -6,7 +6,7 @@ export const administrador =
 			{ name: 'Imprimir', url: '/app/cargarFacturas', icon: 'icon-printer', },
 			{ name: 'Eliminar', url: '/app/destruirEtiqueta', icon: 'icon-trash', },
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
-			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
+			//{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Busquedas', url: '/app/buscarBotellas', icon: 'icon-magnifier', },
 			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Almacenes', wrapper: { element: '', attributes: {}, },},
@@ -42,7 +42,7 @@ export const gerente =
 			{ name: 'Imprimir', url: '/app/cargarFacturas', icon: 'icon-printer', },
 			{ name: 'Eliminar', url: '/app/destruirEtiqueta', icon: 'icon-trash', },
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
-			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
+			//{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Busquedas', url: '/app/buscarBotellas', icon: 'icon-magnifier', },
 			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Almacenes', wrapper: { element: '', attributes: {}, },},
@@ -62,7 +62,7 @@ export const almacenGeneral =
 	items:
 	[
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
-			{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
+			//{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Inventario', url: '/app/inventarioBotellas', icon: 'icon-note', },
 		{ title: true, name: 'Movimientos', wrapper: { element: '', attributes: {}, }, },
 			{ name: 'Entradas / Salidas', url: '/app/traspasos', icon: 'icon-pencil', },

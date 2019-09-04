@@ -179,10 +179,9 @@ class Traspasos extends Component {
         {
             if(result.value.length > 0)
             {
-                let first = result.value.substring(1,17);
-                let second = result.value.substring(18,21);
+                let first = result.value.substring(1,5);
 
-                movimiento.tarjeta = first+second;
+                movimiento.tarjeta = first;
                 
                 api().post('/MovimientoNuevo',movimiento)
                 .then(function(response)
@@ -254,15 +253,10 @@ class Traspasos extends Component {
             if (event.key === 'Enter' &&  almacen !=='0')
             {
                 //datos = movimiento.folio.toString().split("^");
-                datos = numFolio.toString().split("^");
+                datos = numFolio.toString().split("!#");
 
-                let newsd = numFolio.toString().split("&")
-                
-                if(newsd.length === 7){
-                    datos = newsd;
-                }
 
-                if (datos.length === 7 )
+                if (datos.length === 6 )
                 {
                     movimiento.folio = datos[0];
                     numFolio = datos[0];

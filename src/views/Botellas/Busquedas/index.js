@@ -58,7 +58,7 @@ class Buscar extends Component
 
         this.state={
             botella : {
-                folio : '',
+                id : '',
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
@@ -92,21 +92,17 @@ class Buscar extends Component
         var datos = [];
         let temp = this;
 
-        if ( (event.key === 'Enter') && (botella.folio) )
+        if ( (event.key === 'Enter') && (botella.id) )
         {
             botella.error = 1;
-            datos = botella.folio.toString().split("^");
+            datos = botella.id.toString().split("!#");
             
-            let newsd = botella.folio.toString().split("&")
-            
-            if(newsd.length === 7){
-                datos = newsd;
-            }
+           // let newsd = botella.folio.toString().split("&")
 
-            if(datos.length===7)
+            if(datos.length===6)
             {
                 botella.folio = datos[0];
-                api().get(`/Botella/${botella.folio}`)
+                api().get(`/Botella/${botella.id}`)
                 .then(function(response)
                 { 
                     if(response.status === 200)
@@ -140,6 +136,7 @@ class Buscar extends Component
             else
             {
                 this.limpiarState();
+                swal('Etiqueta Invalida','','error');
                 target.select();
             }
         }
@@ -154,7 +151,7 @@ class Buscar extends Component
         this.setState({
             botella : 
             {
-                folio : '',
+                id : '',
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
@@ -183,7 +180,7 @@ class Buscar extends Component
                                         <div className="col-sm-12">
                                             <div className="form-group">
                                                 <label>Folio:</label>
-                                                <input className="form-control" type="text" autoFocus placeholder="#" value = {botella.folio} name="folio" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
+                                                <input className="form-control" type="text" autoFocus placeholder="#" value = {botella.id} name="id" onKeyPress = {this.handleKeyPress} onChange = {this.handleInputChange} />
                                             </div>
                                             <div className="form-group">
                                                 <label>Código de insumo:</label>

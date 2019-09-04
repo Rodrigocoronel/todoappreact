@@ -58,7 +58,7 @@ class Buscar extends Component
 
         this.state={
             botella : {
-                folio : '',
+                id : '',
                 insumo : '',
                 desc_insumo : '',
                 fecha_compra : '',
@@ -94,9 +94,9 @@ class Buscar extends Component
         var { botella } = this.state;
         let temp = this;
 
-        if(botella.folio !== '')
+        if(botella.id !== '')
         {
-            api().get(`/Botella/${botella.folio}`)
+            api().get(`/Botella/${botella.id}`)
             .then(function(response)
             { 
                 if(response.status === 200)
@@ -131,7 +131,7 @@ class Buscar extends Component
     {
         var { botella, datos } = this.state;
         let temp = this;
-        datos.botella = botella.folio;
+        datos.botella = botella.id;
         swal({ 
             title: 'Cual es el motivo?', 
             input: 'text', 
@@ -195,7 +195,7 @@ class Buscar extends Component
                                             <div className="form-group">
                                                 <label>Folio:</label>
                                                 <div className="input-group mb-3">
-                                                    <input className="form-control" type="text" autoFocus placeholder="#" value = {botella.folio} name="folio" onChange = {this.handleInputChange} />
+                                                    <input className="form-control" type="text" autoFocus placeholder="#" value = {botella.id} name="id" onChange = {this.handleInputChange} />
                                                     <div className="input-group-append">
                                                         <button className="btn btn-primary" type="button" id="botonBuscar" onClick={this.buscarFolio}> Buscar Folio </button>
                                                     </div>
