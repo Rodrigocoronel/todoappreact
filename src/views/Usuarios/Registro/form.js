@@ -178,11 +178,11 @@ export default class FormUser extends React.Component{
 			else
 			{	
 				
-				let first = result.value.substring(1,5);
+				//let first = result.value.substring(1,5);
 
-				usuario.tarjeta = first; 
+				usuario.tarjeta = result.value; 
 
-				swal('Tarjeta registrada','','success');
+				swal('Tarjeta agregada','','success');
 				temp.setState({ usuario : usuario });
 			}
 			

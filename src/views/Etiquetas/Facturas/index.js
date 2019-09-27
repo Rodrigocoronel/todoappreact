@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
 import { api, request_file } from '../../../actions/_request';
 import swal from 'sweetalert2';
+import Select from 'react-select';
 
 class Almacenes extends Component {
 
@@ -68,7 +69,7 @@ class Almacenes extends Component {
         var { factura, botellas, datos, noArticulos } = this.state;
         var estanTodosLlenos = true;
         datos.factura = factura;
-        datos.botellas = botellas;
+        
         console.log(botellas)
         if(noArticulos === 0)
         {
@@ -77,11 +78,16 @@ class Almacenes extends Component {
         else
         {
             botellas.forEach((value) => { 
-                if(value.insumo === '') estanTodosLlenos = false; 
+
+                if(value.insumo == '')
+                    estanTodosLlenos = false;
             });
 
             if(estanTodosLlenos)
             {
+
+                datos.botellas = botellas;
+
                 api().post('/GenerarEtiquetas',datos)
                 .then(function(response)
                 {
@@ -144,32 +150,30 @@ class Almacenes extends Component {
         api().post('/CargarXml',formData)
         .then(function(response)
         {
-            if(response.status === 200)
-            {
-                if(parseInt(response.data.error,10) === 0)
-                {
-                    error = response.data.error;
-                    factura = response.data.factura;
-                    botellas = response.data.articulos;
-                    noArticulos = response.data.noArticulos;
-                    impreso = response.data.impreso;
-                    temp.setState({ error : error,
-                                    archivo : archivo,
-                                    factura : factura,
-                                    noArticulos : noArticulos,
-                                    botellas : botellas,
-                                    impreso : impreso 
-                                });
-                    if(parseInt(impreso,10) === 1) swal('Ya se habian impreso las etiquetas de esta factura','');
-                }
-                else
-                {
-                    this.limpiarState();
-                    error = response.data.error;
-                    temp.setState({ error : error });
-                }
 
+            if(parseInt(response.data.error,10) === 0)
+            {
+                error = response.data.error;
+                factura = response.data.factura;
+                botellas = response.data.articulos;
+                noArticulos = response.data.noArticulos;
+                impreso = response.data.impreso;
+                temp.setState({ error : error,
+                                archivo : archivo,
+                                factura : factura,
+                                noArticulos : noArticulos,
+                                botellas : botellas,
+                                impreso : impreso 
+                            });
+                if(parseInt(impreso,10) === 1) swal('Ya se habian impreso las etiquetas de esta factura','');
             }
+            else
+            {
+                this.limpiarState();
+                error = response.data.error;
+                temp.setState({ error : error });
+            }
+
         })
         .catch(error =>
         {
@@ -193,14 +197,24 @@ class Almacenes extends Component {
     handleSelectChange(event,i)
     {
         let {productos} = this.state;
-        const value = event.target.value;
-        const index = event.target.selectedIndex;
-        const texto = event.target.options[index].text;
+        // const value = event.target.value;
+        // const index = event.target.selectedIndex;
+        // const texto = event.target.options[index].text;
         var { botellas } = this.state;
 
-        botellas[i]['insumo'] = value;
-        botellas[i]['desc_insumo'] = texto;
-        botellas[i]['producto_id'] = productos[i]['id'];
+        botellas[i]['insumoSelect'] = event;
+
+        if(event != null){
+            botellas[i]['insumo'] = event.value;
+            botellas[i]['desc_insumo'] = event.label;
+            botellas[i]['producto_id'] = productos[i]['id'];
+        }
+        else{
+            botellas[i]['insumo'] = '';
+            botellas[i]['desc_insumo'] = '';
+            botellas[i]['producto_id'] = '';
+        }
+        
         this.setState({ botellas : botellas });
     }
 
@@ -209,26 +223,27 @@ class Almacenes extends Component {
         var { botellas } = this.state;
         let temp = this;
 
-        if (event.key === 'Enter' )
+        if (event.key === 'Enter' && botellas[i].insumo != '')
         {
             api().get(`/Producto/${botellas[i].insumo}`)
             .then(function(response)
             { 
-                if(response.status === 200)
+
+                if(response.data == false)
                 {
-                    if(response.data === false)
-                    {
-                        botellas[i].insumo = '';
-                        botellas[i].desc_insumo = '';
-                        temp.setState({ botellas : botellas }); 
-                    }
-                    else
-                    { 
-                        botellas[i].insumo = response.data.insumo;
-                        botellas[i].desc_insumo = response.data.desc_insumo;
-                        temp.setState({ botellas : botellas });               
-                    }
+                    botellas[i].insumo = '';
+                    botellas[i].desc_insumo = '';
+                    botellas[i].insumoSelect = null;
+                    temp.setState({ botellas : botellas }); 
                 }
+                else
+                { 
+                    botellas[i].insumo = response.data.insumo;
+                    botellas[i].desc_insumo = response.data.desc_insumo;
+                    botellas[i].insumoSelect = response.data;
+                    temp.setState({ botellas : botellas });               
+                }
+                
             })
             .catch(error =>
             {   
@@ -322,39 +337,55 @@ class Almacenes extends Component {
                                     <table className="table table-responsive-sm table-striped">
                                         <thead>
                                             <tr>
-                                                <th className="text-center" width="15%"> Cantidad </th>
-                                                <th className="text-center" width="15%"> Código </th>
-                                                <th className="text-center" width="50%"> Descripción </th>
-                                                <th className="text-center" width="20%"> Imprimir </th>
+                                                <th className="text-center" width=""> Cantidad </th>
+                                                <th className="text-center" width="15%"> # insumo </th>
+                                                <th className="text-center" width="40%"> Desc Insumo </th>
+                                                {
+                                                    (impreso === 0) &&
+                                                    <th className="text-center" width=""> Referencia </th>
+                                                }
+                                                <th className="text-center" width=""> Imprimir </th>
                                             </tr>
                                         </thead>
+                                        <tbody>
                                         {
                                             datos.botellas.map((item, i) => 
                                                
-                                                <tbody>
+                                                
                                                     <tr key = { i } >
-                                                        <td className="text-center" width="15%"> { item.max } </td>
-                                                        <td className="text-center" width="15%">
-                                                            {
-                                                                item.insumo === null ? item.insumo = "" : ""
-                                                            }
-                                                            <input className="form-control" type="text" placeholder="#" value = {item.insumo} name="insumo" onKeyPress = {(e)=>this.handleKeyPress(e,i)} onChange = {(e)=>this.handleInputChange(e,i)} />
-                                                        </td>
-                                                        <td className="text-center" width="50%">
-                                                        {
-                                                            <select 
-                                                                value = {item.insumo} 
+                                                        <td className="text-center" width=""> { item.max } </td>
+                                                        <td className="" width="">
+                                                            <input 
                                                                 className="form-control" 
-                                                                name="desc_insumo" 
-                                                                onChange = {(e)=>this.handleSelectChange(e,i)} >
-                                                                <option value="0">  </option>
-                                                                {
-                                                                    productos.map((item2, j) => <option key={j} value={item2.insumo}> {item2.desc_insumo} </option> )
-                                                                }
-                                                            </select>
+                                                                type="text" 
+                                                                placeholder="#" 
+                                                                value = {item.insumo} 
+                                                                name="insumo" 
+                                                                onKeyPress = {(e)=>this.handleKeyPress(e,i)} 
+                                                                onChange = {(e)=>this.handleInputChange(e,i)} 
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                        {
+                                                            <Select 
+                                                                value = {item.insumoSelect} 
+                                                                className="" 
+                                                                name="insumoSelect" 
+                                                                onChange = {(e)=>this.handleSelectChange(e,i)}
+                                                                options = {productos}
+                                                                isClearable={true}
+                                                            >
+
+                                                            </Select>
                                                         }
                                                         </td>
-                                                        <td className="text-center" width="20%">
+                                                        {
+                                                            (impreso === 0) &&
+                                                                <td>
+                                                                    <label className="form-control" type="text" name="referencia"> { item.referencia } </label>
+                                                                </td> 
+                                                        }
+                                                        <td className="text-center" width="">
                                                             <div className="btn-group" role="group" aria-label="Botones Cantidad">
                                                                 {
                                                                     (impreso === 0) ?
@@ -377,19 +408,11 @@ class Almacenes extends Component {
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                    {
-                                                        (impreso === 0) ?
-                                                            <tr>
-                                                                <td className="text-center">  </td>
-                                                                <td className="text-center"> <i> REFERENCIA: </i> </td>
-                                                                <td> <label className="form-control" type="text" name="referencia"> { item.referencia } </label> </td>
-                                                                <td> </td>
-                                                            </tr>
-                                                        : ""
-                                                    } 
-                                                </tbody>                            
+                                                    
+                                                                           
                                             )
                                         }
+                                        </tbody> 
                                     </table>
                                 </div>
                             </div>
