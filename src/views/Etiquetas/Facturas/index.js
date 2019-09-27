@@ -53,7 +53,7 @@ class Almacenes extends Component {
         api().get(`/Productos`)
         .then(function(response)
         {
-            if(response.status === 200)
+            if(response.status == 200)
             {
                 if(response.data[0] != null)
                 {
@@ -71,7 +71,7 @@ class Almacenes extends Component {
         datos.factura = factura;
         
         console.log(botellas)
-        if(noArticulos === 0)
+        if(noArticulos == 0)
         {
             swal('Debes imprimir al menos una etiqueta','','error');
         }
@@ -151,7 +151,7 @@ class Almacenes extends Component {
         .then(function(response)
         {
 
-            if(parseInt(response.data.error,10) === 0)
+            if(parseInt(response.data.error,10) == 0)
             {
                 error = response.data.error;
                 factura = response.data.factura;
@@ -165,7 +165,7 @@ class Almacenes extends Component {
                                 botellas : botellas,
                                 impreso : impreso 
                             });
-                if(parseInt(impreso,10) === 1) swal('Ya se habian impreso las etiquetas de esta factura','');
+                if(parseInt(impreso,10) == 1) swal('Ya se habian impreso las etiquetas de esta factura','');
             }
             else
             {
@@ -223,7 +223,7 @@ class Almacenes extends Component {
         var { botellas } = this.state;
         let temp = this;
 
-        if (event.key === 'Enter' && botellas[i].insumo != '')
+        if (event.key == 'Enter' && botellas[i].insumo != '')
         {
             api().get(`/Producto/${botellas[i].insumo}`)
             .then(function(response)
@@ -312,15 +312,15 @@ class Almacenes extends Component {
                                             </div>
                                             <div className="form-group">
                                             {
-                                                error === 0 ? 
-                                                    impreso === 0 ?
+                                                error == 0 ? 
+                                                    impreso == 0 ?
                                                         <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las <strong> &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
                                                     :
                                                         <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero <strong> &nbsp; REIMPRIMIR &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
                                                 : ""
                                             }
                                             {
-                                                error === 2 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> Archivo Incorrecto </strong> </button> : ""
+                                                error == 2 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> Archivo Incorrecto </strong> </button> : ""
                                             }
                                             </div>
                                         </div>
@@ -341,7 +341,7 @@ class Almacenes extends Component {
                                                 <th className="text-center" width="15%"> # insumo </th>
                                                 <th className="text-center" width="40%"> Desc Insumo </th>
                                                 {
-                                                    (impreso === 0) &&
+                                                    (impreso == 0) &&
                                                     <th className="text-center" width=""> Referencia </th>
                                                 }
                                                 <th className="text-center" width=""> Imprimir </th>
@@ -380,7 +380,7 @@ class Almacenes extends Component {
                                                         }
                                                         </td>
                                                         {
-                                                            (impreso === 0) &&
+                                                            (impreso == 0) &&
                                                                 <td>
                                                                     <label className="form-control" type="text" name="referencia"> { item.referencia } </label>
                                                                 </td> 
@@ -388,19 +388,19 @@ class Almacenes extends Component {
                                                         <td className="text-center" width="">
                                                             <div className="btn-group" role="group" aria-label="Botones Cantidad">
                                                                 {
-                                                                    (impreso === 0) ?
+                                                                    (impreso == 0) ?
                                                                         <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
                                                                     :
                                                                         <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.menos(e,i)} > <strong> - </strong> </button>
                                                                 }
                                                                 {
-                                                                    (impreso === 0) ?
+                                                                    (impreso == 0) ?
                                                                         <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
                                                                     :
                                                                         <button className="btn btn-secondary active" type="button" aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
                                                                 }
                                                                 {
-                                                                    (impreso === 0) ?
+                                                                    (impreso == 0) ?
                                                                         <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
                                                                     :
                                                                         <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.mas(e,i)} > <strong> + </strong> </button>
