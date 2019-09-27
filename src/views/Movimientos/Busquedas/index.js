@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
-import {api} from '../../../actions/_request';
+import {api,API_URL} from '../../../actions/_request';
 
 const MensajeDeError = (props) => 
 ( 
@@ -209,7 +209,7 @@ class Reportes extends Component {
 			if(busqueda.almacen !== '0')    cadena = cadena + `&almacen=${busqueda.almacen}`;
 			if(busqueda.movimiento !== '0') cadena = cadena + `&movimiento=${busqueda.movimiento}`;
 			console.log(cadena);
-			window.open("http://localhost:8000/api"+cadena, '_blank');
+			window.open(API_URL+cadena, '_blank');
 		}
 	}
 
