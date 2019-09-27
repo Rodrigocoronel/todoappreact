@@ -276,7 +276,9 @@ class Inventario extends Component
                                                                 : ""
                                                             )
                                                         }
-                                                        <option value='9999'> Todas las areas </option>
+                                                        {
+                                                            this.props.auth.user.area === -3 ? <option value='9999'> Todas las areas </option> : ""
+                                                        }
                                                     </select>
                                                 }
                                             </div>
