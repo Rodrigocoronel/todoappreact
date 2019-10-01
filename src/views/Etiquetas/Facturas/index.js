@@ -26,6 +26,7 @@ class Almacenes extends Component {
                 cantidad : '',
                 max : '',
                 producto_id : 0,
+                insumoSelect : null,
             },
             error : 1,
             botellas : [],
@@ -34,6 +35,7 @@ class Almacenes extends Component {
             impreso : 0,
             datos : {},
             productos : [],
+            impr : false,
         }
         this.limpiarState = this.limpiarState.bind(this);
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
@@ -69,11 +71,14 @@ class Almacenes extends Component {
         var { factura, botellas, datos, noArticulos } = this.state;
         var estanTodosLlenos = true;
         datos.factura = factura;
-        
-        console.log(botellas)
-        if(noArticulos == 0)
+        let _self = this;
+
+        _self.setState({impr : true});
+
+        if( noArticulos == 0 )
         {
             swal('Debes imprimir al menos una etiqueta','','error');
+            _self.setState({impr : false});
         }
         else
         {
@@ -93,7 +98,8 @@ class Almacenes extends Component {
                 {
                     swal('Imprimiendo','','success');
 
-                    // Hacer algo para desactivar boton
+                    
+                    
 					return request_file()
 					.post(`/DescargarEtiquetas/${response.data}`);
 						
@@ -104,12 +110,14 @@ class Almacenes extends Component {
                     window.open(fileURL);
                 }).catch(error =>
                 {
-                    swal('Algo Esta mal','','error');
+                    swal('Algo salio mal','','error');
+                    _self.setState({impr : false});
                 });
             }
             else
             {
                 swal('Debes ingresar todos los codigos de insumo','','error');
+                _self.setState({impr : false});
             }
         }
     }
@@ -207,7 +215,7 @@ class Almacenes extends Component {
         if(event != null){
             botellas[i]['insumo'] = event.value;
             botellas[i]['desc_insumo'] = event.label;
-            botellas[i]['producto_id'] = productos[i]['id'];
+            botellas[i]['producto_id'] = event.id;
         }
         else{
             botellas[i]['insumo'] = '';
@@ -278,7 +286,7 @@ class Almacenes extends Component {
 
     render() {
 
-        var { error, factura, noArticulos, impreso, productos } = this.state;
+        var { error, factura, noArticulos, impreso, productos, impr } = this.state;
         let datos = this.state;
 
         return (
@@ -314,7 +322,7 @@ class Almacenes extends Component {
                                             {
                                                 error == 0 ? 
                                                     impreso == 0 ?
-                                                        <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las <strong> &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
+                                                        <button disabled={impr} className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las <strong> &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
                                                     :
                                                         <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero <strong> &nbsp; REIMPRIMIR &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
                                                 : ""
@@ -363,6 +371,7 @@ class Almacenes extends Component {
                                                                 name="insumo" 
                                                                 onKeyPress = {(e)=>this.handleKeyPress(e,i)} 
                                                                 onChange = {(e)=>this.handleInputChange(e,i)} 
+                                                                disabled ={impreso == 0 ? false : true }
                                                             />
                                                         </td>
                                                         <td>
@@ -374,6 +383,7 @@ class Almacenes extends Component {
                                                                 onChange = {(e)=>this.handleSelectChange(e,i)}
                                                                 options = {productos}
                                                                 isClearable={true}
+                                                                isDisabled ={impreso == 0 ? false : true }
                                                             >
 
                                                             </Select>

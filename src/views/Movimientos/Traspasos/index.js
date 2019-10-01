@@ -179,9 +179,10 @@ class Traspasos extends Component {
         {
             if(result.value.length > 0)
             {
-                //let first = result.value.substring(1,5);
+                let first = result.value.substring(1,17);
+                let second = result.value.substring(18,21);
 
-                movimiento.tarjeta = result.value;
+                movimiento.tarjeta = first+second;
                 
                 api().post('/MovimientoNuevo',movimiento)
                 .then(function(response)
