@@ -36,6 +36,7 @@ class Almacenes extends Component {
             datos : {},
             productos : [],
             impr : false,
+            loadXmlF : false,
         }
         this.limpiarState = this.limpiarState.bind(this);
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
@@ -75,6 +76,9 @@ class Almacenes extends Component {
 
         _self.setState({impr : true});
 
+        if(this.state.imp)
+            swal('ll','','er')
+
         if( noArticulos == 0 )
         {
             swal('Debes imprimir al menos una etiqueta','','error');
@@ -97,8 +101,6 @@ class Almacenes extends Component {
                 .then(function(response)
                 {
                     swal('Imprimiendo','','success');
-
-                    
                     
 					return request_file()
 					.post(`/DescargarEtiquetas/${response.data}`);
@@ -108,6 +110,7 @@ class Almacenes extends Component {
                     const file = new Blob([response.data], {type: 'application/pdf'});
                     const fileURL = URL.createObjectURL(file);
                     window.open(fileURL);
+
                 }).catch(error =>
                 {
                     swal('Algo salio mal','','error');
@@ -154,6 +157,8 @@ class Almacenes extends Component {
 
         archivo = target.files[0];        
         formData.append('archivo',archivo);
+
+        this.setState({loadXmlF : true})
         
         api().post('/CargarXml',formData)
         .then(function(response)
@@ -166,20 +171,26 @@ class Almacenes extends Component {
                 botellas = response.data.articulos;
                 noArticulos = response.data.noArticulos;
                 impreso = response.data.impreso;
-                temp.setState({ error : error,
-                                archivo : archivo,
-                                factura : factura,
-                                noArticulos : noArticulos,
-                                botellas : botellas,
-                                impreso : impreso 
-                            });
+                
+                temp.setState({ 
+                    error : error,
+                    archivo : archivo,
+                    factura : factura,
+                    noArticulos : noArticulos,
+                    botellas : botellas,
+                    impreso : impreso,
+                    loadXmlF : false,
+                    impr : false,
+                });
+
                 if(parseInt(impreso,10) == 1) swal('Ya se habian impreso las etiquetas de esta factura','');
+
             }
             else
             {
                 this.limpiarState();
                 error = response.data.error;
-                temp.setState({ error : error });
+                temp.setState({ error : error , loadXmlF : false, impr : false,});
             }
 
         })
@@ -187,8 +198,9 @@ class Almacenes extends Component {
         {
             this.limpiarState();
             error='1';
-            temp.setState({ error : error });
+            temp.setState({ error : error , loadXmlF : false, impr : false,});
             swal('Archivo Invalido','','error');
+
         });
     }
 
@@ -242,13 +254,16 @@ class Almacenes extends Component {
                     botellas[i].insumo = '';
                     botellas[i].desc_insumo = '';
                     botellas[i].insumoSelect = null;
+                    botellas[i].producto_id = 0;
                     temp.setState({ botellas : botellas }); 
+                    swal('Codigo no encontrado!','','error');
                 }
                 else
                 { 
-                    botellas[i].insumo = response.data.insumo;
-                    botellas[i].desc_insumo = response.data.desc_insumo;
+                    botellas[i].insumo = response.data.value;
+                    botellas[i].desc_insumo = response.data.label;
                     botellas[i].insumoSelect = response.data;
+                    botellas[i].producto_id = response.data.id;
                     temp.setState({ botellas : botellas });               
                 }
                 
@@ -303,7 +318,19 @@ class Almacenes extends Component {
                                         <div className="col-sm-12">
                                             <form id='elForm'>
                                                 <div className="form-group">
-                                                    <input type="file" required className="form-control-file" id="archivo" name="archivo[]" accept="text/xml" onChange={this.handleFileInputChange} />
+                                                    <input 
+                                                        type="file" 
+                                                        required 
+                                                        className="form-control-file" 
+                                                        id="archivo" 
+                                                        name="archivo[]" 
+                                                        accept="text/xml" 
+                                                        onChange={this.handleFileInputChange} 
+                                                    />
+                                                    {
+                                                        this.state.loadXmlF &&
+                                                        <label>Examinando archivo</label>
+                                                    }
                                                 </div>
                                             </form>
                                             <div className="form-group">
@@ -322,7 +349,16 @@ class Almacenes extends Component {
                                             {
                                                 error == 0 ? 
                                                     impreso == 0 ?
-                                                        <button disabled={impr} className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero imprimir las <strong> &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
+                                                        <button 
+                                                            disabled={impr} 
+                                                            className="btn btn-block btn-primary" 
+                                                            type="button" 
+                                                            onClick={this.imprimir}> 
+                                                            La factura es correcta, quiero imprimir 
+                                                            las <strong> &nbsp; 
+                                                            { noArticulos } &nbsp; 
+                                                            </strong> etiquetas 
+                                                        </button>
                                                     :
                                                         <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero <strong> &nbsp; REIMPRIMIR &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
                                                 : ""
@@ -347,7 +383,7 @@ class Almacenes extends Component {
                                             <tr>
                                                 <th className="text-center" width=""> Cantidad </th>
                                                 <th className="text-center" width="15%"> # insumo </th>
-                                                <th className="text-center" width="40%"> Desc Insumo </th>
+                                                <th className="text-center" width="35%"> Desc Insumo </th>
                                                 {
                                                     (impreso == 0) &&
                                                     <th className="text-center" width=""> Referencia </th>
