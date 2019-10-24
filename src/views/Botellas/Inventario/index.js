@@ -42,7 +42,7 @@ const camposTablaNoDesglosado = [
 
 const camposTablaDesglosado = [
     {
-        Header: 'No.',
+        Header: 'Folio',
         accessor: 'id',
         headerStyle: { whiteSpace: 'unset' },
         style: {whiteSpace: 'unset'},

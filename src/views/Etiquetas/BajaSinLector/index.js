@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions/dash.js';
-import {api} from '../../../actions/_request';
+import {api, request_file} from '../../../actions/_request';
 import swal from 'sweetalert2';
+
+import {Card, CardHeader, CardBody, Col, Row} from 'reactstrap'
 
 const TipoDeMovimiento = ({mov,motivo}) =>
 (
@@ -32,6 +34,10 @@ const VentanaDeMovimientos = ({botella}) =>
                         <th width='30%'> <center> Fecha </center> </th>
                         <th width='20%'> <center> Movimiento </center> </th>
                         <th width='40%'> <center> Almacen </center> </th>
+                        {
+                            botella.transito == 5 &&
+                            <th width='40%'> <center> Usuario </center> </th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -39,9 +45,15 @@ const VentanaDeMovimientos = ({botella}) =>
                     botella.mov.map((item, i) => 
                         <tr key = { i } >
                             <td width='10%'> <center> { i+1 } </center>  </td>
-                            <td width='30%'> <center> { item.fecha } </center> </td>
+                            <td width='20%'> <center> { item.fecha } </center> </td>
                             <td width='20%'> <center> { <TipoDeMovimiento mov = {parseInt(item.movimiento_id,10)} motivo={botella.motivo} /> } </center> </td>
-                            <td width='40%'> <center> { item.almacen_nombre } </center> </td>
+                            <td width='30%'> <center> { item.almacen_nombre } </center> </td>
+                            {
+                                item.movimiento_id == 5 &&
+                                <td width="10%">
+                                    <center> {botella.user_delete} </center>
+                                </td>
+                            }
                         </tr>
                     )
                 }
@@ -129,36 +141,91 @@ class Buscar extends Component
 
     eliminarEtiqueta()
     {
-        var { botella, datos } = this.state;
+        var { botella } = this.state;
         let temp = this;
-        datos.botella = botella.id;
-        swal({ 
-            title: 'Cual es el motivo?', 
-            input: 'text', 
-            inputValidator: (value) => { return !value && 'Debes escribir una motivo' }
-        })
-        .then((result) => 
-        {
-            datos.motivo = result.value;
+        
+        swal.queue([{
+          title: 'Al eliminar la etiqueta se generara una nueva!<br/>Motivo de reimpresión:',
+          input: 'text',
+          inputAttributes: {
+            autocapitalize: 'off'
+          },
+          showCancelButton: true,
+          confirmButtonText: 'Eliminar!',
+          showLoaderOnConfirm: true,
+          inputValidator: (value) => {
+            return !value && 'You need to write something!'
+          },
+          preConfirm: (login) => {
 
-            api().post('/Eliminar',datos)
-            .then(function(response)
-            {
-                if(response.status === 200)
-                {
-                    if(response.data.registrado)
-                    {
-                        swal('La etiqueta se dio de baja','','success');
-                        temp.setState({datos : datos}); 
-                    }
+                let elData = {
+                    botella : botella.id,
+                    motivo : login
                 }
-            })
-            .catch( error =>
-            {
- 
-            });
-        });
-    }
+
+                return api().post('/Eliminar', elData)
+                .then(function(response)
+                {
+                    botella = response.data.botella;
+                    temp.setState({botella : botella})
+
+                    if(response.data.registrado){
+                        return request_file().post(`descargar_new`,elData).then(response => 
+                        {
+                            const file = new Blob([response.data], {type: 'application/pdf'});
+                            const fileURL = URL.createObjectURL(file);
+                            window.open(fileURL);
+
+                        }).catch(err=>console.log(err))
+                    }else{
+                        swal.insertQueueStep({ 
+                            type: 'error',
+                            title: 'Etiqueta dada de baja previamente'
+                        });
+                    }
+                            
+                })
+
+          },
+          allowOutsideClick: () => !swal.isLoading()
+        }])
+
+        // swal({ 
+        //     title: 'Al eliminar la etiqueta se generara una nueva!<br/>Motivo de reimpresión:', 
+        //     input: 'text', 
+        //     inputValidator: (value) => { return !value && 'Debes escribir un motivo!' }
+        // })
+        // .then((result) => 
+        // {
+        //     let elData = {
+        //         botella : botella.id,
+        //         motivo : result.value
+        //     }
+           
+        //     api().post('/Eliminar', elData)
+        //     .then(function(response)
+        //     {
+        //         botella = response.data.botella;
+        //         temp.setState({botella : botella})
+        //         if(response.data.registrado){
+        //             return request_file().post(`descargar_new`,elData).then(response => 
+        //             {
+        //                 const file = new Blob([response.data], {type: 'application/pdf'});
+        //                 const fileURL = URL.createObjectURL(file);
+        //                 window.open(fileURL);
+
+        //             }).catch(err=>console.log(err))
+        //         }else{
+        //             swal('Etiqueta dada de baja previamente!','','error');
+        //         }
+                        
+        //     })
+        // })
+        // .catch( error =>
+        // {
+        //     swal('Error consulte a wenatives!','','error');
+        // });
+    }   
             
     limpiarState()
     {
@@ -179,12 +246,12 @@ class Buscar extends Component
     render() 
     {
         let {botella} = this.state;
-
+        console.log(botella)
         return(
             <div className="container-fluid">
                 <div className="animated fadeIn">
-                    <div className="row">
-                        <div className="col-sm-12 col-lg-6">
+                    <Row>
+                        <Col xs="12" sm="12" lg="6">
                             <div className="card">
                                 <div className="card-header">
                                     <strong>Búsqueda Manual De Botellas</strong>
@@ -247,11 +314,11 @@ class Buscar extends Component
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </Col>
                         <div className="col-sm-12 col-lg-6">
-                            { botella.error === 0 ? <VentanaDeMovimientos botella = {botella} /> : "" }
+                            {  <VentanaDeMovimientos botella = {botella} />}
                         </div>
-                    </div>
+                    </Row>
                 </div>
             </div>
         );

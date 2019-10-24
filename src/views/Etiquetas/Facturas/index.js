@@ -17,16 +17,7 @@ class Almacenes extends Component {
                 folio_factura : '',
                 fecha_compra : '',
                 comprador : '',
-            },
-             botella : {
-                folio : '',
-                insumo : '',
-                desc_insumo : '',
-                referencia : '',
-                cantidad : '',
-                max : '',
-                producto_id : 0,
-                insumoSelect : null,
+                rfc_proveedor : '',
             },
             error : 1,
             botellas : [],
@@ -37,7 +28,9 @@ class Almacenes extends Component {
             productos : [],
             impr : false,
             loadXmlF : false,
+            facturaGuardada : false,
         }
+
         this.limpiarState = this.limpiarState.bind(this);
         this.handleFileInputChange = this.handleFileInputChange.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -56,19 +49,18 @@ class Almacenes extends Component {
         api().get(`/Productos`)
         .then(function(response)
         {
-            if(response.status == 200)
+
+            if(response.data[0] != null)
             {
-                if(response.data[0] != null)
-                {
-                    productos = response.data;
-                    temp.setState({ productos : productos })
-                }
+                productos = response.data;
+                temp.setState({ productos : productos })
             }
-        });
+            
+        }).catch(err=>console.error(err))
     }
 
-    imprimir()
-    {
+    guardarFactura=()=>{
+
         var { factura, botellas, datos, noArticulos } = this.state;
         var estanTodosLlenos = true;
         datos.factura = factura;
@@ -76,53 +68,100 @@ class Almacenes extends Component {
 
         _self.setState({impr : true});
 
-        if(this.state.imp)
-            swal('ll','','er')
+        botellas.forEach((value) => { 
 
-        if( noArticulos == 0 )
+            if(value.insumo == '')
+                estanTodosLlenos = false;
+        });
+
+        if(estanTodosLlenos)
         {
-            swal('Debes imprimir al menos una etiqueta','','error');
-            _self.setState({impr : false});
+
+            datos.botellas = botellas;
+
+            api().post('/guardar_factura',datos)
+            .then(function(response)
+            {
+                if(response.data.error != false){
+                    swal('Factura guardada!','','success'); 
+                    factura.id = response.data.id;
+                    _self.setState({ facturaGuardada : true, factura : factura }) 
+                }
+            })
+            .catch(error =>
+            {
+                swal('Algo salio mal','','error');
+                _self.setState({impr : false});
+            });
         }
         else
         {
-            botellas.forEach((value) => { 
-
-                if(value.insumo == '')
-                    estanTodosLlenos = false;
-            });
-
-            if(estanTodosLlenos)
-            {
-
-                datos.botellas = botellas;
-
-                api().post('/GenerarEtiquetas',datos)
-                .then(function(response)
-                {
-                    swal('Imprimiendo','','success');
-                    
-					return request_file()
-					.post(`/DescargarEtiquetas/${response.data}`);
-						
-                }).then(response => 
-                {
-                    const file = new Blob([response.data], {type: 'application/pdf'});
-                    const fileURL = URL.createObjectURL(file);
-                    window.open(fileURL);
-
-                }).catch(error =>
-                {
-                    swal('Algo salio mal','','error');
-                    _self.setState({impr : false});
-                });
-            }
-            else
-            {
-                swal('Debes ingresar todos los codigos de insumo','','error');
-                _self.setState({impr : false});
-            }
+            swal('Debes ingresar todos los codigos de insumo','','error');
+            _self.setState({impr : false});
         }
+        
+
+    }
+
+    imprimir(evt,item,index)
+    {
+        evt.preventDefault();
+
+        let _self = this;
+
+        let {botellas} = this.state;
+
+        _self.setState({impr : true});
+
+        let {factura} = this.state;
+
+        swal.queue([{
+            title: 'Estas segur@?',
+            text: `Se imprimiran ${item.cantidad} etiquetas de ${item.desc_insumo}`,
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, Imprimir!',
+            showLoaderOnConfirm: true,
+            preConfirm: () => {
+                    let datos = {
+                        factura : factura.id,
+                        producto_id  : item.producto_id
+                    }
+                    return api().post('/GenerarEtiquetas',datos)
+                    .then(function(response)
+                    {   
+                        return request_file()
+                        .post(`/DescargarEtiquetas/${factura.id}/${item.insumo}/${item.producto_id}`);
+                            
+                    }).then(response => 
+                    {
+
+                        swal.insertQueueStep({ 
+                            type: 'success',
+                            title: 'Etiquetas generadas correctamente'
+                        });
+
+                        const file = new Blob([response.data], {type: 'application/pdf'});
+                        const fileURL = URL.createObjectURL(file);
+                        window.open(fileURL);
+
+                        botellas[index].impreso = 1;
+
+                        _self.setState({botellas: botellas})
+
+                    }).catch(error =>
+                    {
+                        swal('Error consulte a wenatives!','','error');
+                        _self.setState({impr : false});
+                    })
+                    
+                },
+                allowOutsideClick: () => !swal.isLoading() 
+        }])
+         
+    
     }
 
     menos(event,i)
@@ -152,56 +191,65 @@ class Almacenes extends Component {
         event.preventDefault();
         const target = event.target;
         var { error, archivo, factura, noArticulos, botellas, impreso } = this.state;
-        let temp = this;
-        var formData = new FormData();
-
-        archivo = target.files[0];        
-        formData.append('archivo',archivo);
-
-        this.setState({loadXmlF : true})
         
-        api().post('/CargarXml',formData)
-        .then(function(response)
-        {
+        let facturaGuardada = '';       
 
-            if(parseInt(response.data.error,10) == 0)
+        if( target.files.length > 0 ){
+
+            let temp = this;
+            var formData = new FormData();
+
+            archivo = target.files[0];
+
+            formData.append('archivo',archivo);
+
+            this.setState({loadXmlF : true})
+            
+            api().post('/CargarXml',formData)
+            .then(function(response)
             {
-                error = response.data.error;
-                factura = response.data.factura;
-                botellas = response.data.articulos;
-                noArticulos = response.data.noArticulos;
-                impreso = response.data.impreso;
-                
-                temp.setState({ 
-                    error : error,
-                    archivo : archivo,
-                    factura : factura,
-                    noArticulos : noArticulos,
-                    botellas : botellas,
-                    impreso : impreso,
-                    loadXmlF : false,
-                    impr : false,
-                });
 
-                if(parseInt(impreso,10) == 1) swal('Ya se habian impreso las etiquetas de esta factura','');
+                if(parseInt(response.data.error,10) == 0)
+                {
+                    error = response.data.error;
+                    factura = response.data.factura;
+                    botellas = response.data.articulos;
+                    noArticulos = response.data.noArticulos;
+                    impreso = response.data.impreso;
+                    facturaGuardada = response.data.facturaGuardada;
+                    
+                    temp.setState({ 
+                        error : error,
+                        archivo : archivo,
+                        factura : factura,
+                        noArticulos : noArticulos,
+                        botellas : botellas,
+                        impreso : impreso,
+                        loadXmlF : false,
+                        impr : false,
+                        facturaGuardada : facturaGuardada,
+                    });
 
-            }
-            else
+                    if(parseInt(impreso,10) == 1) swal('Ya se habian impreso las etiquetas de esta factura','');
+
+                }
+                else
+                {
+                    this.limpiarState();
+                    error = response.data.error;
+                    temp.setState({ error : error , loadXmlF : false, impr : false,});
+                }
+
+            })
+            .catch(error =>
             {
                 this.limpiarState();
-                error = response.data.error;
+                error='1';
                 temp.setState({ error : error , loadXmlF : false, impr : false,});
-            }
+                swal('Archivo Invalido','','error');
 
-        })
-        .catch(error =>
-        {
-            this.limpiarState();
-            error='1';
-            temp.setState({ error : error , loadXmlF : false, impr : false,});
-            swal('Archivo Invalido','','error');
-
-        });
+            });
+        }
     }
 
     handleInputChange(event,i)
@@ -296,14 +344,15 @@ class Almacenes extends Component {
             noArticulos : '',
             archivo : null,
             impreso : '',
+            facturaGuardada : false,
         })
     }
 
     render() {
 
-        var { error, factura, noArticulos, impreso, productos, impr } = this.state;
+        var { error, factura, noArticulos, impreso, productos, impr , facturaGuardada, botellas} = this.state;
         let datos = this.state;
-
+        console.log(facturaGuardada)
         return (
             <div className="container-fluid">
                 <div className="animated fadeIn">
@@ -345,28 +394,6 @@ class Almacenes extends Component {
                                                 <label>Comprador:</label>
                                                 <label className="form-control" type="text" name="comprador"> {factura.comprador} </label>
                                             </div>
-                                            <div className="form-group">
-                                            {
-                                                error == 0 ? 
-                                                    impreso == 0 ?
-                                                        <button 
-                                                            disabled={impr} 
-                                                            className="btn btn-block btn-primary" 
-                                                            type="button" 
-                                                            onClick={this.imprimir}> 
-                                                            La factura es correcta, quiero imprimir 
-                                                            las <strong> &nbsp; 
-                                                            { noArticulos } &nbsp; 
-                                                            </strong> etiquetas 
-                                                        </button>
-                                                    :
-                                                        <button className="btn btn-block btn-primary" type="button" onClick={this.imprimir}> La factura es correcta, quiero <strong> &nbsp; REIMPRIMIR &nbsp; { noArticulos } &nbsp; </strong> etiquetas </button>
-                                                : ""
-                                            }
-                                            {
-                                                error == 2 ? <button className="btn btn-block btn-outline-danger" type="button" disabled> <strong> Archivo Incorrecto </strong> </button> : ""
-                                            }
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -375,29 +402,32 @@ class Almacenes extends Component {
                         <div className="col-12">
                             <div className="card">
                                 <div className="card-header">
-                                    <strong> Articulos </strong>
+                                    <strong> Articulos</strong>
                                 </div>
                                 <div className="card-body">
                                     <table className="table table-responsive-sm table-striped">
                                         <thead>
                                             <tr>
-                                                <th className="text-center" width=""> Cantidad </th>
                                                 <th className="text-center" width="15%"> # insumo </th>
                                                 <th className="text-center" width="35%"> Desc Insumo </th>
                                                 {
-                                                    (impreso == 0) &&
+                                                    !facturaGuardada &&
                                                     <th className="text-center" width=""> Referencia </th>
                                                 }
-                                                <th className="text-center" width=""> Imprimir </th>
+                                                <th className="text-center" width="100"> Cantidad </th>
+                                                {
+                                                    facturaGuardada &&
+                                                       <th>Imprimir</th> 
+                                                }
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {
-                                            datos.botellas.map((item, i) => 
+                                            botellas.map((item, i) => 
                                                
                                                 
                                                     <tr key = { i } >
-                                                        <td className="text-center" width=""> { item.max } </td>
                                                         <td className="" width="">
                                                             <input 
                                                                 className="form-control" 
@@ -407,7 +437,7 @@ class Almacenes extends Component {
                                                                 name="insumo" 
                                                                 onKeyPress = {(e)=>this.handleKeyPress(e,i)} 
                                                                 onChange = {(e)=>this.handleInputChange(e,i)} 
-                                                                disabled ={impreso == 0 ? false : true }
+                                                                disabled ={!facturaGuardada ? false : true }
                                                             />
                                                         </td>
                                                         <td>
@@ -419,40 +449,44 @@ class Almacenes extends Component {
                                                                 onChange = {(e)=>this.handleSelectChange(e,i)}
                                                                 options = {productos}
                                                                 isClearable={true}
-                                                                isDisabled ={impreso == 0 ? false : true }
+                                                                isDisabled ={!facturaGuardada ? false : true }
                                                             >
 
                                                             </Select>
                                                         }
                                                         </td>
                                                         {
-                                                            (impreso == 0) &&
+                                                            (!facturaGuardada) &&
                                                                 <td>
-                                                                    <label className="form-control" type="text" name="referencia"> { item.referencia } </label>
+                                                                    <label 
+                                                                        className="form-control" 
+                                                                        style={{'height':'100%'}} 
+                                                                        type="text" 
+                                                                        name="referencia"
+                                                                    > 
+                                                                        { item.referencia } 
+                                                                    </label>
                                                                 </td> 
                                                         }
-                                                        <td className="text-center" width="">
-                                                            <div className="btn-group" role="group" aria-label="Botones Cantidad">
-                                                                {
-                                                                    (impreso == 0) ?
-                                                                        <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
-                                                                    :
-                                                                        <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.menos(e,i)} > <strong> - </strong> </button>
-                                                                }
-                                                                {
-                                                                    (impreso == 0) ?
-                                                                        <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
-                                                                    :
-                                                                        <button className="btn btn-secondary active" type="button" aria-pressed="true"> <strong> { item.cantidad } </strong> </button>
-                                                                }
-                                                                {
-                                                                    (impreso == 0) ?
-                                                                        <button className="btn btn-secondary active" type="button" disabled aria-pressed="true"> <strong>   </strong> </button>
-                                                                    :
-                                                                        <button className="btn btn-secondary active" type="button" aria-pressed="true" onClick={(e)=>this.mas(e,i)} > <strong> + </strong> </button>
-                                                                }
-                                                            </div>
+                                                        <td>
+                                                            <label className="form-control">{item.cantidad}</label>
                                                         </td>
+                                                        {
+                                                            (item.impreso == 0 && facturaGuardada) &&
+                                                                <td>
+                                                                    <button 
+                                                                        className="btn btn-primary" 
+                                                                        onClick={(e)=>this.imprimir(e,item,i)}>
+                                                                        <i className="fa fa-print fa-lg"></i>
+                                                                    </button>
+                                                                </td>
+                                                        }
+                                                        {
+                                                            (item.impreso == 1 && facturaGuardada) &&
+                                                            <td>
+                                                                <label className="form-control">Impreso</label>
+                                                            </td> 
+                                                        }
                                                     </tr>
                                                     
                                                                            
@@ -463,6 +497,12 @@ class Almacenes extends Component {
                                 </div>
                             </div>
                         </div>
+                        {
+                            (!facturaGuardada) &&
+                                <div className="col-12 text-right mb-5">
+                                    <button className="btn btn-primary" onClick={this.guardarFactura}>Guardar Factura</button>
+                                </div>
+                        }
                     </div>
                 </div>
             </div>

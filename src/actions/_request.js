@@ -55,7 +55,7 @@ export const request_file = () => {
 	return axios.create({
 		baseURL 		: API_URL,
 		responseType 	: 'blob',
-		headers 		: {'Authorization': AuthorizationToken,'Content-Type': 'multipart/form-data', }
+		headers 		: { 'Authorization': AuthorizationToken }
 
 	});
 

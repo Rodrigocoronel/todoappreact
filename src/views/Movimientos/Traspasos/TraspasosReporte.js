@@ -51,7 +51,7 @@ export default class TraspasosReporte extends React.Component{
 
         
 		return(
-			<div className="col-xl-5 col-lg-9 col-md-10 col-sm-12">
+			<div className="col-xl-5 col-lg-9 col-md-12 col-sm-12">
                 <div className="card">
                     <div className="card-header">
                     	<Row>
@@ -129,7 +129,7 @@ export default class TraspasosReporte extends React.Component{
                                                 datosTraspaso.id !== 0 &&
                                                 datosTraspaso.movimientos_detallados.map((item, i) => 
                                                     <tr key = { i } >
-                                                        <td width='20%'> <center> { item.folio}             </center> </td>
+                                                        <td width='20%'> <center> { item.id}             </center> </td>
                                                         <td width='20%'> <center> { <TipoDeMovimiento mov = { parseInt(item.movimiento_id,10) } /> } </center> </td>
                                                         <td width='60%'> <center> { item.desc_insumo }  </center> </td>
                                                     </tr>

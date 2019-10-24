@@ -21,7 +21,7 @@ import
 // sidebar nav config
 import * as navigation from '../../_nav';
 // routes config
-import routes from '../../routes';
+import * as routes from '../../routes';
 import DefaultAside from './DefaultAside';
 import DefaultFooter from './DefaultFooter';
 import DefaultHeader from './DefaultHeader';
@@ -33,15 +33,32 @@ class DefaultLayout extends Component
 	{
 		let {user} = this.props.auth;
 		let menuDeUsuario = [];
+		let routes_user = [];
 
 		switch(parseInt(user.tipo,10))
 		{
-			case 1: menuDeUsuario = navigation.administrador; break;
-			case 2: menuDeUsuario = navigation.supervisor; break;
-			case 3: menuDeUsuario = navigation.gerente; break;
-			case 4: menuDeUsuario = navigation.almacenGeneral; break;
-			case 5: menuDeUsuario = navigation.almacenLicor; break;
-			case 6: menuDeUsuario = navigation.barra; break;
+			case 1: 
+				menuDeUsuario = navigation.administrador; 
+				routes_user = routes.routes;
+				break;
+			// case 2: menuDeUsuario = navigation.supervisor; break;
+			case 3: 
+				menuDeUsuario = navigation.gerente; 
+				routes_user = routes.routes_gerente;
+				break;
+			case 4: 
+				menuDeUsuario = navigation.almacenGeneral; 
+				routes_user = routes.routes_almacenes_general;
+				break;
+			case 5: 
+				menuDeUsuario = navigation.almacenLicor; 
+				routes_user = routes.routes_almacenes_licor;
+				break;
+			case 6: 
+				menuDeUsuario = navigation.barra; 
+				routes_user = routes.routes_barra;
+
+				break;
 			default:
 		}
 
@@ -59,11 +76,11 @@ class DefaultLayout extends Component
 						<AppSidebarMinimizer />
 					</AppSidebar>
 					<main className="main">
-						<AppBreadcrumb appRoutes={routes}/>
+						<AppBreadcrumb appRoutes={routes_user}/>
 						<Container fluid>
 							<Switch>
 								{
-									routes.map((route, idx) => 
+									routes_user.map((route, idx) => 
 									{
 										return route.component ? 
 											(<Route key={idx} path={route.path} exact={route.exact} name={route.name} render={props => (<route.component {...props} />)} />)

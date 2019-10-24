@@ -201,7 +201,7 @@ class Traspasos extends Component {
                             swal('Movimiento rechazado','','error');
                         }
                         fin=1;
-                        temp.setState({ movimiento : movimiento, error : error, fin : fin });  
+                        temp.setState({ movimiento : movimiento, error : error, fin : fin , numFolio : response.data.movimiento.folio});  
                     }
                 })
                 .catch( error =>
@@ -458,7 +458,7 @@ class Traspasos extends Component {
             })
 
             swal({ 
-                title: '¿Quien Recibe?', 
+                title: 'Nombre de la persona que recibe el traspaso:', 
                 input: 'text', 
                 inputValidator: (value) => { return !value && 'Debes escribir quien recibe' }
             })
@@ -508,6 +508,10 @@ class Traspasos extends Component {
         }
 
     }
+
+    handleFocus=(event)=> {
+      event.target.select();
+    }
     
     render() 
     {
@@ -517,7 +521,7 @@ class Traspasos extends Component {
             <div className="container-fluid">
                 <div className="animated fadeIn">
                     <div className="row">
-                        <div className="col-xl-7 col-lg-9 col-md-10 col-sm-12">
+                        <div className="col-xl-7 col-lg-9 col-md-112 col-sm-12">
                             <div className="card">
                                 <div className="card-header">
                                     <strong> Registro De Movimientos </strong>
@@ -632,7 +636,9 @@ class Traspasos extends Component {
                                                     onChange={this.handleInputChange} 
                                                     onKeyPress={this.handleKeyPress}
                                                     autoFocus
+                                                    onFocus={this.handleFocus}
                                                     id="folio"
+                                                    autocomplete="off"
                                                 />
                                             </div>
                                             <div className="form-group">
