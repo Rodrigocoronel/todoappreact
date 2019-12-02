@@ -271,7 +271,7 @@ class Traspasos extends Component {
                     }
                     if( tMov === 2 )
                     {
-                        if(Traspaso_valid.edit){
+                        if(Traspaso_valid.edit == 1){
                             movimiento.trasp_id = Traspaso_valid.id;
                             this.guardarMovimiento('','',event);
                         }else{
@@ -548,9 +548,9 @@ class Traspasos extends Component {
                                                     {
                                                         almacenes.map((item, i) =>
                                                             parseInt(item.activo,10) === 1 ?
-                                                                this.props.auth.user.area === -3 ? 
+                                                                parseInt(this.props.auth.user.area,10) === -3 ? 
                                                                     <option key={i} value={item.id} > {item.nombre} </option>  
-                                                                : this.props.auth.user.area === item.id ? 
+                                                                : parseInt(this.props.auth.user.area,10) === parseInt(item.id,10) ? 
                                                                     <option key={i} value={item.id} > {item.nombre} </option>  : ""
                                                             : ""
                                                         )

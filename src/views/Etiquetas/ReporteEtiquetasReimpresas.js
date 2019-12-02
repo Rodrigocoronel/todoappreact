@@ -169,7 +169,7 @@ export default class Facturas extends React.Component{
     	return(
     		<Container>
     			<Card>
-    				<CardHeader>Facturas</CardHeader>
+    				<CardHeader>Etiquetas Reimpresas</CardHeader>
     				<CardBody>
     					<Row>
                             <Col xs="6">

@@ -472,7 +472,7 @@ class Almacenes extends Component {
                                                             <label className="form-control">{item.cantidad}</label>
                                                         </td>
                                                         {
-                                                            (item.impreso == 0 && facturaGuardada) &&
+                                                            ( item.impreso == 0 && facturaGuardada ) &&
                                                                 <td>
                                                                     <button 
                                                                         className="btn btn-primary" 

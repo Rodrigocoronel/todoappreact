@@ -4,7 +4,7 @@ export const fetch = () => {
 
     return(dispatch) => {
 
-        api().get('url')
+        api().get('/url')
          .then(function(response)
          {
             if(response.status === 200){

@@ -29,7 +29,11 @@ export const administrador =
 	        }
 	      ],
 	    },
-			
+	    { 
+	    	name: 'Insumos', 
+	    	url: '/app/insumos', 
+	    	icon: 'icon-grid', 
+		},	
 		{ title: true, name: 'Botellas', wrapper: { element: '', attributes: {} }, class: '' },
 			//{ name: 'Registro', url: '/app/agregarBotellas', icon: 'icon-pencil', },
 			{ name: 'Busquedas', url: '/app/buscarBotellas', icon: 'icon-magnifier', },

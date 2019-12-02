@@ -113,7 +113,7 @@ class Reportes extends Component {
                 }
             }
         });
-        this.props.auth.user.area === -3 ? busqueda.almacen = '0' : busqueda.almacen = this.props.auth.user.area;
+        this.props.auth.user.area == -3 ? busqueda.almacen = '0' : busqueda.almacen = this.props.auth.user.area;
         this.setState({busqueda : busqueda});
     }
 
@@ -205,9 +205,9 @@ class Reportes extends Component {
 		{
 			// Hacer consulta
 			var cadena = `/reporte_de_busqueda?fechaInicial=${busqueda.fechaInicial}`;
-			if(busqueda.fechaFinal !== '')  cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
-			if(busqueda.almacen !== '0')    cadena = cadena + `&almacen=${busqueda.almacen}`;
-			if(busqueda.movimiento !== '0') cadena = cadena + `&movimiento=${busqueda.movimiento}`;
+			if(busqueda.fechaFinal != '')  cadena = cadena + `&fechaFinal=${busqueda.fechaFinal}`;
+			if(busqueda.almacen != "0")    cadena = cadena + `&almacen=${busqueda.almacen}`;
+			if(busqueda.movimiento != "0") cadena = cadena + `&movimiento=${busqueda.movimiento}`;
 			console.log(cadena);
 			window.open(API_URL+cadena, '_blank');
 		}
@@ -248,8 +248,8 @@ class Reportes extends Component {
                                                     {
                                                         almacenes.map((item, i) =>
                                                             parseInt(item.activo,10) === 1 ?
-                                                                this.props.auth.user.area === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
-                                                                this.props.auth.user.area === item.id ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
+                                                                parseInt(this.props.auth.user.area,10) === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
+                                                                parseInt(this.props.auth.user.area,10) === parseInt(item.id,10) ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
                                                             : ""
                                                         )
                                                     }

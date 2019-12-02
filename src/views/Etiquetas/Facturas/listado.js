@@ -6,7 +6,7 @@ import * as actions from '../../../actions/dash.js';
 import {api,API_URL, request_file} from '../../../actions/_request';
 import _ from "lodash";
 
-import {Container, Card, CardHeader, CardBody, Row, Col, Button} from 'reactstrap';
+import {Container, Card, CardHeader, CardBody, Row, Col, Button , Input} from 'reactstrap';
 
 import swal from 'sweetalert2';
 
@@ -154,7 +154,7 @@ class BasicTable extends React.Component{
 	}
 }
 
-const requestData = (pageSize, page, sorted, filtered) => {
+const requestData = (pageSize, page, sorted, filtered,fecha1,fecha2) => {
 
 	return new Promise((resolve, reject) => {
 
@@ -189,19 +189,18 @@ const requestData = (pageSize, page, sorted, filtered) => {
 			}
 		}
 
-		api().get(`/facturas?folio_factura=${folio_factura}&rfc=${rfc}&proveedor=${proveedor}&proveedor=${proveedor}&fecha_compra=${fecha_compra}&take=${take}&skip=${skip}`)
-			.then(function (response) {
+		api().get(`/facturas?folio_factura=${folio_factura}&rfc=${rfc}&proveedor=${proveedor}&proveedor=${proveedor}&fecha_compra=${fecha_compra}&take=${take}&skip=${skip}&fecha1=${fecha1}&fecha2=${fecha2}`)
+		.then(function (response) {
+				filteredData = response.data.datos;
+				total = response.data.total;
 
-					filteredData = response.data.datos;
-					total = response.data.total;
+				const res = {
+					rows: filteredData,
+					pages: Math.ceil(total / pageSize)
+				};
 
-					const res = {
-						rows: filteredData,
-						pages: Math.ceil(total / pageSize)
-					};
-
-					resolve(res)
-			});
+				resolve(res)
+		});
 	});
 };
 
@@ -217,10 +216,12 @@ export default class Facturas extends React.Component{
 			data : [],
 			loading : false,
 			pages : 0,
-
+            fecha1 : '',
+            fecha2 : '',
 		}
 
 		this.fetchData = this.fetchData.bind(this);
+        this.table = React.createRef();
 	}
 
 	fetchData(state, instance) {
@@ -233,6 +234,8 @@ export default class Facturas extends React.Component{
           state.page,
           state.sorted,
           state.filtered,
+          this.state.fecha1,
+          this.state.fecha2,
         ).then(res => {
           // Now just get the rows of data to your React Table (and update anything else like total pages or loading)
           this.setState({
@@ -243,17 +246,79 @@ export default class Facturas extends React.Component{
         });
     }
 
+    handleInputChange=(event)=>
+    {
+        const value = event.target.value;
+        const name = event.target.name;
+
+        this.setState({ [name]: value }, () => {
+           this.fetchData(this.table.current.state)
+        });
+    }
+
+    descargar=()=>{
+        let {fecha1,fecha2} = this.state;
+        if(fecha1 != '')
+            window.open(API_URL+`/reporte_impresas/${fecha1}?fecha2=${fecha2}`, '_blank');
+        else{
+            swal('Seleccione una fecha de inicio!','','error');
+        }
+    }
+
 
     render(){
 
-    	let { data, pages, loading } = this.state;
+    	let { data, pages, loading , fecha1 , fecha2} = this.state;
 
     	let cols = columns;
 
     	return(
     		<Container>
     			<Card>
-    				<CardHeader>Facturas</CardHeader>
+    				<CardHeader>
+                        <Row>
+                            <Col xs="12 mb-3">
+                                Facturas
+                            </Col>
+                            <Col xs="12">
+                                <Row>
+                                    <Col xs="4" sm="4">
+                                        <div className="form-group">
+                                            <label>Fecha inicio</label>
+                                            <Input 
+                                                name="fecha1"
+                                                value={fecha1}
+                                                onChange={this.handleInputChange}
+                                                type="date"
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col xs="4" sm="4">
+                                        <div className="form-group">
+                                            <label>Fecha Fin</label>
+                                            <Input 
+                                                name="fecha2"
+                                                value={fecha2}
+                                                onChange={this.handleInputChange}
+                                                type="date"
+                                            />
+                                        </div>
+                                    </Col>
+
+                                    <Col xs="4 align-self-end" sm="4">
+
+                                        <div className="form-group">
+                                            <label></label>
+                                            <Button onClick={this.descargar}>
+                                            Descargar
+                                        </Button>
+                                        </div>
+                                        
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </CardHeader>
     				<CardBody>
     					<Row>
     						<Col xs="12">
@@ -274,6 +339,8 @@ export default class Facturas extends React.Component{
 								            </div>
 								        );
 								     }}
+
+                                    ref={this.table}
                                 />
     						</Col>
     					</Row>

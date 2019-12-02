@@ -77,6 +77,11 @@ const EtiquetsRe = Loadable({
 	loading: Loading,
 });
 
+const Insumos = Loadable({
+	loader: () => import('./views/Insumos'),
+	loading: Loading,
+});
+
 export const routes = [
 	{ path: '/app/', 					exact:true, name: 'Ingresar', 		component: DefaultLayout },         // Login
 	{ path: '/app/dashboard',       				name: 'Inicio',			component: Dashboard },             // Ventana principal
@@ -93,6 +98,7 @@ export const routes = [
 	{ path: '/app/registro/edit/:id', 	exact:true, name: 'Editar Usuario', component: EditUser },	   			// Editar Usuario
 	{ path: '/app/registro/agregar', 	exact:true, name: 'Agregar Usuario',component: EditUser },	   			// Agregar Usuario
 	{ path: '/app/reimpresas', exact: true, name: 'Etiquetas Reimpresas', component: EtiquetsRe},
+	{ path: '/app/insumos', exact: true, name: 'Insumos', component: Insumos},
 	{ path: '/app/logout',          				name: 'Logout',    		component: Logout },                // Logout
 ];
 

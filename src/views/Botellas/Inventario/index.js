@@ -271,8 +271,8 @@ class Inventario extends Component
                                                         {
                                                             almacenes.map((item, i) =>
                                                                 parseInt(item.activo,10) === 1 ?
-                                                                    this.props.auth.user.area === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
-                                                                    this.props.auth.user.area === item.id ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
+                                                                    parseInt(this.props.auth.user.area,10) === -3 ? <option key={i} value={item.id} > {item.nombre} </option>  :
+                                                                    parseInt(this.props.auth.user.area,10) === parseInt(item.id,10) ? <option key={i} value={item.id} > {item.nombre} </option>  : ""
                                                                 : ""
                                                             )
                                                         }
