@@ -420,23 +420,39 @@ class Traspasos extends Component {
         let _self = this;
 
         Traspaso_valid.edit = 0;
+        console.log('Traspaso_valid--->',Traspaso_valid);
+        /* Validar el traspaso id y que no valla vacio*/
+        if( parseInt(Traspaso_valid.id )>0){
+            if( Traspaso_valid.movimientos.length>0){
+                swal({
+                    title: '¿Estas Seguro?',
+                    text: "Al imprimir el reporte se cerrara el traspaso "+ Traspaso_valid.id,
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, Imprimir!'
+                }).then((result) => {
+                    if (result.value) {
+                        window.open(API_URL+"/reporteDeTraspaso/"+Traspaso_valid.id, '_blank');
+                        _self.setState({Traspaso_valid : Traspaso_valid})
+                    }
+                    document.getElementById("folio").focus();
+                    document.getElementById("folio").select();
+                });
+            
 
-        swal({
-            title: '¿Estas Seguro?',
-            text: "Al imprimir el reporte se cerrara el traspaso "+ Traspaso_valid.id,
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, Imprimir!'
-        }).then((result) => {
-            if (result.value) {
-                window.open(API_URL+"/reporteDeTraspaso/"+Traspaso_valid.id, '_blank');
-                _self.setState({Traspaso_valid : Traspaso_valid})
+            }else{
+                swal.fire('No puedes imprimir un traspaso vacio');
             }
-            document.getElementById("folio").focus();
-            document.getElementById("folio").select();
-        });
+
+
+        }else{
+            swal.fire('Favor de Crear un Traspaso nuevo');
+        }
+        
+
+        
     }
 
     nuevoTraspaso=(e)=>{
