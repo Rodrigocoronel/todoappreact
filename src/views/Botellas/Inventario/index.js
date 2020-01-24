@@ -15,6 +15,8 @@ const camposTablaNoDesglosado = [
         minWidth: 80,
         maxWidth: 100,
         accessor: 'cantidad',
+        filterable: false,
+        sortable: false,
     },
     {
         Header: 'Código Insumo',
@@ -23,12 +25,16 @@ const camposTablaNoDesglosado = [
         style: {whiteSpace: 'unset'},
         minWidth: 80,
         maxWidth: 100,
+         filterable: true,
+        sortable: false,
     },
     {
         Header: 'Descripción',
         accessor: 'desc_insumo',
         headerStyle: { whiteSpace: 'unset' },
         style: {whiteSpace: 'unset'},
+        filterable: true,
+        sortable: false,
     },
     {
         Header: 'Area',
@@ -37,6 +43,8 @@ const camposTablaNoDesglosado = [
         style: {whiteSpace: 'unset'},
         minWidth: 200,
         maxWidth: 250,
+        filterable: false,
+        sortable: false,
     },
 ];
 
@@ -48,6 +56,8 @@ const camposTablaDesglosado = [
         style: {whiteSpace: 'unset'},
         minWidth: 50,
         maxWidth: 100,
+        filterable: true,
+        sortable: false,
     },
    
     {
@@ -57,12 +67,16 @@ const camposTablaDesglosado = [
         style: {whiteSpace: 'unset'},
         minWidth: 80,
         maxWidth: 100,
+        filterable: true,
+        sortable: false,
     },
     {
         Header: 'Descripción',
         accessor: 'desc_insumo',
         headerStyle: { whiteSpace: 'unset' },
         style: {whiteSpace: 'unset'},
+        filterable: true,
+        sortable: false,
     },
     {
         Header: 'Area',
@@ -71,6 +85,8 @@ const camposTablaDesglosado = [
         style: {whiteSpace: 'unset'},
         minWidth: 200,
         maxWidth: 250,
+        filterable: false,
+        sortable: false,
     },
 ];
 
@@ -82,9 +98,30 @@ const requestData = (pageSize, page, sorted, filtered,almacen,desglosar) => {
         var take= pageSize;
         var skip=pageSize * page;
         var total=1;  
+        var id='';
+        var insumo='';
+        var descripcion='';
+        for (var i = filtered.length - 1; i >= 0; i--) {
+          switch(filtered[i].id)
+          {
+                       
+            case "desc_insumo":
+              descripcion=filtered[i].value;
+              console.log('descripcion--->',filtered[i].value);
+              break;
+            case "id":
+              id=filtered[i].value;
+              console.log('id--->',filtered[i].value);
+              break; 
+            case "insumo":
+              insumo=filtered[i].value;
+              console.log('insumo--->',filtered[i].value);
+              break;
+          }
+        }
         console.log('entro a la busqueda')
 
-        api().get(`/Inventario/${almacen}?take=${take}&skip=${skip}&desglosar=${desglosar}`)
+        api().get(`/Inventario/${almacen}?take=${take}&skip=${skip}&desglosar=${desglosar}&id=${id}&descripcion=${descripcion}&insumo=${insumo}`)
         .then(function(response)
         {
            
@@ -151,13 +188,48 @@ class Inventario extends Component
         this.mostrarRegistrosDesglosados = this.mostrarRegistrosDesglosados.bind(this);
         this.fetchData = this.fetchData.bind(this);
         this.pdf = this.pdf.bind(this);
+        this.table = React.createRef();
     }
     pdf(event){
         var {busqueda, desglosar} = this.state;
+
+        var id='';
+        var insumo='';
+        var descripcion='';
+        
+
+        /*validamos si existe la tabla  para el filtrado*/
+        if(this.table.current!=null){
+            var filtered=this.table.current.state.filtered;
+
+        for (var i = filtered.length - 1; i >= 0; i--) {
+          switch(filtered[i].id)
+          {
+                           
+                case "desc_insumo":
+                  descripcion=filtered[i].value;
+                  console.log('descripcion--->',filtered[i].value);
+                  break;
+                case "id":
+                  id=filtered[i].value;
+                  console.log('id--->',filtered[i].value);
+                  break; 
+                case "insumo":
+                  insumo=filtered[i].value;
+                  console.log('insumo--->',filtered[i].value);
+                  break;
+              }
+            }
+        }
+
+
+        
+
+        
         if(busqueda.almacen!=='0')
         {
             var x=desglosar===true?1:0;
-           window.open(API_URL+"/PdfInventario/"+busqueda.almacen+'/'+x, '_blank');
+           window.open(API_URL+"/PdfInventario/"+busqueda.almacen+'/'+x+`?id=${id}&descripcion=${descripcion}&insumo=${insumo}`, '_blank');
             
         }
     }
@@ -312,6 +384,7 @@ class Inventario extends Component
                                             pages={pages} // Display the total number of pages
                                             loading={loading} // Display the loading overlay when we need it
                                             onFetchData={_.debounce(this.fetchData, 500)} // Request new data when things change
+                                            ref={this.table}
                                         />
                                     </div>
                                   }
